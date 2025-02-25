@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'colors.dart';
 
 class AppTextStyles {
+  static const TextStyle headingLarge = TextStyle(
+    fontSize: 30,
+    fontWeight: FontWeight.w600,
+    fontFamily: 'Inter',
+    color: AppColors.mediumGray,
+  );
+
   static const TextStyle bodyLarge = TextStyle(
     fontSize: 18,
     fontFamily: 'Inter',
@@ -19,7 +26,7 @@ class AppTextStyles {
   static const TextStyle bodySmall = TextStyle(
     fontSize: 14,
     fontFamily: 'Inter',
-    fontWeight: FontWeight.w400, // Light
+    fontWeight: FontWeight.w300, // Light
     color: AppColors.mediumGray,
   );
 
