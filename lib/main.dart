@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'services/routes.dart';
 import 'theme/colors.dart';
+import 'theme/text_styles.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,11 +20,9 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Inter',
         primaryColor: AppColors.primary,
         textTheme: TextTheme(
-          bodyLarge: TextStyle(color: AppColors.darkGray),
-          bodyMedium: TextStyle(
-            color: AppColors.mediumGray,
-            fontWeight: FontWeight.w500,
-          ),
+          bodyLarge: AppTextStyles.bodyLarge,
+          bodyMedium: AppTextStyles.bodyMedium,
+          bodySmall: AppTextStyles.bodySmall,
         ),
       ),
       routerConfig: appRouter,
