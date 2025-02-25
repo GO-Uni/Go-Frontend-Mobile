@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/text_styles.dart';
 import '../theme/colors.dart';
 import '../widgets/custom_text_field.dart';
+import '../widgets/custom_button.dart';
 
 class SignUpBusiness extends StatelessWidget {
   const SignUpBusiness({super.key});
@@ -55,7 +56,7 @@ class SignUpBusiness extends StatelessWidget {
               const SizedBox(height: 30),
 
               Padding(
-                padding: const EdgeInsets.only(left: 20),
+                padding: const EdgeInsets.only(left: 32),
                 child: GestureDetector(
                   onTap: () {
                     Navigator.pop(context);
@@ -105,6 +106,18 @@ class SignUpBusiness extends StatelessWidget {
                 label: "Confirm Password",
                 hintText: "Confirm your password",
                 isPassword: true,
+              ),
+
+              const SizedBox(height: 20),
+
+              Center(
+                child: CustomButton(
+                  text: "Continue",
+                  onPressed: () {
+                    print("SignUp Button Pressed");
+                  },
+                  width: 150,
+                ),
               ),
             ],
           ),
