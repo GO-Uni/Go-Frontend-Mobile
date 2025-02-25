@@ -19,7 +19,7 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: width ?? double.infinity,
-      height: 50,
+      height: 38,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: isDisabled ? Colors.grey : AppColors.primary,
@@ -30,11 +30,9 @@ class CustomButton extends StatelessWidget {
         onPressed: isDisabled ? null : onPressed,
         child: Text(
           text,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(fontSize: 14, color: Colors.white),
         ),
       ),
     );
