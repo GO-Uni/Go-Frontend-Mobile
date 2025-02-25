@@ -6,8 +6,26 @@ class SignUpOptions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Center(child: Text("SIGN up options")),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.asset(
+              'assets/images/SignUpOptions-bg.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          Column(
+            children: [
+              const SizedBox(height: 90),
+              Align(
+                alignment: Alignment.topCenter,
+                child: Image.asset('assets/images/LOGO.png', height: 90),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
