@@ -25,7 +25,7 @@ class SignUpOptionCard extends StatelessWidget {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(22),
         child: Column(
@@ -38,7 +38,7 @@ class SignUpOptionCard extends StatelessWidget {
                       ? FaIcon(icon, size: 38, color: AppColors.darkGray)
                       : Icon(icon, size: 38, color: AppColors.darkGray),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 3),
 
             // Title
             Text(
@@ -48,7 +48,7 @@ class SignUpOptionCard extends StatelessWidget {
                 color: AppColors.darkGray,
               ),
             ),
-            const SizedBox(height: 5),
+            const SizedBox(height: 3),
 
             // Description
             Text(
@@ -58,7 +58,7 @@ class SignUpOptionCard extends StatelessWidget {
                 color: AppColors.mediumGray,
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 3),
 
             GestureDetector(
               onTap: onTap,
@@ -73,7 +73,7 @@ class SignUpOptionCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 4),
-                  Icon(Icons.arrow_forward, size: 20, color: AppColors.primary),
+                  Icon(Icons.arrow_forward, size: 18, color: AppColors.primary),
                 ],
               ),
             ),
