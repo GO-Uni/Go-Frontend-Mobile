@@ -11,7 +11,7 @@ class SignUpOptions extends StatelessWidget {
           Positioned.fill(
             child: Image.asset(
               'assets/images/SignUpOptions-bg.png',
-              fit: BoxFit.cover,
+              fit: BoxFit.fill,
             ),
           ),
 
@@ -21,6 +21,19 @@ class SignUpOptions extends StatelessWidget {
               Align(
                 alignment: Alignment.topCenter,
                 child: Image.asset('assets/images/LOGO.png', height: 90),
+              ),
+
+              const SizedBox(height: 20),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  "Choose your journey with GO. Connect, explore, and grow with our community.",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(fontSize: 14),
+                ),
               ),
             ],
           ),
