@@ -21,7 +21,7 @@ class CustomTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: margin ?? const EdgeInsets.symmetric(horizontal: 40),
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -37,12 +37,16 @@ class CustomTextField extends StatelessWidget {
               ? DropdownButtonFormField<String>(
                 decoration: InputDecoration(
                   hintText: hintText,
+                  hintStyle: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.mediumGray,
+                  ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 9,
+                    horizontal: 10,
+                    vertical: 5,
                   ),
                 ),
                 items: const [
@@ -67,12 +71,16 @@ class CustomTextField extends StatelessWidget {
                 obscureText: isPassword,
                 decoration: InputDecoration(
                   hintText: hintText,
+                  hintStyle: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.mediumGray,
+                  ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 9,
+                    horizontal: 10,
+                    vertical: 5,
                   ),
                 ),
               ),
