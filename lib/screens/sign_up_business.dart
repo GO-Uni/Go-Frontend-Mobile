@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../theme/text_styles.dart';
+//import '../theme/text_styles.dart';
 import '../theme/colors.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_button.dart';
+import '../widgets/welcome_header.dart';
 
 class SignUpBusiness extends StatefulWidget {
   const SignUpBusiness({super.key});
@@ -25,7 +26,7 @@ class SignUpBusinessState extends State<SignUpBusiness> {
             decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/SignUpBusiness-bg.png'),
-                fit: BoxFit.cover,
+                fit: BoxFit.fill,
               ),
             ),
           ),
@@ -37,28 +38,10 @@ class SignUpBusinessState extends State<SignUpBusiness> {
               children: [
                 const SizedBox(height: 10),
 
-                Center(
-                  child: Column(
-                    children: [
-                      Image.asset(
-                        'assets/images/location-logo.png',
-                        fit: BoxFit.fill,
-                        height: 70,
-                      ),
-                      const SizedBox(height: 12),
-                      Text(
-                        "Welcome To GO",
-                        style: AppTextStyles.headingLarge.copyWith(
-                          color: AppColors.darkGray,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "Sign up to begin your journey",
-                        style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-                      ),
-                    ],
-                  ),
+                const WelcomeHeader(
+                  title: "Welcome To GO",
+                  subtitle: "Sign up to begin your journey",
+                  imagePath: 'assets/images/location-logo.png',
                 ),
 
                 const SizedBox(height: 18),
@@ -84,7 +67,7 @@ class SignUpBusinessState extends State<SignUpBusiness> {
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 6),
 
                 const CustomTextField(
                   label: 'Email',
