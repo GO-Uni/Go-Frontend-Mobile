@@ -4,6 +4,7 @@ import '../screens/sign_up_options.dart';
 import '../screens/sign_up_business.dart';
 import '../screens/sign_up.dart';
 import '../screens/log_in.dart';
+import '../screens/subscription_business.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
@@ -16,7 +17,8 @@ final GoRouter appRouter = GoRouter(
       path: '/sign-up-business',
       builder: (context, state) => SignUpBusiness(),
     ),
-    GoRoute(path: '/', builder: (context, state) => SignUp()),
+    GoRoute(path: '/signup', builder: (context, state) => SignUp()),
     GoRoute(path: '/login', builder: (context, state) => Login()),
+    GoRoute(path: '/', builder: (context, state) => SubscriptionBusiness()),
   ],
 );

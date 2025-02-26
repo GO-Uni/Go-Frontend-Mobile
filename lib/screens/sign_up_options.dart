@@ -68,7 +68,6 @@ class SignUpOptions extends StatelessWidget {
                     "Explore our platform without creating an account. Limited features available.",
                 actionText: "Start exploring",
                 icon: FontAwesomeIcons.ghost,
-                isFontAwesome: true,
                 onTap: () {
                   // Handle guest login
                 },
