@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
-import '../widgets/custom_text_field.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/welcome_header.dart';
-import '../theme/text_styles.dart';
+import '../../theme/colors.dart';
+import '../../widgets/custom_text_field.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/welcome_header.dart';
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+class SignUp extends StatefulWidget {
+  const SignUp({super.key});
 
   @override
-  LoginState createState() => LoginState();
+  SignUpState createState() => SignUpState();
 }
 
-class LoginState extends State<Login> {
-  bool isChecked = false;
-
+class SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,26 +27,26 @@ class LoginState extends State<Login> {
               ),
             ),
           ),
+
           SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 180),
+                const SizedBox(height: 100),
 
                 const WelcomeHeader(
                   title: "Welcome To GO",
-                  subtitle: "Sign in to continue your journey",
+                  subtitle: "Sign up to begin your journey",
                   imagePath: 'assets/images/location-logo.png',
                 ),
 
                 const SizedBox(height: 18),
 
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 32),
+                Padding(
+                  padding: const EdgeInsets.only(left: 32),
+                  child: GestureDetector(
+                    onTap: () => Navigator.pop(context),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -57,7 +54,7 @@ class LoginState extends State<Login> {
                         const SizedBox(width: 8),
                         Text(
                           "Back",
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             color: AppColors.primary,
                           ),
@@ -70,6 +67,10 @@ class LoginState extends State<Login> {
                 const SizedBox(height: 6),
 
                 const CustomTextField(
+                  label: 'Name',
+                  hintText: 'Enter your name',
+                ),
+                const CustomTextField(
                   label: 'Email',
                   hintText: 'Enter your email',
                 ),
@@ -78,45 +79,19 @@ class LoginState extends State<Login> {
                   hintText: "Enter your password",
                   isPassword: true,
                 ),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Row(
-                    children: [
-                      Checkbox(
-                        value: isChecked,
-                        activeColor: AppColors.primary,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isChecked = value ?? false;
-                          });
-                        },
-                      ),
-                      const Text("Remember me", style: TextStyle(fontSize: 14)),
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: () {
-                          // Handle Forgot Password action
-                        },
-                        child: const Text(
-                          "Forgot Password?",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                const CustomTextField(
+                  label: "Confirm Password",
+                  hintText: "Confirm your password",
+                  isPassword: true,
                 ),
 
                 const SizedBox(height: 10),
 
                 Center(
                   child: CustomButton(
-                    text: "Login",
+                    text: "Sign Up",
                     onPressed: () {
-                      // Handle Login action
+                      // Handle Sign Up action
                     },
                     width: 150,
                   ),
@@ -127,25 +102,26 @@ class LoginState extends State<Login> {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      // Handle navigation to Sign Up screen
+                      // Handle navigation to Login screen
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 32),
+                    child: const Padding(
+                      padding: EdgeInsets.only(left: 32),
                       child: Text.rich(
                         TextSpan(
                           children: [
-                            const TextSpan(
-                              text: "Don't have an account? ",
+                            TextSpan(
+                              text: "Already have an account? ",
                               style: TextStyle(
                                 fontSize: 14,
                                 color: AppColors.darkGray,
                               ),
                             ),
                             TextSpan(
-                              text: "Sign Up",
-                              style: AppTextStyles.bodyMedium.copyWith(
+                              text: "Login",
+                              style: TextStyle(
                                 fontSize: 14,
                                 color: AppColors.primary,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],

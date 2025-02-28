@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../theme/colors.dart';
-import '../widgets/signup_option_card.dart';
+import '../../theme/colors.dart';
+import '../../widgets/signup_option_card.dart';
 
 class SignUpOptions extends StatelessWidget {
   const SignUpOptions({super.key});

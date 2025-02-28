@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-//import '../theme/text_styles.dart';
-import '../theme/colors.dart';
-import '../widgets/custom_text_field.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/welcome_header.dart';
+import '../../theme/colors.dart';
+import '../../widgets/custom_text_field.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/welcome_header.dart';
+import '../../theme/text_styles.dart';
 
-class SignUpBusiness extends StatefulWidget {
-  const SignUpBusiness({super.key});
+class Login extends StatefulWidget {
+  const Login({super.key});
 
   @override
-  SignUpBusinessState createState() => SignUpBusinessState();
+  LoginState createState() => LoginState();
 }
 
-class SignUpBusinessState extends State<SignUpBusiness> {
+class LoginState extends State<Login> {
   bool isChecked = false;
 
   @override
@@ -30,26 +30,26 @@ class SignUpBusinessState extends State<SignUpBusiness> {
               ),
             ),
           ),
-
           SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 10),
+                const SizedBox(height: 180),
 
                 const WelcomeHeader(
                   title: "Welcome To GO",
-                  subtitle: "Sign up to begin your journey",
+                  subtitle: "Sign in to continue your journey",
                   imagePath: 'assets/images/location-logo.png',
                 ),
 
                 const SizedBox(height: 18),
 
-                Padding(
-                  padding: const EdgeInsets.only(left: 32),
-                  child: GestureDetector(
-                    onTap: () => Navigator.pop(context),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 32),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -57,7 +57,7 @@ class SignUpBusinessState extends State<SignUpBusiness> {
                         const SizedBox(width: 8),
                         Text(
                           "Back",
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             color: AppColors.primary,
                           ),
@@ -74,69 +74,37 @@ class SignUpBusinessState extends State<SignUpBusiness> {
                   hintText: 'Enter your email',
                 ),
                 const CustomTextField(
-                  label: "Business Name",
-                  hintText: "Enter your business name",
-                ),
-                const CustomTextField(
-                  label: "Owner Name",
-                  hintText: "Enter owner name",
-                ),
-                const CustomTextField(
-                  label: "Business Category",
-                  hintText: "Select category",
-                  isDropdown: true,
-                ),
-                const CustomTextField(
                   label: "Password",
                   hintText: "Enter your password",
                   isPassword: true,
                 ),
-                const CustomTextField(
-                  label: "Confirm Password",
-                  hintText: "Confirm your password",
-                  isPassword: true,
-                ),
 
                 Padding(
-                  padding: const EdgeInsets.only(left: 32),
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
                   child: Row(
-                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Checkbox(
                         value: isChecked,
                         activeColor: AppColors.primary,
                         onChanged: (bool? value) {
                           setState(() {
-                            isChecked = value!;
+                            isChecked = value ?? false;
                           });
                         },
                       ),
-                      const Text("Bookings", style: TextStyle(fontSize: 14)),
-                      const SizedBox(width: 150),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.help_outline,
-                          size: 20,
-                          color: Colors.grey,
-                        ),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder:
-                                (context) => AlertDialog(
-                                  title: const Text("Bookings Help"),
-                                  content: const Text(
-                                    "Enable this option to allow bookings for your business.",
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text("OK"),
-                                    ),
-                                  ],
-                                ),
-                          );
+                      const Text("Remember me", style: TextStyle(fontSize: 14)),
+                      const Spacer(),
+                      GestureDetector(
+                        onTap: () {
+                          // Handle Forgot Password action
                         },
+                        child: const Text(
+                          "Forgot Password?",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.primary,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -146,9 +114,9 @@ class SignUpBusinessState extends State<SignUpBusiness> {
 
                 Center(
                   child: CustomButton(
-                    text: "Continue",
+                    text: "Login",
                     onPressed: () {
-                      // Handle SignUp action
+                      // Handle Login action
                     },
                     width: 150,
                   ),
@@ -159,26 +127,25 @@ class SignUpBusinessState extends State<SignUpBusiness> {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      // Handle navigation to Login
+                      // Handle navigation to Sign Up screen
                     },
-                    child: const Padding(
-                      padding: EdgeInsets.only(left: 32),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 32),
                       child: Text.rich(
                         TextSpan(
                           children: [
-                            TextSpan(
-                              text: "Already have an account? ",
+                            const TextSpan(
+                              text: "Don't have an account? ",
                               style: TextStyle(
                                 fontSize: 14,
                                 color: AppColors.darkGray,
                               ),
                             ),
                             TextSpan(
-                              text: "Login",
-                              style: TextStyle(
+                              text: "Sign Up",
+                              style: AppTextStyles.bodyMedium.copyWith(
                                 fontSize: 14,
                                 color: AppColors.primary,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],

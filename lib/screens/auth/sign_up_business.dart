@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
-import '../widgets/custom_text_field.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/welcome_header.dart';
+//import '../theme/text_styles.dart';
+import '../../theme/colors.dart';
+import '../../widgets/custom_text_field.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/welcome_header.dart';
 
-class SignUp extends StatefulWidget {
-  const SignUp({super.key});
+class SignUpBusiness extends StatefulWidget {
+  const SignUpBusiness({super.key});
 
   @override
-  SignUpState createState() => SignUpState();
+  SignUpBusinessState createState() => SignUpBusinessState();
 }
 
-class SignUpState extends State<SignUp> {
+class SignUpBusinessState extends State<SignUpBusiness> {
+  bool isChecked = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +36,7 @@ class SignUpState extends State<SignUp> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 100),
+                const SizedBox(height: 10),
 
                 const WelcomeHeader(
                   title: "Welcome To GO",
@@ -67,12 +70,21 @@ class SignUpState extends State<SignUp> {
                 const SizedBox(height: 6),
 
                 const CustomTextField(
-                  label: 'Name',
-                  hintText: 'Enter your name',
-                ),
-                const CustomTextField(
                   label: 'Email',
                   hintText: 'Enter your email',
+                ),
+                const CustomTextField(
+                  label: "Business Name",
+                  hintText: "Enter your business name",
+                ),
+                const CustomTextField(
+                  label: "Owner Name",
+                  hintText: "Enter owner name",
+                ),
+                const CustomTextField(
+                  label: "Business Category",
+                  hintText: "Select category",
+                  isDropdown: true,
                 ),
                 const CustomTextField(
                   label: "Password",
@@ -85,13 +97,58 @@ class SignUpState extends State<SignUp> {
                   isPassword: true,
                 ),
 
+                Padding(
+                  padding: const EdgeInsets.only(left: 32),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Checkbox(
+                        value: isChecked,
+                        activeColor: AppColors.primary,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            isChecked = value!;
+                          });
+                        },
+                      ),
+                      const Text("Bookings", style: TextStyle(fontSize: 14)),
+                      const SizedBox(width: 150),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.help_outline,
+                          size: 20,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder:
+                                (context) => AlertDialog(
+                                  title: const Text("Bookings Help"),
+                                  content: const Text(
+                                    "Enable this option to allow bookings for your business.",
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text("OK"),
+                                    ),
+                                  ],
+                                ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+
                 const SizedBox(height: 10),
 
                 Center(
                   child: CustomButton(
-                    text: "Sign Up",
+                    text: "Continue",
                     onPressed: () {
-                      // Handle Sign Up action
+                      // Handle SignUp action
                     },
                     width: 150,
                   ),
@@ -102,7 +159,7 @@ class SignUpState extends State<SignUp> {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      // Handle navigation to Login screen
+                      // Handle navigation to Login
                     },
                     child: const Padding(
                       padding: EdgeInsets.only(left: 32),
