@@ -43,4 +43,11 @@ class AppTextStyles {
     fontWeight: FontWeight.bold,
     color: AppColors.primary,
   );
+
+  static const TextStyle boldText = TextStyle(
+    fontSize: 16,
+    fontFamily: 'Inter',
+    fontWeight: FontWeight.w700, // Bold
+    color: AppColors.darkGray,
+  );
 }
