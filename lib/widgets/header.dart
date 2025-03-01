@@ -44,7 +44,9 @@ class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
         bottomLeft: Radius.circular(20),
         bottomRight: Radius.circular(20),
       ),
+
       child: Container(
+        padding: const EdgeInsets.only(top: 18),
         color: Colors.white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
