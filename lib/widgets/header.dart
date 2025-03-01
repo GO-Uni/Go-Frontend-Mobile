@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../theme/text_styles.dart';
 import '../theme/colors.dart';
+import 'package:go_router/go_router.dart';
+import '../services/routes.dart';
 
 class Header extends StatefulWidget {
   const Header({super.key});
@@ -78,8 +80,8 @@ class HeaderState extends State<Header> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildTabButton("Destinations", 0),
-                  _buildTabButton("Saved", 1),
+                  _buildTabButton("Destinations", 0, ConfigRoutes.destinations),
+                  _buildTabButton("Saved", 1, ConfigRoutes.saved),
                 ],
               ),
               const SizedBox(height: 4),
@@ -116,12 +118,13 @@ class HeaderState extends State<Header> {
     );
   }
 
-  Widget _buildTabButton(String text, int index) {
+  Widget _buildTabButton(String text, int index, String route) {
     return GestureDetector(
       onTap: () {
         setState(() {
           selectedIndex = index;
         });
+        context.go(route);
       },
       child: Column(
         children: [
