@@ -6,11 +6,11 @@ class Header extends StatefulWidget {
   const Header({super.key});
 
   @override
-  _HeaderState createState() => _HeaderState();
+  HeaderState createState() => HeaderState();
 }
 
-class _HeaderState extends State<Header> {
-  int selectedIndex = 0;
+class HeaderState extends State<Header> {
+  int selectedIndex = -1;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,6 @@ class _HeaderState extends State<Header> {
                 ),
               ),
               const SizedBox(width: 12),
-
               Expanded(
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -95,10 +94,15 @@ class _HeaderState extends State<Header> {
                     ),
                     AnimatedPositioned(
                       duration: const Duration(milliseconds: 300),
-                      left: selectedIndex == 0 ? 0 : 160,
+                      left:
+                          selectedIndex == 0
+                              ? 0
+                              : selectedIndex == 1
+                              ? 160
+                              : -100,
                       child: Container(
                         height: 2,
-                        width: 120,
+                        width: selectedIndex == -1 ? 0 : 120,
                         color: AppColors.darkGreen,
                       ),
                     ),
