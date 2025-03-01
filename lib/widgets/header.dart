@@ -39,96 +39,102 @@ class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            margin: const EdgeInsets.only(top: 15),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              children: [
-                Text(
-                  "GO",
-                  style: AppTextStyles.boldText.copyWith(
-                    fontSize: 34,
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      color: AppColors.lightGreen,
-                      borderRadius: BorderRadius.circular(30),
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        bottomLeft: Radius.circular(20),
+        bottomRight: Radius.circular(20),
+      ),
+      child: Container(
+        color: Colors.white,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                children: [
+                  Text(
+                    "GO",
+                    style: AppTextStyles.boldText.copyWith(
+                      fontSize: 34,
+                      color: AppColors.primary,
                     ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            style: AppTextStyles.bodyMedium,
-                            decoration: InputDecoration(
-                              hintText: "Discover places...",
-                              hintStyle: AppTextStyles.bodyMedium.copyWith(
-                                color: AppColors.lightGray,
-                              ),
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 5,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        color: AppColors.lightGreen,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              style: AppTextStyles.bodyMedium,
+                              decoration: InputDecoration(
+                                hintText: "Discover places...",
+                                hintStyle: AppTextStyles.bodyMedium.copyWith(
+                                  color: AppColors.lightGray,
+                                ),
+                                border: InputBorder.none,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.search, color: Colors.black),
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.search, color: Colors.black),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Center(
-            child: SizedBox(
-              width: 250,
-              child: TabBar(
-                controller: _tabController,
-                onTap: (index) {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                  widget.onTabSelected(index);
-                },
-                indicator:
-                    _selectedIndex == null
-                        ? const BoxDecoration()
-                        : UnderlineTabIndicator(
-                          borderSide: BorderSide(
-                            width: 2,
-                            color: AppColors.primary,
-                          ),
-                          insets: EdgeInsets.symmetric(horizontal: 120),
-                        ),
-                indicatorSize: TabBarIndicatorSize.tab,
-                labelStyle: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
-                unselectedLabelStyle: AppTextStyles.bodyMedium.copyWith(
-                  fontSize: 14,
-                ),
-                labelColor: AppColors.darkGray,
-                unselectedLabelColor: AppColors.darkGray,
-                dividerColor: AppColors.lightGreen,
-                dividerHeight: 3.0,
-                tabs: const [Tab(text: "Destinations"), Tab(text: "Saved")],
+                ],
               ),
             ),
-          ),
-          const SizedBox(height: 8),
-        ],
+            Center(
+              child: SizedBox(
+                width: 250,
+                child: TabBar(
+                  controller: _tabController,
+                  onTap: (index) {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                    widget.onTabSelected(index);
+                  },
+                  indicator:
+                      _selectedIndex == null
+                          ? const BoxDecoration()
+                          : const UnderlineTabIndicator(
+                            borderSide: BorderSide(
+                              width: 2,
+                              color: AppColors.primary,
+                            ),
+                            insets: EdgeInsets.symmetric(horizontal: 120),
+                          ),
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  labelStyle: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
+                  unselectedLabelStyle: AppTextStyles.bodyMedium.copyWith(
+                    fontSize: 14,
+                  ),
+                  labelColor: AppColors.darkGray,
+                  unselectedLabelColor: AppColors.darkGray,
+                  dividerColor: AppColors.lightGreen,
+                  dividerHeight: 3.0,
+                  tabs: const [Tab(text: "Destinations"), Tab(text: "Saved")],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     );
   }
