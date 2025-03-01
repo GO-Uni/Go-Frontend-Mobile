@@ -11,4 +11,7 @@ final class ConfigRoutes {
   static const String bookings = '/bookings';
   static const String maps = '/maps';
   static const String profile = '/profile';
+
+  static const String destinations = '/destinations';
+  static const String saved = '/saved';
 }

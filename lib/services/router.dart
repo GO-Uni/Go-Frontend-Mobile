@@ -4,6 +4,8 @@ import '../screens/auth/sign_up_business.dart';
 import '../screens/auth/sign_up.dart';
 import '../screens/auth/log_in.dart';
 import '../screens/auth/subscription_business.dart';
+import '../screens/destinations_screen.dart';
+import '../screens/saved_screen.dart';
 
 import '../screens/chatbot_screen.dart';
 import '../screens/bookings_screen.dart';
@@ -53,6 +55,14 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: ConfigRoutes.profile,
           builder: (context, state) => ProfileScreen(),
+        ),
+        GoRoute(
+          path: ConfigRoutes.destinations,
+          builder: (context, state) => DestinationsScreen(),
+        ),
+        GoRoute(
+          path: ConfigRoutes.saved,
+          builder: (context, state) => SavedScreen(),
         ),
       ],
     ),
