@@ -6,13 +6,12 @@ import '../screens/auth/log_in.dart';
 import '../screens/auth/subscription_business.dart';
 import '../screens/destinations_screen.dart';
 import '../screens/saved_screen.dart';
-
 import '../screens/chatbot_screen.dart';
 import '../screens/bookings_screen.dart';
 import '../screens/maps_screen.dart';
 import '../screens/profile_screen.dart';
 import '../screens/where_to_next_screen.dart';
-import '../widgets/bottom_nav_bar.dart';
+import '../widgets/app_layout.dart';
 import 'routes.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -34,7 +33,7 @@ final GoRouter appRouter = GoRouter(
     ),
 
     ShellRoute(
-      builder: (context, state, child) => BottomNavBar(child: child),
+      builder: (context, state, child) => AppLayout(child: child),
       routes: [
         GoRoute(
           path: ConfigRoutes.whereToNext,
