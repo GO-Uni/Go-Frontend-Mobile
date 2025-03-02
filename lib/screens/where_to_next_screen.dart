@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/text_styles.dart';
 import '../theme/colors.dart';
 import '../widgets/category_card.dart';
+import '../widgets/custom_button.dart';
 
 class WhereToNextScreen extends StatelessWidget {
   const WhereToNextScreen({super.key});
@@ -19,39 +20,58 @@ class WhereToNextScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(top: 10, left: 12, right: 12),
-            child: Text(
-              "Where to next?",
-              style: AppTextStyles.headingLarge.copyWith(
-                color: AppColors.darkGray,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: GridView.builder(
-                itemCount: categories.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 2,
-                  childAspectRatio: 1.0,
+      body: SafeArea(
+        top: false,
+        minimum: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                child: Text(
+                  "Where to next?",
+                  style: AppTextStyles.headingLarge.copyWith(
+                    color: AppColors.darkGray,
+                  ),
                 ),
-                itemBuilder: (context, index) {
-                  return CategoryCard(
-                    title: categories[index]['title']!,
-                    imagePath: categories[index]['image']!,
-                  );
-                },
               ),
-            ),
+              SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                child: Column(
+                  children: [
+                    GridView.builder(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: categories.length,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                          ),
+                      itemBuilder: (context, index) {
+                        return CategoryCard(
+                          title: categories[index]['title']!,
+                          imagePath: categories[index]['image']!,
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+              Center(
+                child: CustomButton(
+                  text: "View All Destinations",
+                  onPressed: () {},
+                  width: 200,
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
