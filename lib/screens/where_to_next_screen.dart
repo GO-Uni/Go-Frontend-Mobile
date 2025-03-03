@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/services/routes.dart';
+import 'package:go_router/go_router.dart';
 import '../theme/text_styles.dart';
 import '../theme/colors.dart';
 import '../widgets/category_card.dart';
@@ -22,7 +24,7 @@ class WhereToNextScreen extends StatelessWidget {
       backgroundColor: AppColors.lightGreen,
       body: SafeArea(
         top: false,
-        minimum: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 2.0),
+        minimum: const EdgeInsets.symmetric(horizontal: 2.0, vertical: 8.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,6 +35,7 @@ class WhereToNextScreen extends StatelessWidget {
                   "Where to next?",
                   style: AppTextStyles.headingLarge.copyWith(
                     color: AppColors.darkGray,
+                    fontSize: 24,
                   ),
                 ),
               ),
@@ -64,7 +67,9 @@ class WhereToNextScreen extends StatelessWidget {
               Center(
                 child: CustomButton(
                   text: "View All Destinations",
-                  onPressed: () {},
+                  onPressed: () {
+                    context.go(ConfigRoutes.destinations);
+                  },
                   width: 200,
                 ),
               ),

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(MaterialApp(home: DestinationsScreen()));
-}
+import '../theme/text_styles.dart';
+import '../theme/colors.dart';
 
 class DestinationsScreen extends StatelessWidget {
   const DestinationsScreen({super.key});
@@ -10,11 +8,36 @@ class DestinationsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.amber,
-      body: Center(
-        child: Text(
-          "Explore amazing destinations!",
-          style: TextStyle(color: Colors.white),
+      backgroundColor: AppColors.lightGreen,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                "Recommended",
+                style: AppTextStyles.bodyLarge.copyWith(fontSize: 24),
+              ),
+            ),
+            SizedBox(
+              height: 200,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: 5,
+                itemBuilder: (context, index) {
+                  return;
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                "All Destinations",
+                style: AppTextStyles.bodyLarge.copyWith(fontSize: 24),
+              ),
+            ),
+          ],
         ),
       ),
     );
