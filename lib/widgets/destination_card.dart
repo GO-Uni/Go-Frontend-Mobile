@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/text_styles.dart';
 
-class DestinationCard extends StatelessWidget {
+class DestinationCard extends StatefulWidget {
   final String imageUrl;
   final String name;
   final String description;
@@ -16,9 +16,16 @@ class DestinationCard extends StatelessWidget {
   });
 
   @override
+  DestinationCardState createState() => DestinationCardState();
+}
+
+class DestinationCardState extends State<DestinationCard> {
+  bool isBookmarked = false;
+
+  @override
   Widget build(BuildContext context) {
     return Container(
-      width: 120,
+      width: 130,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -30,43 +37,56 @@ class DestinationCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
             child: Image.network(
-              imageUrl,
-              height: 120,
+              widget.imageUrl,
+              height: 105,
               width: double.infinity,
               fit: BoxFit.cover,
             ),
           ),
-
           Padding(
             padding: EdgeInsets.all(4),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  name,
+                  widget.name,
                   style: AppTextStyles.bodyLarge.copyWith(fontSize: 14),
                 ),
                 SizedBox(height: 4),
                 Text(
-                  description,
+                  widget.description,
                   style: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
                 ),
                 SizedBox(height: 5),
-
                 Row(
                   children: [
                     Row(
                       children: List.generate(5, (index) {
                         return Icon(
-                          index < rating ? Icons.star : Icons.star_border,
-                          color: index < rating ? Colors.amber : Colors.grey,
+                          index < widget.rating
+                              ? Icons.star
+                              : Icons.star_border,
+                          color:
+                              index < widget.rating
+                                  ? Colors.amber
+                                  : Colors.grey,
                           size: 20,
                         );
                       }),
                     ),
                     Spacer(),
 
-                    Icon(Icons.bookmark_border, color: Colors.black),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isBookmarked = !isBookmarked;
+                        });
+                      },
+                      child: Icon(
+                        isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                        color: isBookmarked ? Colors.green : Colors.black,
+                      ),
+                    ),
                   ],
                 ),
               ],
