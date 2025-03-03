@@ -46,14 +46,15 @@ class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
       ),
 
       child: Container(
-        padding: const EdgeInsets.only(top: 18),
+        padding: const EdgeInsets.only(top: 23),
         color: Colors.white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               margin: const EdgeInsets.only(top: 14),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+
               child: Row(
                 children: [
                   Text(
@@ -66,7 +67,10 @@ class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 0,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.lightGreen,
                         borderRadius: BorderRadius.circular(30),
