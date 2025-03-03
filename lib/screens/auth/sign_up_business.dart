@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 //import '../theme/text_styles.dart';
 import '../../theme/colors.dart';
 import '../../widgets/custom_text_field.dart';
@@ -49,7 +50,7 @@ class SignUpBusinessState extends State<SignUpBusiness> {
                 Padding(
                   padding: const EdgeInsets.only(left: 32),
                   child: GestureDetector(
-                    onTap: () => Navigator.pop(context),
+                    onTap: () => context.pop(),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

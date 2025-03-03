@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../services/routes.dart';
 import '../../theme/colors.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/custom_button.dart';
@@ -47,7 +49,7 @@ class LoginState extends State<Login> {
                 const SizedBox(height: 18),
 
                 GestureDetector(
-                  onTap: () => Navigator.pop(context),
+                  onTap: () => context.pop(),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 32),
                     child: Row(
@@ -117,6 +119,7 @@ class LoginState extends State<Login> {
                     text: "Login",
                     onPressed: () {
                       // Handle Login action
+                      context.go(ConfigRoutes.whereToNext);
                     },
                     width: 150,
                   ),

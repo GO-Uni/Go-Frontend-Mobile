@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_frontend_mobile/services/routes.dart';
+import 'package:go_router/go_router.dart';
 import '../../theme/colors.dart';
 import '../../widgets/signup_option_card.dart';
 
@@ -49,7 +51,7 @@ class SignUpOptions extends StatelessWidget {
                 actionText: "Sign up now",
                 icon: Icons.person_outline,
                 onTap: () {
-                  // Handle sign-up action
+                  context.push(ConfigRoutes.signUp);
                 },
               ),
               SignUpOptionCard(
@@ -59,7 +61,7 @@ class SignUpOptions extends StatelessWidget {
                 actionText: "Sign up as business",
                 icon: Icons.business_outlined,
                 onTap: () {
-                  // Handle business sign-up
+                  context.push(ConfigRoutes.signUpBusiness);
                 },
               ),
               SignUpOptionCard(
@@ -77,8 +79,7 @@ class SignUpOptions extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 60),
                 child: GestureDetector(
                   onTap: () {
-                    // Handle login navigation
-                    Navigator.pushNamed(context, '/login');
+                    context.push(ConfigRoutes.login);
                   },
                   child: RichText(
                     text: TextSpan(
