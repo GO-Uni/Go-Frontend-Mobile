@@ -31,6 +31,35 @@ class BookedCard extends StatelessWidget {
                 ),
               ),
             ),
+
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          name,
+                          style: AppTextStyles.bodyLarge.copyWith(fontSize: 14),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          timeRange,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            fontSize: 12,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
