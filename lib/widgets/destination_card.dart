@@ -103,7 +103,7 @@ class DestinationCardState extends State<DestinationCard> {
           if (widget.isBooked == true)
             Positioned(
               top: 8,
-              right: 8,
+              right: 16,
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
@@ -123,8 +123,7 @@ class DestinationCardState extends State<DestinationCard> {
           if (widget.isBooked == false)
             Positioned(
               top: 8,
-              right: 8,
-              bottom: 12,
+              right: 16,
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
