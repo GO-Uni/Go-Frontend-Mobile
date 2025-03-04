@@ -2,10 +2,17 @@ import 'package:flutter/material.dart';
 import '../theme/text_styles.dart';
 import '../theme/colors.dart';
 
+enum HeaderVariant { defaultHeader, compactHeader }
+
 class Header extends StatefulWidget {
   final Function(int) onTabSelected;
+  final HeaderVariant variant;
 
-  const Header({super.key, required this.onTabSelected});
+  const Header({
+    super.key,
+    required this.onTabSelected,
+    this.variant = HeaderVariant.defaultHeader,
+  });
 
   @override
   State<Header> createState() => _HeaderState();
@@ -51,95 +58,125 @@ class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              margin: const EdgeInsets.only(top: 14),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            if (widget.variant == HeaderVariant.defaultHeader) ...[
+              _buildDefaultHeader(),
+              _buildTabs(),
+            ] else ...[
+              _buildCompactHeader(),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
 
+  // The original full header
+  Widget _buildDefaultHeader() {
+    return Container(
+      margin: const EdgeInsets.only(top: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Row(
+        children: [
+          Text(
+            "GO",
+            style: AppTextStyles.boldText.copyWith(
+              fontSize: 34,
+              color: AppColors.primary,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: AppColors.lightGreen,
+                borderRadius: BorderRadius.circular(30),
+              ),
               child: Row(
                 children: [
-                  Text(
-                    "GO",
-                    style: AppTextStyles.boldText.copyWith(
-                      fontSize: 34,
-                      color: AppColors.primary,
+                  Expanded(
+                    child: TextField(
+                      style: AppTextStyles.bodyMedium,
+                      decoration: InputDecoration(
+                        hintText: "Discover places...",
+                        hintStyle: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.lightGray,
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 5,
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 0,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.lightGreen,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              style: AppTextStyles.bodyMedium,
-                              decoration: InputDecoration(
-                                hintText: "Discover places...",
-                                hintStyle: AppTextStyles.bodyMedium.copyWith(
-                                  color: AppColors.lightGray,
-                                ),
-                                border: InputBorder.none,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 5,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.search, color: Colors.black),
-                          ),
-                        ],
-                      ),
-                    ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.search, color: Colors.black),
                   ),
                 ],
               ),
             ),
-            Center(
-              child: SizedBox(
-                width: 250,
-                child: TabBar(
-                  controller: _tabController,
-                  onTap: (index) {
-                    setState(() {
-                      _selectedIndex = index;
-                    });
-                    widget.onTabSelected(index);
-                  },
-                  indicator:
-                      _selectedIndex == null
-                          ? const BoxDecoration()
-                          : const UnderlineTabIndicator(
-                            borderSide: BorderSide(
-                              width: 2,
-                              color: AppColors.primary,
-                            ),
-                            insets: EdgeInsets.symmetric(horizontal: 120),
-                          ),
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  labelStyle: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
-                  unselectedLabelStyle: AppTextStyles.bodyMedium.copyWith(
-                    fontSize: 14,
-                  ),
-                  labelColor: AppColors.darkGray,
-                  unselectedLabelColor: AppColors.darkGray,
-                  dividerColor: AppColors.lightGreen,
-                  dividerHeight: 3.0,
-                  tabs: const [Tab(text: "Destinations"), Tab(text: "Saved")],
-                ),
-              ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // The compact header
+  Widget _buildCompactHeader() {
+    return Container(
+      padding: const EdgeInsets.only(right: 18, left: 18, top: 12, bottom: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            "GO",
+            style: AppTextStyles.boldText.copyWith(
+              fontSize: 28,
+              color: AppColors.primary,
             ),
-            const SizedBox(height: 8),
-          ],
+          ),
+          Text(
+            "Discover Lebanon with GO",
+            style: AppTextStyles.bodyLarge.copyWith(
+              fontSize: 14,
+              color: AppColors.darkGray,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // The tab bar
+  Widget _buildTabs() {
+    return Center(
+      child: SizedBox(
+        width: 250,
+        child: TabBar(
+          controller: _tabController,
+          onTap: (index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+            widget.onTabSelected(index);
+          },
+          indicator:
+              _selectedIndex == null
+                  ? const BoxDecoration()
+                  : const UnderlineTabIndicator(
+                    borderSide: BorderSide(width: 2, color: AppColors.primary),
+                    insets: EdgeInsets.symmetric(horizontal: 120),
+                  ),
+          indicatorSize: TabBarIndicatorSize.tab,
+          labelStyle: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
+          unselectedLabelStyle: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
+          labelColor: AppColors.darkGray,
+          unselectedLabelColor: AppColors.darkGray,
+          dividerColor: AppColors.lightGreen,
+          dividerHeight: 3.0,
+          tabs: const [Tab(text: "Destinations"), Tab(text: "Saved")],
         ),
       ),
     );

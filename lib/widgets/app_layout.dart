@@ -45,6 +45,12 @@ class _AppLayoutState extends State<AppLayout> {
     return 0;
   }
 
+  bool _isCompactHeader(BuildContext context) {
+    final location = GoRouterState.of(context).uri.toString();
+    return location == ConfigRoutes.chatbot ||
+        location == ConfigRoutes.whereToNext;
+  }
+
   void _onBottomNavTap(int index) {
     _resetHeader();
     switch (index) {
@@ -69,11 +75,19 @@ class _AppLayoutState extends State<AppLayout> {
   @override
   Widget build(BuildContext context) {
     int selectedIndex = _getBottomNavIndex(context);
+    bool isCompact = _isCompactHeader(context);
 
     return Scaffold(
       body: Column(
         children: [
-          Header(key: _headerKey, onTabSelected: _onHeaderTabSelected),
+          Header(
+            key: _headerKey,
+            onTabSelected: _onHeaderTabSelected,
+            variant:
+                isCompact
+                    ? HeaderVariant.compactHeader
+                    : HeaderVariant.defaultHeader,
+          ),
           Expanded(child: _selectedHeaderContent ?? widget.child),
         ],
       ),
