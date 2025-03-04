@@ -7,11 +7,13 @@ enum HeaderVariant { searchHeader, compactHeader }
 class Header extends StatefulWidget {
   final Function(int) onTabSelected;
   final HeaderVariant variant;
+  final int? initialTabIndex;
 
   const Header({
     super.key,
     required this.onTabSelected,
     this.variant = HeaderVariant.compactHeader,
+    this.initialTabIndex,
   });
 
   @override
@@ -25,8 +27,12 @@ class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.initialTabIndex;
     _tabController = TabController(length: 2, vsync: this);
-    _selectedIndex = null;
+
+    if (widget.initialTabIndex != null) {
+      _tabController.index = widget.initialTabIndex!;
+    }
 
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) {
@@ -36,6 +42,19 @@ class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
         widget.onTabSelected(_tabController.index);
       }
     });
+  }
+
+  @override
+  void didUpdateWidget(covariant Header oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialTabIndex != widget.initialTabIndex) {
+      setState(() {
+        _selectedIndex = widget.initialTabIndex;
+      });
+      if (widget.initialTabIndex != null) {
+        _tabController.animateTo(widget.initialTabIndex!);
+      }
+    }
   }
 
   @override
@@ -69,7 +88,6 @@ class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
     );
   }
 
-  // The Search Header
   Widget _buildSearchHeader() {
     return Container(
       margin: const EdgeInsets.only(top: 14),
@@ -163,7 +181,7 @@ class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
           },
           indicator:
               _selectedIndex == null
-                  ? const BoxDecoration()
+                  ? BoxDecoration()
                   : const UnderlineTabIndicator(
                     borderSide: BorderSide(width: 2, color: AppColors.primary),
                     insets: EdgeInsets.symmetric(horizontal: 120),

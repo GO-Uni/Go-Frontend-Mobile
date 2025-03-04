@@ -13,26 +13,39 @@ class AppLayout extends StatefulWidget {
 }
 
 class _AppLayoutState extends State<AppLayout> {
-  Widget? _selectedHeaderContent;
+  int? _selectedTabIndex;
   Key _headerKey = UniqueKey();
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final extra = GoRouterState.of(context).extra;
+    if (extra is int) {
+      setState(() {
+        _selectedTabIndex = extra;
+      });
+    }
+  }
+
   void _onHeaderTabSelected(int index) {
+    setState(() {
+      _selectedTabIndex = index;
+    });
+
     switch (index) {
       case 0:
-        context.go(ConfigRoutes.destinations);
+        context.go(ConfigRoutes.destinations, extra: 0);
         break;
       case 1:
-        context.go(ConfigRoutes.saved);
+        context.go(ConfigRoutes.saved, extra: 1);
         break;
-      default:
-        _selectedHeaderContent = null;
     }
   }
 
   void _resetHeader() {
     setState(() {
       _headerKey = UniqueKey();
-      _selectedHeaderContent = null;
+      _selectedTabIndex = null;
     });
   }
 
@@ -88,8 +101,9 @@ class _AppLayoutState extends State<AppLayout> {
                 needsSearchHeader
                     ? HeaderVariant.searchHeader
                     : HeaderVariant.compactHeader,
+            initialTabIndex: _selectedTabIndex,
           ),
-          Expanded(child: _selectedHeaderContent ?? widget.child),
+          Expanded(child: widget.child),
         ],
       ),
       bottomNavigationBar: BottomNavBar(

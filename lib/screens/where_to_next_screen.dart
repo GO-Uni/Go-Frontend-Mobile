@@ -68,7 +68,7 @@ class WhereToNextScreen extends StatelessWidget {
                 child: CustomButton(
                   text: "View All Destinations",
                   onPressed: () {
-                    context.go(ConfigRoutes.destinations);
+                    context.go(ConfigRoutes.destinations, extra: 0);
                   },
                   width: 200,
                 ),
