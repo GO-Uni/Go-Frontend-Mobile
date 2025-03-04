@@ -44,18 +44,18 @@ class DestinationCardState extends State<DestinationCard> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(4),
+            padding: EdgeInsets.all(7),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   widget.name,
-                  style: AppTextStyles.bodyLarge.copyWith(fontSize: 14),
+                  style: AppTextStyles.bodyLarge.copyWith(fontSize: 13),
                 ),
                 SizedBox(height: 4),
                 Text(
                   widget.description,
-                  style: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
+                  style: AppTextStyles.bodyMedium.copyWith(fontSize: 11),
                 ),
                 SizedBox(height: 5),
                 Row(
