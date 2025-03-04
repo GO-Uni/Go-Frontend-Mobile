@@ -14,6 +14,7 @@ class SavedScreen extends StatelessWidget {
         "name": "Baalbek Ruins",
         "description": "Ancient Roman temple",
         "rating": 4,
+        "isBooked": true,
       },
       {
         "imageUrl":
@@ -21,6 +22,7 @@ class SavedScreen extends StatelessWidget {
         "name": "Harissa",
         "description": "Beautiful mountain view",
         "rating": 5,
+        "isBooked": true,
       },
       {
         "imageUrl":
@@ -28,6 +30,7 @@ class SavedScreen extends StatelessWidget {
         "name": "Baalbek Ruins",
         "description": "Ancient Roman temple",
         "rating": 4,
+        "isBooked": false,
       },
     ];
 
@@ -48,6 +51,7 @@ class SavedScreen extends StatelessWidget {
                     name: destination["name"],
                     description: destination["description"],
                     rating: destination["rating"],
+                    isBooked: destination["isBooked"],
                   ),
                 );
               },
