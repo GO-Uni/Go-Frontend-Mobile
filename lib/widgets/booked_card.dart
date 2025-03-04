@@ -56,6 +56,12 @@ class BookedCard extends StatelessWidget {
                         ),
                       ],
                     ),
+
+                    Icon(
+                      Icons.location_pin,
+                      color: AppColors.darkGreen,
+                      size: 33,
+                    ),
                   ],
                 ),
               ),

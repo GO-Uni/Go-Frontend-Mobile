@@ -15,6 +15,9 @@ class BookingsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
       body: ListView.builder(
+        shrinkWrap: true,
+        padding: EdgeInsets.all(12),
+        physics: BouncingScrollPhysics(),
         itemCount: bookings.length,
         itemBuilder: (context, index) {
           final booking = bookings[index];
