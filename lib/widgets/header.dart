@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/text_styles.dart';
 import '../theme/colors.dart';
 
-enum HeaderVariant { defaultHeader, compactHeader }
+enum HeaderVariant { searchHeader, compactHeader }
 
 class Header extends StatefulWidget {
   final Function(int) onTabSelected;
@@ -11,7 +11,7 @@ class Header extends StatefulWidget {
   const Header({
     super.key,
     required this.onTabSelected,
-    this.variant = HeaderVariant.defaultHeader,
+    this.variant = HeaderVariant.compactHeader,
   });
 
   @override
@@ -51,15 +51,14 @@ class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
         bottomLeft: Radius.circular(20),
         bottomRight: Radius.circular(20),
       ),
-
       child: Container(
         padding: const EdgeInsets.only(top: 23),
         color: Colors.white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (widget.variant == HeaderVariant.defaultHeader) ...[
-              _buildDefaultHeader(),
+            if (widget.variant == HeaderVariant.searchHeader) ...[
+              _buildSearchHeader(),
               _buildTabs(),
             ] else ...[
               _buildCompactHeader(),
@@ -70,8 +69,8 @@ class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
     );
   }
 
-  // The original full header
-  Widget _buildDefaultHeader() {
+  // The Search Header
+  Widget _buildSearchHeader() {
     return Container(
       margin: const EdgeInsets.only(top: 14),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -123,7 +122,7 @@ class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
     );
   }
 
-  // The compact header
+  // The Compact Header
   Widget _buildCompactHeader() {
     return Container(
       padding: const EdgeInsets.only(right: 18, left: 18, top: 12, bottom: 12),
@@ -149,7 +148,7 @@ class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
     );
   }
 
-  // The tab bar
+  // The Tab Bar
   Widget _buildTabs() {
     return Center(
       child: SizedBox(

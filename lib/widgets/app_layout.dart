@@ -45,10 +45,11 @@ class _AppLayoutState extends State<AppLayout> {
     return 0;
   }
 
-  bool _isCompactHeader(BuildContext context) {
+  bool _needsSearchHeader(BuildContext context) {
     final location = GoRouterState.of(context).uri.toString();
-    return location == ConfigRoutes.chatbot ||
-        location == ConfigRoutes.whereToNext;
+    return location == ConfigRoutes.destinations ||
+        location == ConfigRoutes.saved ||
+        location == ConfigRoutes.bookings;
   }
 
   void _onBottomNavTap(int index) {
@@ -75,7 +76,7 @@ class _AppLayoutState extends State<AppLayout> {
   @override
   Widget build(BuildContext context) {
     int selectedIndex = _getBottomNavIndex(context);
-    bool isCompact = _isCompactHeader(context);
+    bool needsSearchHeader = _needsSearchHeader(context);
 
     return Scaffold(
       body: Column(
@@ -84,9 +85,9 @@ class _AppLayoutState extends State<AppLayout> {
             key: _headerKey,
             onTabSelected: _onHeaderTabSelected,
             variant:
-                isCompact
-                    ? HeaderVariant.compactHeader
-                    : HeaderVariant.defaultHeader,
+                needsSearchHeader
+                    ? HeaderVariant.searchHeader
+                    : HeaderVariant.compactHeader,
           ),
           Expanded(child: _selectedHeaderContent ?? widget.child),
         ],
