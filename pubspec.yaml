@@ -65,10 +65,19 @@ flutter:
     - assets/images/location-logo.svg
     - assets/images/SignUpOptions-bg.svg
     - assets/images/SignUpBusiness-bg.svg
+    - assets/icons/bot.png
+    - assets/icons/map.png
+    - assets/icons/calendar.png
     - assets/images/LOGO.png
     - assets/images/SignUpBusiness-bg.png
     - assets/images/SignUpOptions-bg.png
     - assets/images/location-logo.png
+
+    - assets/images/chatbot.svg
+
+    - assets/images/sports.jpg
+    - assets/images/natural.jpg
+    - assets/images/historical.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -94,6 +103,8 @@ flutter:
           weight: 600
         - asset: assets/fonts/Inter-Bold.ttf
           weight: 700
+        - asset: assets/fonts/Inter-Black.ttf
+          weight: 900
 
 
   #

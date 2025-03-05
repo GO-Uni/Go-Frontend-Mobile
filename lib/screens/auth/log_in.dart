@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
-import '../widgets/custom_text_field.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/welcome_header.dart';
+import 'package:go_router/go_router.dart';
+import '../../services/routes.dart';
+import '../../theme/colors.dart';
+import '../../widgets/custom_text_field.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/welcome_header.dart';
+import '../../theme/text_styles.dart';
 
-class SignUp extends StatefulWidget {
-  const SignUp({super.key});
+class Login extends StatefulWidget {
+  const Login({super.key});
 
   @override
-  SignUpState createState() => SignUpState();
+  LoginState createState() => LoginState();
 }
 
-class SignUpState extends State<SignUp> {
+class LoginState extends State<Login> {
+  bool isChecked = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,26 +32,26 @@ class SignUpState extends State<SignUp> {
               ),
             ),
           ),
-
           SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 100),
+                const SizedBox(height: 180),
 
                 const WelcomeHeader(
                   title: "Welcome To GO",
-                  subtitle: "Sign up to begin your journey",
+                  subtitle: "Sign in to continue your journey",
                   imagePath: 'assets/images/location-logo.png',
                 ),
 
                 const SizedBox(height: 18),
 
-                Padding(
-                  padding: const EdgeInsets.only(left: 32),
-                  child: GestureDetector(
-                    onTap: () => Navigator.pop(context),
+                GestureDetector(
+                  onTap: () => context.pop(),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 32),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -54,7 +59,7 @@ class SignUpState extends State<SignUp> {
                         const SizedBox(width: 8),
                         Text(
                           "Back",
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             color: AppColors.primary,
                           ),
@@ -67,10 +72,6 @@ class SignUpState extends State<SignUp> {
                 const SizedBox(height: 6),
 
                 const CustomTextField(
-                  label: 'Name',
-                  hintText: 'Enter your name',
-                ),
-                const CustomTextField(
                   label: 'Email',
                   hintText: 'Enter your email',
                 ),
@@ -79,19 +80,46 @@ class SignUpState extends State<SignUp> {
                   hintText: "Enter your password",
                   isPassword: true,
                 ),
-                const CustomTextField(
-                  label: "Confirm Password",
-                  hintText: "Confirm your password",
-                  isPassword: true,
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Row(
+                    children: [
+                      Checkbox(
+                        value: isChecked,
+                        activeColor: AppColors.primary,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            isChecked = value ?? false;
+                          });
+                        },
+                      ),
+                      const Text("Remember me", style: TextStyle(fontSize: 14)),
+                      const Spacer(),
+                      GestureDetector(
+                        onTap: () {
+                          // Handle Forgot Password action
+                        },
+                        child: const Text(
+                          "Forgot Password?",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
 
                 const SizedBox(height: 10),
 
                 Center(
                   child: CustomButton(
-                    text: "Sign Up",
+                    text: "Login",
                     onPressed: () {
-                      // Handle Sign Up action
+                      // Handle Login action
+                      context.go(ConfigRoutes.whereToNext);
                     },
                     width: 150,
                   ),
@@ -102,26 +130,25 @@ class SignUpState extends State<SignUp> {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      // Handle navigation to Login screen
+                      // Handle navigation to Sign Up screen
                     },
-                    child: const Padding(
-                      padding: EdgeInsets.only(left: 32),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 32),
                       child: Text.rich(
                         TextSpan(
                           children: [
-                            TextSpan(
-                              text: "Already have an account? ",
+                            const TextSpan(
+                              text: "Don't have an account? ",
                               style: TextStyle(
                                 fontSize: 14,
                                 color: AppColors.darkGray,
                               ),
                             ),
                             TextSpan(
-                              text: "Login",
-                              style: TextStyle(
+                              text: "Sign Up",
+                              style: AppTextStyles.bodyMedium.copyWith(
                                 fontSize: 14,
                                 color: AppColors.primary,
-                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],
