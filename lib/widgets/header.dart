@@ -4,7 +4,7 @@ import '../theme/colors.dart';
 
 enum HeaderVariant { searchHeader, compactHeader }
 
-class Header extends StatefulWidget {
+class Header extends StatelessWidget {
   final Function(int) onTabSelected;
   final HeaderVariant variant;
   final int? initialTabIndex;
@@ -17,170 +17,105 @@ class Header extends StatefulWidget {
   });
 
   @override
-  State<Header> createState() => _HeaderState();
-}
-
-class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  int? _selectedIndex;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedIndex = widget.initialTabIndex;
-    _tabController = TabController(length: 2, vsync: this);
-
-    if (widget.initialTabIndex != null) {
-      _tabController.index = widget.initialTabIndex!;
-    }
-
-    _tabController.addListener(() {
-      if (_tabController.indexIsChanging) {
-        setState(() {
-          _selectedIndex = _tabController.index;
-        });
-        widget.onTabSelected(_tabController.index);
-      }
-    });
-  }
-
-  @override
-  void didUpdateWidget(covariant Header oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.initialTabIndex != widget.initialTabIndex) {
-      setState(() {
-        _selectedIndex = widget.initialTabIndex;
-      });
-      if (widget.initialTabIndex != null) {
-        _tabController.animateTo(widget.initialTabIndex!);
-      }
-    }
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: const BorderRadius.only(
-        bottomLeft: Radius.circular(20),
-        bottomRight: Radius.circular(20),
-      ),
-      child: Container(
-        padding: const EdgeInsets.only(top: 23),
-        color: Colors.white,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (widget.variant == HeaderVariant.searchHeader) ...[
-              _buildSearchHeader(),
-              _buildTabs(),
-            ] else ...[
-              _buildCompactHeader(),
-            ],
+    return Container(
+      padding: const EdgeInsets.only(top: 22),
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (variant == HeaderVariant.searchHeader) ...[
+            searchHeader,
+            tabBar,
+          ] else ...[
+            compactHeader,
           ],
-        ),
+        ],
       ),
     );
   }
 
-  Widget _buildSearchHeader() {
-    return Container(
-      margin: const EdgeInsets.only(top: 14),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Row(
-        children: [
-          Text(
-            "GO",
-            style: AppTextStyles.boldText.copyWith(
-              fontSize: 34,
-              color: AppColors.primary,
-            ),
+  Widget get searchHeader => Container(
+    margin: const EdgeInsets.only(top: 14),
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+    child: Row(
+      children: [
+        Text(
+          "GO",
+          style: AppTextStyles.boldText.copyWith(
+            fontSize: 34,
+            color: AppColors.primary,
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              decoration: BoxDecoration(
-                color: AppColors.lightGreen,
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      style: AppTextStyles.bodyMedium,
-                      decoration: InputDecoration(
-                        hintText: "Discover places...",
-                        hintStyle: AppTextStyles.bodyMedium.copyWith(
-                          color: AppColors.lightGray,
-                        ),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 5,
-                        ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: AppColors.lightGreen,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    style: AppTextStyles.bodyMedium,
+                    decoration: InputDecoration(
+                      hintText: "Discover places...",
+                      hintStyle: AppTextStyles.bodyMedium.copyWith(
+                        color: AppColors.lightGray,
                       ),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 5),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.search, color: Colors.black),
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.search, color: Colors.black),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 
-  // The Compact Header
-  Widget _buildCompactHeader() {
-    return Container(
-      padding: const EdgeInsets.only(right: 18, left: 18, top: 12, bottom: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            "GO",
-            style: AppTextStyles.boldText.copyWith(
-              fontSize: 28,
-              color: AppColors.primary,
-            ),
+  Widget get compactHeader => Container(
+    padding: const EdgeInsets.only(right: 18, left: 18, top: 12, bottom: 12),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "GO",
+          style: AppTextStyles.boldText.copyWith(
+            fontSize: 28,
+            color: AppColors.primary,
           ),
-          Text(
-            "Discover Lebanon with GO",
-            style: AppTextStyles.bodyLarge.copyWith(
-              fontSize: 14,
-              color: AppColors.darkGray,
-            ),
+        ),
+        Text(
+          "Discover Lebanon with GO",
+          style: AppTextStyles.bodyLarge.copyWith(
+            fontSize: 14,
+            color: AppColors.darkGray,
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 
-  // The Tab Bar
-  Widget _buildTabs() {
-    return Center(
-      child: SizedBox(
-        width: 250,
+  Widget get tabBar => Center(
+    child: SizedBox(
+      width: 250,
+      child: DefaultTabController(
+        length: 2,
+        initialIndex: initialTabIndex ?? 0,
         child: TabBar(
-          controller: _tabController,
-          onTap: (index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-            widget.onTabSelected(index);
-          },
+          onTap: (index) => onTabSelected(index),
           indicator:
-              _selectedIndex == null
+              initialTabIndex == null
                   ? BoxDecoration()
                   : const UnderlineTabIndicator(
                     borderSide: BorderSide(width: 2, color: AppColors.primary),
@@ -196,6 +131,6 @@ class _HeaderState extends State<Header> with SingleTickerProviderStateMixin {
           tabs: const [Tab(text: "Destinations"), Tab(text: "Saved")],
         ),
       ),
-    );
-  }
+    ),
+  );
 }
