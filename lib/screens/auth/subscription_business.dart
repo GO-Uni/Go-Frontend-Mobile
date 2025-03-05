@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../theme/colors.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/welcome_header.dart';
-import '../widgets/signup_option_card.dart';
+import '../../theme/colors.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/welcome_header.dart';
+import '../../widgets/signup_option_card.dart';
 
 class SubscriptionBusiness extends StatefulWidget {
   const SubscriptionBusiness({super.key});
