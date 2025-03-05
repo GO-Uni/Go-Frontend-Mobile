@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/colors.dart';
+import '../theme/text_styles.dart';
 
 class CustomTextField extends StatelessWidget {
   final String label;
@@ -69,6 +70,7 @@ class CustomTextField extends StatelessWidget {
               )
               : TextField(
                 obscureText: isPassword,
+                style: AppTextStyles.bodyRegular,
                 decoration: InputDecoration(
                   hintText: hintText,
                   hintStyle: const TextStyle(
