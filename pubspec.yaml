@@ -73,6 +73,8 @@ flutter:
     - assets/images/SignUpOptions-bg.png
     - assets/images/location-logo.png
 
+    - assets/images/chatbot.svg
+
     - assets/images/sports.jpg
     - assets/images/natural.jpg
     - assets/images/historical.png

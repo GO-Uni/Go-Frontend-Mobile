@@ -15,7 +15,7 @@ import '../widgets/app_layout.dart';
 import 'routes.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: ConfigRoutes.signUpOptions,
+  initialLocation: ConfigRoutes.whereToNext,
   routes: [
     GoRoute(
       path: ConfigRoutes.signUpOptions,
