@@ -4,7 +4,7 @@ import '../theme/text_styles.dart';
 
 class CustomTextField extends StatelessWidget {
   final String label;
-  final String hintText;
+  final String? hintText;
   final bool isPassword;
   final bool isDropdown;
   final EdgeInsets? margin;
@@ -12,7 +12,7 @@ class CustomTextField extends StatelessWidget {
   const CustomTextField({
     super.key,
     required this.label,
-    required this.hintText,
+    this.hintText,
     this.isPassword = false,
     this.isDropdown = false,
     this.margin,
@@ -21,7 +21,7 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: margin ?? const EdgeInsets.symmetric(horizontal: 40),
+      margin: margin ?? const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.only(bottom: 6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
