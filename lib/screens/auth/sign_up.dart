@@ -29,7 +29,7 @@ class SignUpState extends State<SignUp> {
           ),
 
           SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -43,24 +43,21 @@ class SignUpState extends State<SignUp> {
 
                 const SizedBox(height: 18),
 
-                Padding(
-                  padding: const EdgeInsets.only(left: 15),
-                  child: GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.arrow_back, color: AppColors.primary),
-                        const SizedBox(width: 8),
-                        Text(
-                          "Back",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.primary,
-                          ),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.arrow_back, color: AppColors.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Back",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.primary,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
 

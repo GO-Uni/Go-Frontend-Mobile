@@ -34,7 +34,7 @@ class LoginState extends State<Login> {
           ),
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -50,22 +50,19 @@ class LoginState extends State<Login> {
 
                 GestureDetector(
                   onTap: () => context.pop(),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.arrow_back, color: AppColors.primary),
-                        const SizedBox(width: 8),
-                        Text(
-                          "Back",
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.primary,
-                          ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.arrow_back, color: AppColors.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Back",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.primary,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
 
@@ -81,35 +78,32 @@ class LoginState extends State<Login> {
                   isPassword: true,
                 ),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Row(
-                    children: [
-                      Checkbox(
-                        value: isChecked,
-                        activeColor: AppColors.primary,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isChecked = value ?? false;
-                          });
-                        },
-                      ),
-                      const Text("Remember me", style: TextStyle(fontSize: 14)),
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: () {
-                          // Handle Forgot Password action
-                        },
-                        child: const Text(
-                          "Forgot Password?",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.primary,
-                          ),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: isChecked,
+                      activeColor: AppColors.primary,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          isChecked = value ?? false;
+                        });
+                      },
+                    ),
+                    const Text("Remember me", style: TextStyle(fontSize: 14)),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: () {
+                        // Handle Forgot Password action
+                      },
+                      child: const Text(
+                        "Forgot Password?",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.primary,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 10),

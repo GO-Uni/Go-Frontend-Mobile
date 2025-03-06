@@ -33,7 +33,7 @@ class SignUpBusinessState extends State<SignUpBusiness> {
           ),
 
           SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -47,24 +47,21 @@ class SignUpBusinessState extends State<SignUpBusiness> {
 
                 const SizedBox(height: 18),
 
-                Padding(
-                  padding: const EdgeInsets.only(left: 18),
-                  child: GestureDetector(
-                    onTap: () => context.pop(),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.arrow_back, color: AppColors.primary),
-                        const SizedBox(width: 8),
-                        Text(
-                          "Back",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.primary,
-                          ),
+                GestureDetector(
+                  onTap: () => context.pop(),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.arrow_back, color: AppColors.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Back",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.primary,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
 
@@ -98,49 +95,46 @@ class SignUpBusinessState extends State<SignUpBusiness> {
                   isPassword: true,
                 ),
 
-                Padding(
-                  padding: const EdgeInsets.only(left: 32),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Checkbox(
-                        value: isChecked,
-                        activeColor: AppColors.primary,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isChecked = value!;
-                          });
-                        },
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Checkbox(
+                      value: isChecked,
+                      activeColor: AppColors.primary,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          isChecked = value!;
+                        });
+                      },
+                    ),
+                    const Text("Bookings", style: TextStyle(fontSize: 14)),
+                    const SizedBox(width: 170),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.help_outline,
+                        size: 20,
+                        color: Colors.grey,
                       ),
-                      const Text("Bookings", style: TextStyle(fontSize: 14)),
-                      const SizedBox(width: 150),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.help_outline,
-                          size: 20,
-                          color: Colors.grey,
-                        ),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder:
-                                (context) => AlertDialog(
-                                  title: const Text("Bookings Help"),
-                                  content: const Text(
-                                    "Enable this option to allow bookings for your business.",
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text("OK"),
-                                    ),
-                                  ],
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder:
+                              (context) => AlertDialog(
+                                title: const Text("Bookings Help"),
+                                content: const Text(
+                                  "Enable this option to allow bookings for your business.",
                                 ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text("OK"),
+                                  ),
+                                ],
+                              ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 10),
