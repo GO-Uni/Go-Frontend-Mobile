@@ -10,6 +10,7 @@ class CustomTextField extends StatelessWidget {
   final bool isSubscription;
   final String? subText;
   final EdgeInsets? margin;
+  final bool readOnly;
 
   const CustomTextField({
     super.key,
@@ -20,6 +21,7 @@ class CustomTextField extends StatelessWidget {
     this.isSubscription = false,
     this.subText,
     this.margin,
+    this.readOnly = false,
   });
 
   @override
@@ -92,14 +94,13 @@ class CustomTextField extends StatelessWidget {
                       child: Text("Category 3", style: TextStyle(fontSize: 12)),
                     ),
                   ],
-                  onChanged: (value) {
-                    // Handle dropdown selection
-                  },
+                  onChanged: readOnly ? null : (value) {},
                   icon: const Icon(Icons.keyboard_arrow_down, size: 20),
                 )
                 : TextField(
                   obscureText: isPassword,
                   style: AppTextStyles.bodyRegular,
+                  readOnly: readOnly,
                   decoration: InputDecoration(
                     hintText: hintText,
                     hintStyle: const TextStyle(
