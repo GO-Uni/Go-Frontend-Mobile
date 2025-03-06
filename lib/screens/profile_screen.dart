@@ -1,13 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/widgets/custom_text_field.dart';
+import 'package:go_frontend_mobile/widgets/custom_button.dart';
 import '../theme/colors.dart';
 import '../widgets/profile_header.dart';
 import '../models/user_model.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   final UserModel user;
 
   const ProfileScreen({super.key, required this.user});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  bool _isEditing = false;
+
+  void _toggleEditing() {
+    setState(() {
+      _isEditing = !_isEditing;
+    });
+  }
+
+  void _saveChanges() {
+    _toggleEditing();
+  }
+
+  void _logout() {}
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +39,7 @@ class ProfileScreen extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 15, left: 15),
-              child: ProfileHeader(user: user),
+              child: ProfileHeader(user: widget.user),
             ),
             const SizedBox(height: 5),
             Padding(
@@ -30,55 +50,65 @@ class ProfileScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       IconButton(
-                        icon: const Icon(
-                          Icons.edit_note,
+                        icon: Icon(
+                          _isEditing ? Icons.check : Icons.edit_note,
                           color: AppColors.darkGray,
                         ),
-                        onPressed: () {},
+                        onPressed: _toggleEditing,
                       ),
                     ],
                   ),
 
-                  if (user.userType == UserType.business) ...[
+                  if (widget.user.userType == UserType.business) ...[
                     CustomTextField(
                       label: "Business Name",
-                      hintText: user.businessName ?? "Enter business name",
+                      hintText:
+                          widget.user.businessName ?? "Enter business name",
+                      readOnly: !_isEditing,
                     ),
                     CustomTextField(
                       label: "Owner Name",
-                      hintText: user.ownerName ?? "Enter owner name",
+                      hintText: widget.user.ownerName ?? "Enter owner name",
+                      readOnly: !_isEditing,
                     ),
                     CustomTextField(
                       label: "Business Category",
-                      hintText: user.businessCategory ?? "Select category",
-                      isDropdown: true,
+                      hintText:
+                          widget.user.businessCategory ?? "Select category",
+                      isDropdown: _isEditing,
+                      readOnly: !_isEditing,
                     ),
                     CustomTextField(
                       label: "District",
-                      hintText: user.district ?? "Enter district",
+                      hintText: widget.user.district ?? "Enter district",
+                      readOnly: !_isEditing,
                     ),
                     Row(
                       children: [
                         Expanded(
                           child: CustomTextField(
                             label: "Opening",
-                            hintText: user.openingTime ?? "18:00 AM",
-                            isDropdown: true,
+                            hintText: widget.user.openingTime ?? "18:00 AM",
+                            isDropdown: _isEditing,
+                            readOnly: !_isEditing,
                           ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: CustomTextField(
                             label: "Closing",
-                            hintText: user.closingTime ?? "8:00 AM",
-                            isDropdown: true,
+                            hintText: widget.user.closingTime ?? "8:00 AM",
+                            isDropdown: _isEditing,
+                            readOnly: !_isEditing,
                           ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: CustomTextField(
                             label: "Qnty/Booking",
-                            hintText: user.qtyBooking?.toString() ?? "123",
+                            hintText:
+                                widget.user.qtyBooking?.toString() ?? "123",
+                            readOnly: !_isEditing,
                           ),
                         ),
                       ],
@@ -88,13 +118,29 @@ class ProfileScreen extends StatelessWidget {
                       hintText: "Monthly",
                       subText: "\$14.99/monthly",
                       isSubscription: true,
+                      readOnly: !_isEditing,
                     ),
                   ],
 
-                  if (user.userType == UserType.normal) ...[
-                    CustomTextField(label: "Name", hintText: user.name),
+                  if (widget.user.userType == UserType.normal) ...[
+                    CustomTextField(
+                      label: "Name",
+                      hintText: widget.user.name,
+                      readOnly: !_isEditing,
+                    ),
                   ],
                 ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              child: Align(
+                alignment: Alignment.center,
+                child: CustomButton(
+                  text: _isEditing ? "Save" : "Logout",
+                  onPressed: _isEditing ? _saveChanges : _logout,
+                  width: 160,
+                ),
               ),
             ),
           ],
