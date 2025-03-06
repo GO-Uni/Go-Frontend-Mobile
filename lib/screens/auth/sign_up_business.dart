@@ -33,7 +33,7 @@ class SignUpBusinessState extends State<SignUpBusiness> {
           ),
 
           SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -48,7 +48,7 @@ class SignUpBusinessState extends State<SignUpBusiness> {
                 const SizedBox(height: 18),
 
                 Padding(
-                  padding: const EdgeInsets.only(left: 32),
+                  padding: const EdgeInsets.only(left: 18),
                   child: GestureDetector(
                     onTap: () => context.pop(),
                     child: Row(
