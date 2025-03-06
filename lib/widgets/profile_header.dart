@@ -30,6 +30,52 @@ class ProfileHeader extends StatelessWidget {
                 user.email,
                 style: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
               ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextButton(
+                    onPressed: () {},
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      alignment: Alignment.centerLeft,
+                    ),
+                    child: Text(
+                      "Change profile",
+                      style: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
+                    ),
+                  ),
+                  if (user.userType == UserType.business) ...[
+                    TextButton(
+                      onPressed: () {},
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        alignment: Alignment.centerLeft,
+                      ),
+                      child: Text(
+                        "Edit view page",
+                        style: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {},
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        alignment: Alignment.centerLeft,
+                      ),
+                      child: Text(
+                        "Edit location",
+                        style: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
             ],
           ),
         ),
