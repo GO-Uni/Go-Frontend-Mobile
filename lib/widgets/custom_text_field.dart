@@ -21,7 +21,7 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: margin ?? const EdgeInsets.symmetric(horizontal: 20),
+      //margin: margin ?? const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.only(bottom: 6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,7 +39,7 @@ class CustomTextField extends StatelessWidget {
                 decoration: InputDecoration(
                   hintText: hintText,
                   hintStyle: const TextStyle(
-                    fontSize: 13,
+                    fontSize: 12,
                     color: AppColors.lightGray,
                   ),
                   border: OutlineInputBorder(
@@ -47,26 +47,27 @@ class CustomTextField extends StatelessWidget {
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 10,
-                    vertical: 5,
+                    vertical: 12,
                   ),
                 ),
                 items: const [
                   DropdownMenuItem(
                     value: "Category 1",
-                    child: Text("Category 1"),
+                    child: Text("Category 1", style: TextStyle(fontSize: 12)),
                   ),
                   DropdownMenuItem(
                     value: "Category 2",
-                    child: Text("Category 2"),
+                    child: Text("Category 2", style: TextStyle(fontSize: 12)),
                   ),
                   DropdownMenuItem(
                     value: "Category 3",
-                    child: Text("Category 3"),
+                    child: Text("Category 3", style: TextStyle(fontSize: 12)),
                   ),
                 ],
                 onChanged: (value) {
                   // Handle dropdown selection
                 },
+                icon: const Icon(Icons.keyboard_arrow_down, size: 20),
               )
               : TextField(
                 obscureText: isPassword,
@@ -82,7 +83,7 @@ class CustomTextField extends StatelessWidget {
                   ),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 10,
-                    vertical: 5,
+                    vertical: 12,
                   ),
                 ),
               ),
