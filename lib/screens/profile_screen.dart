@@ -2,36 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/widgets/custom_text_field.dart';
 import '../theme/colors.dart';
 import '../widgets/profile_header.dart';
-
-enum UserType { business, normal }
-
-class UserModel {
-  final String name;
-  final String email;
-  final UserType userType;
-  final String? businessName;
-  final String? ownerName;
-  final String? businessCategory;
-  final String? district;
-  final String? openingTime;
-  final String? closingTime;
-  final int? qtyBooking;
-  final String? subscriptionMethod;
-
-  const UserModel({
-    required this.name,
-    required this.email,
-    required this.userType,
-    this.businessName,
-    this.ownerName,
-    this.businessCategory,
-    this.district,
-    this.openingTime,
-    this.closingTime,
-    this.qtyBooking,
-    this.subscriptionMethod,
-  });
-}
+import '../models/user_model.dart';
 
 class ProfileScreen extends StatelessWidget {
   final UserModel user;
@@ -47,14 +18,27 @@ class ProfileScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(18),
+              padding: const EdgeInsets.only(top: 15, left: 15),
               child: ProfileHeader(user: user),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 5),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.only(right: 20, left: 20),
               child: Column(
                 children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.edit_note,
+                          color: AppColors.darkGray,
+                        ),
+                        onPressed: () {},
+                      ),
+                    ],
+                  ),
+
                   if (user.userType == UserType.business) ...[
                     CustomTextField(
                       label: "Business Name",
@@ -95,11 +79,20 @@ class ProfileScreen extends StatelessWidget {
                           child: CustomTextField(
                             label: "Qnty/Booking",
                             hintText: user.qtyBooking?.toString() ?? "123",
-                            isDropdown: false,
                           ),
                         ),
                       ],
                     ),
+                    CustomTextField(
+                      label: "Subscription Method",
+                      hintText: "Monthly",
+                      subText: "\$14.99/monthly",
+                      isSubscription: true,
+                    ),
+                  ],
+
+                  if (user.userType == UserType.normal) ...[
+                    CustomTextField(label: "Name", hintText: user.name),
                   ],
                 ],
               ),
@@ -111,8 +104,22 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-final UserModel defaultUser = UserModel(
-  name: "Hanan",
-  email: "hanan@email.com",
+final UserModel businessUser = UserModel(
+  name: "Hanna",
+  email: "hanan@gmail.com",
   userType: UserType.business,
+  businessName: "3Draze",
+  ownerName: "John Doe",
+  businessCategory: "Clothing",
+  district: "Lebanon",
+  openingTime: "8:00 AM",
+  closingTime: "8:00 PM",
+  qtyBooking: 125,
+  subscriptionMethod: "Monthly",
+);
+
+final UserModel normalUser = UserModel(
+  name: "Hanan",
+  email: "hanan@gmail.com",
+  userType: UserType.normal,
 );

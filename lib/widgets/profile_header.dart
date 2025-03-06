@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../screens/profile_screen.dart';
 import '../theme/colors.dart';
 import '../theme/text_styles.dart';
+import '../models/user_model.dart';
 
 class ProfileHeader extends StatelessWidget {
   final UserModel user;

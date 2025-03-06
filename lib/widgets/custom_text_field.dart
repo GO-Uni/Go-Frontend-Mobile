@@ -7,6 +7,8 @@ class CustomTextField extends StatelessWidget {
   final String? hintText;
   final bool isPassword;
   final bool isDropdown;
+  final bool isSubscription;
+  final String? subText;
   final EdgeInsets? margin;
 
   const CustomTextField({
@@ -15,6 +17,8 @@ class CustomTextField extends StatelessWidget {
     this.hintText,
     this.isPassword = false,
     this.isDropdown = false,
+    this.isSubscription = false,
+    this.subText,
     this.margin,
   });
 
@@ -34,59 +38,83 @@ class CustomTextField extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 3),
-          isDropdown
-              ? DropdownButtonFormField<String>(
-                decoration: InputDecoration(
-                  hintText: hintText,
-                  hintStyle: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.lightGray,
+
+          if (isSubscription)
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade400),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    hintText ?? "",
+                    style: const TextStyle(fontSize: 14, color: Colors.black),
                   ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 12,
-                  ),
-                ),
-                items: const [
-                  DropdownMenuItem(
-                    value: "Category 1",
-                    child: Text("Category 1", style: TextStyle(fontSize: 12)),
-                  ),
-                  DropdownMenuItem(
-                    value: "Category 2",
-                    child: Text("Category 2", style: TextStyle(fontSize: 12)),
-                  ),
-                  DropdownMenuItem(
-                    value: "Category 3",
-                    child: Text("Category 3", style: TextStyle(fontSize: 12)),
+                  Text(
+                    subText ?? "",
+                    style: const TextStyle(fontSize: 14, color: Colors.black),
                   ),
                 ],
-                onChanged: (value) {
-                  // Handle dropdown selection
-                },
-                icon: const Icon(Icons.keyboard_arrow_down, size: 20),
-              )
-              : TextField(
-                obscureText: isPassword,
-                style: AppTextStyles.bodyRegular,
-                decoration: InputDecoration(
-                  hintText: hintText,
-                  hintStyle: const TextStyle(
-                    fontSize: 13,
-                    color: AppColors.lightGray,
+              ),
+            ),
+
+          if (!isSubscription)
+            isDropdown
+                ? DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    hintText: hintText,
+                    hintStyle: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.lightGray,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 12,
+                    ),
                   ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 12,
+                  items: const [
+                    DropdownMenuItem(
+                      value: "Category 1",
+                      child: Text("Category 1", style: TextStyle(fontSize: 12)),
+                    ),
+                    DropdownMenuItem(
+                      value: "Category 2",
+                      child: Text("Category 2", style: TextStyle(fontSize: 12)),
+                    ),
+                    DropdownMenuItem(
+                      value: "Category 3",
+                      child: Text("Category 3", style: TextStyle(fontSize: 12)),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    // Handle dropdown selection
+                  },
+                  icon: const Icon(Icons.keyboard_arrow_down, size: 20),
+                )
+                : TextField(
+                  obscureText: isPassword,
+                  style: AppTextStyles.bodyRegular,
+                  decoration: InputDecoration(
+                    hintText: hintText,
+                    hintStyle: const TextStyle(
+                      fontSize: 13,
+                      color: AppColors.lightGray,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 12,
+                    ),
                   ),
                 ),
-              ),
         ],
       ),
     );
