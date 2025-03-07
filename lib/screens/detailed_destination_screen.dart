@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../theme/text_styles.dart';
 import '../theme/colors.dart';
+import '../widgets/review_widget.dart';
 
 class DetailedDestinationScreen extends StatefulWidget {
   const DetailedDestinationScreen({super.key});
@@ -231,6 +232,12 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                   );
                 }),
               ),
+            ),
+
+            ReviewCard(
+              name: "John Doe",
+              review: "Wonderful place! Recommended",
+              profileImageUrl: null,
             ),
           ],
         ),
