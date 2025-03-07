@@ -11,6 +11,7 @@ class CustomTextField extends StatelessWidget {
   final String? subText;
   final EdgeInsets? margin;
   final bool readOnly;
+  final VoidCallback? onChangePlan;
 
   const CustomTextField({
     super.key,
@@ -22,6 +23,7 @@ class CustomTextField extends StatelessWidget {
     this.subText,
     this.margin,
     this.readOnly = false,
+    this.onChangePlan,
   });
 
   @override
@@ -42,25 +44,53 @@ class CustomTextField extends StatelessWidget {
           const SizedBox(height: 3),
 
           if (isSubscription)
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade400),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    hintText ?? "",
-                    style: const TextStyle(fontSize: 14, color: Colors.black),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade400),
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  Text(
-                    subText ?? "",
-                    style: const TextStyle(fontSize: 14, color: Colors.black),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 14,
                   ),
-                ],
-              ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        hintText ?? "",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Text(
+                        subText ?? "",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: GestureDetector(
+                    onTap: onChangePlan,
+                    child: const Padding(
+                      padding: EdgeInsets.only(top: 3),
+                      child: Text(
+                        "Change plan",
+                        style: TextStyle(fontSize: 14, color: Colors.green),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
 
           if (!isSubscription)
