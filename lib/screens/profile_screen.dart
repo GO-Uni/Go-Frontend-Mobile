@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+//import 'package:go_frontend_mobile/theme/text_styles.dart';
 import 'package:go_frontend_mobile/widgets/custom_text_field.dart';
 import 'package:go_frontend_mobile/widgets/custom_button.dart';
 import '../theme/colors.dart';
@@ -29,6 +30,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _logout() {}
 
+  void _showChangePlanDialog() {}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +46,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 5),
             Padding(
-              padding: const EdgeInsets.only(right: 20, left: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
                   Row(
@@ -118,7 +121,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       hintText: "Monthly",
                       subText: "\$14.99/monthly",
                       isSubscription: true,
-                      readOnly: !_isEditing,
+                      readOnly: true,
+                      onChangePlan: _showChangePlanDialog,
                     ),
                   ],
 
@@ -133,7 +137,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 15),
+              padding: const EdgeInsets.symmetric(vertical: 10),
               child: Align(
                 alignment: Alignment.center,
                 child: CustomButton(
