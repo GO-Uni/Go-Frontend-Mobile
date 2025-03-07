@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-//import 'package:go_frontend_mobile/theme/text_styles.dart';
 import 'package:go_frontend_mobile/widgets/custom_text_field.dart';
 import 'package:go_frontend_mobile/widgets/custom_button.dart';
 import '../theme/colors.dart';
 import '../widgets/profile_header.dart';
 import '../models/user_model.dart';
+import '../widgets/time_dropdown_field.dart';
 
 class ProfileScreen extends StatefulWidget {
   final UserModel user;
@@ -58,6 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: AppColors.darkGray,
                         ),
                         onPressed: _toggleEditing,
+                        iconSize: 28,
                       ),
                     ],
                   ),
@@ -89,20 +90,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: CustomTextField(
+                          child: TimeDropdownField(
                             label: "Opening",
-                            hintText: widget.user.openingTime ?? "18:00 AM",
-                            isDropdown: _isEditing,
-                            readOnly: !_isEditing,
+                            selectedTime: widget.user.openingTime ?? "08:00 AM",
+                            isEditing: _isEditing,
+                            onChanged: (value) {},
                           ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: CustomTextField(
+                          child: TimeDropdownField(
                             label: "Closing",
-                            hintText: widget.user.closingTime ?? "8:00 AM",
-                            isDropdown: _isEditing,
-                            readOnly: !_isEditing,
+                            selectedTime: widget.user.closingTime ?? "08:00 PM",
+                            isEditing: _isEditing,
+                            onChanged: (value) {},
                           ),
                         ),
                         const SizedBox(width: 10),
