@@ -13,6 +13,7 @@ class DetailedDestinationScreen extends StatefulWidget {
 
 class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
   late String selectedImage;
+  bool isBookmarked = false;
 
   @override
   void didChangeDependencies() {
@@ -116,48 +117,81 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 1),
-              child: SizedBox(
-                height: 60,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: images.length,
-                  itemBuilder: (context, index) {
-                    bool isSelected = selectedImage == images[index];
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Thumbnails
+                  SizedBox(
+                    height: 60,
+                    width: MediaQuery.of(context).size.width * 0.7,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: images.length,
+                      itemBuilder: (context, index) {
+                        bool isSelected = selectedImage == images[index];
 
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedImage = images[index];
-                        });
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
-                              child: Image.network(
-                                images[index],
-                                width: 60,
-                                height: 60,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            if (isSelected)
-                              Container(
-                                width: 60,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.withOpacity(0.5),
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedImage = images[index];
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 10),
+                            child: Stack(
+                              children: [
+                                ClipRRect(
                                   borderRadius: BorderRadius.circular(16),
+                                  child: Image.network(
+                                    images[index],
+                                    width: 60,
+                                    height: 60,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
-                              ),
-                          ],
+                                if (isSelected)
+                                  Container(
+                                    width: 60,
+                                    height: 60,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.withOpacity(0.5),
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          // Handle Book action
+                        },
+                        child: Text(
+                          "BOOK",
+                          style: AppTextStyles.bodyLarge.copyWith(fontSize: 16),
                         ),
                       ),
-                    );
-                  },
-                ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isBookmarked = !isBookmarked;
+                          });
+                        },
+                        child: Icon(
+                          isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                          color: isBookmarked ? Colors.green : Colors.black,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ],
