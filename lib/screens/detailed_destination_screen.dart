@@ -14,6 +14,7 @@ class DetailedDestinationScreen extends StatefulWidget {
 class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
   late String selectedImage;
   bool isBookmarked = false;
+  int selectedRating = 3;
 
   @override
   void didChangeDependencies() {
@@ -192,6 +193,43 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                     ],
                   ),
                 ],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                "Baalbek has a history that dates back at least 11,000 years, "
+                "encompassing significant periods such as Prehistoric, Canaanite, Hellenistic, "
+                "and Roman eras. It flourished under Roman rule but underwent transformations "
+                "during the Christianization period and the subsequent rise of Islam.",
+                style: AppTextStyles.bodyRegular.copyWith(
+                  fontSize: 14,
+                  color: AppColors.mediumGray,
+                ),
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: List.generate(5, (index) {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedRating = index + 1;
+                      });
+                    },
+                    child: Icon(
+                      index < selectedRating ? Icons.star : Icons.star,
+                      color:
+                          index < selectedRating
+                              ? Colors.amber
+                              : AppColors.lightGray,
+                      size: 28,
+                    ),
+                  );
+                }),
               ),
             ),
           ],
