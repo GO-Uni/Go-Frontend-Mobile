@@ -234,6 +234,20 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
               ),
             ),
 
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "REVIEWS",
+                    style: AppTextStyles.bodyLarge.copyWith(fontSize: 16),
+                  ),
+                  GestureDetector(child: const Icon(Icons.add, size: 24)),
+                ],
+              ),
+            ),
+
             ReviewCard(
               name: "John Doe",
               review: "Wonderful place! Recommended",
