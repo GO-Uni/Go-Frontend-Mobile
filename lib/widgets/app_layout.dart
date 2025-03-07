@@ -20,10 +20,13 @@ class _AppLayoutState extends State<AppLayout> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final extra = GoRouterState.of(context).extra;
-    if (extra is int) {
-      setState(() {
-        _selectedTabIndex = extra;
-      });
+    if (extra is Map<String, dynamic> && extra.containsKey("tabIndex")) {
+      final int newIndex = extra["tabIndex"];
+      if (newIndex != _selectedTabIndex) {
+        setState(() {
+          _selectedTabIndex = newIndex;
+        });
+      }
     }
   }
 
