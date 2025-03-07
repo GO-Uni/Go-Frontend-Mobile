@@ -102,7 +102,20 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
             ),
 
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              child: Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: 2,
+                  color: AppColors.primary.withOpacity(0.5),
+                ),
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 1),
               child: SizedBox(
                 height: 60,
                 child: ListView.builder(
