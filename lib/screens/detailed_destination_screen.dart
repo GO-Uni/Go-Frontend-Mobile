@@ -123,7 +123,7 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                 right: 0,
                 child: Container(
                   height: 2,
-                  color: AppColors.primary.withOpacity(0.5),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                 ),
               ),
             ),
@@ -167,7 +167,7 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                                     width: 60,
                                     height: 60,
                                     decoration: BoxDecoration(
-                                      color: Colors.grey.withOpacity(0.5),
+                                      color: Colors.grey.withValues(alpha: 0.5),
                                       borderRadius: BorderRadius.circular(16),
                                     ),
                                   ),
