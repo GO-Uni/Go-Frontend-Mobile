@@ -1,11 +1,10 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../theme/text_styles.dart';
 import '../theme/colors.dart';
 import '../widgets/review_widget.dart';
 import '../widgets/review_dialog.dart';
+import '../widgets/booking_dialog.dart';
 
 class DetailedDestinationScreen extends StatefulWidget {
   const DetailedDestinationScreen({super.key});
@@ -184,7 +183,12 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          // Handle Book action
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return const BookingDialog();
+                            },
+                          );
                         },
                         child: Text(
                           "BOOK",
