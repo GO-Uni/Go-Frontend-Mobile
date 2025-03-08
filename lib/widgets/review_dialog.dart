@@ -4,7 +4,9 @@ import '../theme/colors.dart';
 import 'custom_button.dart';
 
 class ReviewDialog extends StatefulWidget {
-  const ReviewDialog({super.key});
+  final String? profileImageUrl;
+
+  const ReviewDialog({super.key, this.profileImageUrl});
 
   @override
   State<ReviewDialog> createState() => _ReviewDialogState();
@@ -43,13 +45,33 @@ class _ReviewDialogState extends State<ReviewDialog> {
                       ),
                     ),
                     alignment: Alignment.center,
-                    child: const Text(
-                      "JD",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    child:
+                        widget.profileImageUrl != null
+                            ? ClipRRect(
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(12),
+                                bottomLeft: Radius.circular(12),
+                              ),
+                              child: Image.network(
+                                widget.profileImageUrl!,
+                                width: 40,
+                                height: 150,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Icon(
+                                    Icons.person,
+                                    color: Colors.white,
+                                  );
+                                },
+                              ),
+                            )
+                            : const Text(
+                              "JD",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                   ),
 
                   Expanded(
