@@ -52,22 +52,24 @@ class _BookingDialogState extends State<BookingDialog> {
         ),
 
         const SizedBox(height: 4),
-
-        Column(
-          children:
-              _timeSlots.map((slot) {
-                bool isBooked = slot == "8:00 am - 8:30 am";
-                return BookingSlot(
-                  timeSlot: slot,
-                  isBooked: isBooked,
-                  isSelected: _selectedTimeSlot == slot,
-                  onTap: () {
-                    setState(() {
-                      _selectedTimeSlot = slot;
-                    });
-                  },
-                );
-              }).toList(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children:
+                _timeSlots.map((slot) {
+                  bool isBooked = slot == "8:00 am - 8:30 am";
+                  return BookingSlot(
+                    timeSlot: slot,
+                    isBooked: isBooked,
+                    isSelected: _selectedTimeSlot == slot,
+                    onTap: () {
+                      setState(() {
+                        _selectedTimeSlot = slot;
+                      });
+                    },
+                  );
+                }).toList(),
+          ),
         ),
 
         const SizedBox(height: 15),
