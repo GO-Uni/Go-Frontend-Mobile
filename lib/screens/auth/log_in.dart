@@ -1,5 +1,8 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../services/routes.dart';
 import '../../theme/colors.dart';
 import '../../widgets/custom_text_field.dart';
@@ -15,7 +18,47 @@ class Login extends StatefulWidget {
 }
 
 class LoginState extends State<Login> {
+  final _email = TextEditingController();
+  final _password = TextEditingController();
   bool isChecked = false;
+
+  @override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  void _login() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    bool success = await authProvider.loginUser(
+      email: _email.text.trim(),
+      password: _password.text.trim(),
+    );
+
+    if (!mounted) return;
+
+    log("🔍 Login Success: $success");
+    log("🔍 Error Message (if any): ${authProvider.errorMessage}");
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Login Successful!"),
+          backgroundColor: Colors.green,
+        ),
+      );
+      context.go(ConfigRoutes.whereToNext);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authProvider.errorMessage ?? "Login failed!"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,14 +112,16 @@ class LoginState extends State<Login> {
 
                 const SizedBox(height: 6),
 
-                const CustomTextField(
+                CustomTextField(
                   label: 'Email',
                   hintText: 'Enter your email',
+                  controller: _email,
                 ),
-                const CustomTextField(
+                CustomTextField(
                   label: "Password",
                   hintText: "Enter your password",
                   isPassword: true,
+                  controller: _password,
                 ),
 
                 Row(
@@ -112,10 +157,7 @@ class LoginState extends State<Login> {
                 Center(
                   child: CustomButton(
                     text: "Login",
-                    onPressed: () {
-                      // Handle Login action
-                      context.go(ConfigRoutes.whereToNext);
-                    },
+                    onPressed: _login,
                     width: 150,
                   ),
                 ),
