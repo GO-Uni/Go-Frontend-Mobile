@@ -12,6 +12,7 @@ class CustomTextField extends StatelessWidget {
   final EdgeInsets? margin;
   final bool readOnly;
   final VoidCallback? onChangePlan;
+  final TextEditingController? controller;
 
   const CustomTextField({
     super.key,
@@ -24,6 +25,7 @@ class CustomTextField extends StatelessWidget {
     this.margin,
     this.readOnly = false,
     this.onChangePlan,
+    this.controller,
   });
 
   @override
@@ -128,6 +130,7 @@ class CustomTextField extends StatelessWidget {
                   icon: const Icon(Icons.keyboard_arrow_down, size: 20),
                 )
                 : TextField(
+                  controller: controller,
                   obscureText: isPassword,
                   style: AppTextStyles.bodyRegular,
                   readOnly: readOnly,
