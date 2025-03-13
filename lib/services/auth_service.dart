@@ -1,9 +1,12 @@
 import 'package:dio/dio.dart';
 import 'dart:developer';
 import 'dio_client.dart';
+import 'api_routes.dart';
 
-class SignUpService {
-  final DioClient _dioClient = DioClient();
+class AuthService {
+  final DioClient _dioClient;
+
+  AuthService(this._dioClient);
 
   Future<Map<String, dynamic>> registerUser({
     required String name,
@@ -13,12 +16,34 @@ class SignUpService {
     try {
       log("🔵 Sending signup request...");
       Response response = await _dioClient.dio.post(
-        "/register",
+        ApiRoutes.register,
         data: {
           "name": name,
           "email": email,
           "password": password,
           "role_id": 2,
+        },
+      );
+
+      return {"error": false, "data": response.data};
+    } on DioException catch (e) {
+      return {
+        "error": true,
+        "message": e.response?.data['message'] ?? "Something went wrong",
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> loginUser({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      Response response = await _dioClient.dio.post(
+        ApiRoutes.login,
+        data: {
+          "email": email.toLowerCase().trim(),
+          "password": password.trim(),
         },
       );
 

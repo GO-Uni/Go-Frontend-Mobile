@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import '../services/sign_up_service.dart';
-import '../services/login_service.dart';
+import 'package:go_frontend_mobile/services/dio_client.dart';
+import '../services/auth_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:developer';
 
 class AuthProvider extends ChangeNotifier {
-  final SignUpService _signUpService = SignUpService();
-  final LoginService _loginService = LoginService();
+  final AuthService _authService = AuthService(DioClient());
 
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
@@ -25,7 +24,7 @@ class AuthProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    final response = await _signUpService.registerUser(
+    final response = await _authService.registerUser(
       name: name,
       email: email,
       password: password,
@@ -51,7 +50,7 @@ class AuthProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    final response = await _loginService.loginUser(
+    final response = await _authService.loginUser(
       email: email,
       password: password,
     );
