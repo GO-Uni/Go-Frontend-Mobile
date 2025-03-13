@@ -22,6 +22,9 @@ class AuthProvider extends ChangeNotifier {
     required String name,
     required String email,
     required String password,
+    int? roleId,
+    String? businessName,
+    String? businessCategory,
   }) async {
     _isLoading = true;
     _errorMessage = null;
@@ -31,6 +34,9 @@ class AuthProvider extends ChangeNotifier {
       name: name,
       email: email,
       password: password,
+      roleId: roleId ?? 2,
+      businessName: businessName,
+      businessCategory: businessCategory,
     );
 
     _isLoading = false;

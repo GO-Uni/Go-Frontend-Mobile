@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/auth_provider.dart';
+import 'package:go_frontend_mobile/services/routes.dart';
 import 'package:go_router/go_router.dart';
-//import '../theme/text_styles.dart';
+import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/custom_button.dart';
@@ -14,7 +16,57 @@ class SignUpBusiness extends StatefulWidget {
 }
 
 class SignUpBusinessState extends State<SignUpBusiness> {
+  final _email = TextEditingController();
+  final _password = TextEditingController();
+  final _confirmPassword = TextEditingController();
+  final _businessName = TextEditingController();
+  final _ownerName = TextEditingController();
+  final _businessCategory = TextEditingController();
+
   bool isChecked = false;
+
+  void _registerBusiness() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    if (_password.text != _confirmPassword.text) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Passwords do not match'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    bool success = await authProvider.registerUser(
+      name: _ownerName.text.trim(),
+      email: _email.text.trim().toLowerCase(),
+      password: _password.text,
+      roleId: 3,
+      businessName: _businessName.text,
+      businessCategory: _businessCategory.text,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Business account created successfully!"),
+          backgroundColor: Colors.green,
+        ),
+      );
+      context.go(ConfigRoutes.whereToNext);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authProvider.errorMessage ?? "Signup failed!"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,32 +119,38 @@ class SignUpBusinessState extends State<SignUpBusiness> {
 
                 const SizedBox(height: 6),
 
-                const CustomTextField(
+                CustomTextField(
                   label: 'Email',
                   hintText: 'Enter your email',
+                  controller: _email,
                 ),
-                const CustomTextField(
+                CustomTextField(
                   label: "Business Name",
                   hintText: "Enter your business name",
+                  controller: _businessName,
                 ),
-                const CustomTextField(
+                CustomTextField(
                   label: "Owner Name",
                   hintText: "Enter owner name",
+                  controller: _ownerName,
                 ),
-                const CustomTextField(
+                CustomTextField(
                   label: "Business Category",
                   hintText: "Select category",
                   isDropdown: true,
+                  controller: _businessCategory,
                 ),
-                const CustomTextField(
+                CustomTextField(
                   label: "Password",
                   hintText: "Enter your password",
                   isPassword: true,
+                  controller: _password,
                 ),
-                const CustomTextField(
+                CustomTextField(
                   label: "Confirm Password",
                   hintText: "Confirm your password",
                   isPassword: true,
+                  controller: _confirmPassword,
                 ),
 
                 Row(
@@ -142,9 +200,7 @@ class SignUpBusinessState extends State<SignUpBusiness> {
                 Center(
                   child: CustomButton(
                     text: "Continue",
-                    onPressed: () {
-                      // Handle SignUp action
-                    },
+                    onPressed: _registerBusiness,
                     width: 150,
                   ),
                 ),
