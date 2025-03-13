@@ -12,17 +12,32 @@ class AuthService {
     required String name,
     required String email,
     required String password,
+    int? roleId,
+    String? businessName,
+    String? businessCategory,
   }) async {
     try {
       log("🔵 Sending signup request...");
+
+      final Map<String, dynamic> requestData = {
+        "name": name,
+        "email": email,
+        "password": password,
+        "role_id": roleId ?? 2,
+      };
+
+      if (roleId == 3) {
+        requestData.addAll({
+          "business_name": businessName,
+          "category_id": businessCategory,
+          "subscription_type": "monthly",
+          "payment_method": "manual",
+        });
+      }
+
       Response response = await _dioClient.dio.post(
         ApiRoutes.register,
-        data: {
-          "name": name,
-          "email": email,
-          "password": password,
-          "role_id": 2,
-        },
+        data: requestData,
       );
 
       return {"error": false, "data": response.data};
