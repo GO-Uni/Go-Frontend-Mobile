@@ -30,7 +30,17 @@ final GoRouter appRouter = GoRouter(
     GoRoute(path: ConfigRoutes.login, builder: (context, state) => Login()),
     GoRoute(
       path: ConfigRoutes.subscriptionBusiness,
-      builder: (context, state) => SubscriptionBusiness(),
+      builder: (context, state) {
+        final args = state.extra as Map<String, dynamic>? ?? {};
+
+        return SubscriptionBusiness(
+          email: args['email'] ?? '',
+          password: args['password'] ?? '',
+          businessCategory: args['category_id'] ?? 0,
+          ownerName: args['ownerName'] ?? 'Unknown',
+          businessName: args['businessName'] ?? '',
+        );
+      },
     ),
 
     ShellRoute(

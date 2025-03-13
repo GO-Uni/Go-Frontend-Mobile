@@ -1,11 +1,29 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/services/routes.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/welcome_header.dart';
 import '../../widgets/signup_option_card.dart';
+import '../../providers/auth_provider.dart';
 
 class SubscriptionBusiness extends StatefulWidget {
-  const SubscriptionBusiness({super.key});
+  final String email;
+  final String password;
+  final int businessCategory;
+  final String ownerName;
+  final String businessName;
+
+  const SubscriptionBusiness({
+    super.key,
+    required this.email,
+    required this.password,
+    required this.businessCategory,
+    required this.ownerName,
+    required this.businessName,
+  });
 
   @override
   SubscriptionBusinessState createState() => SubscriptionBusinessState();
@@ -18,6 +36,49 @@ class SubscriptionBusinessState extends State<SubscriptionBusiness> {
     setState(() {
       selectedPlan = plan;
     });
+  }
+
+  void _subscribe() async {
+    if (selectedPlan.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please select a subscription plan."),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    bool success = await authProvider.registerUser(
+      name: widget.ownerName,
+      email: widget.email,
+      password: widget.password,
+      roleId: 3,
+      businessName: widget.businessName,
+      businessCategory: widget.businessCategory,
+      subscriptionType: selectedPlan.toLowerCase(),
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Subscription successful!"),
+          backgroundColor: Colors.green,
+        ),
+      );
+      context.go(ConfigRoutes.whereToNext);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authProvider.errorMessage ?? "Subscription failed!"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -54,7 +115,7 @@ class SubscriptionBusinessState extends State<SubscriptionBusiness> {
                 Padding(
                   padding: const EdgeInsets.only(left: 32),
                   child: GestureDetector(
-                    onTap: () => Navigator.pop(context),
+                    onTap: () => context.go(ConfigRoutes.signUpBusiness),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -79,9 +140,9 @@ class SubscriptionBusinessState extends State<SubscriptionBusiness> {
                   description:
                       "Get access to all features with our monthly subscription—flexible and affordable, billed every month.",
                   actionText: "\$14.99/month",
-                  isSelected: selectedPlan == "Monthly",
+                  isSelected: selectedPlan == "monthly",
                   enableSelection: true,
-                  onTap: () => selectPlan("Monthly"),
+                  onTap: () => selectPlan("monthly"),
                 ),
 
                 SignUpOptionCard(
@@ -89,9 +150,9 @@ class SubscriptionBusinessState extends State<SubscriptionBusiness> {
                   description:
                       "Save more with our yearly subscription—enjoy uninterrupted access and exclusive discounts for a full year!",
                   actionText: "\$149.99/year",
-                  isSelected: selectedPlan == "Yearly",
+                  isSelected: selectedPlan == "yearly",
                   enableSelection: true,
-                  onTap: () => selectPlan("Yearly"),
+                  onTap: () => selectPlan("yearly"),
                 ),
 
                 const SizedBox(height: 15),
@@ -99,11 +160,7 @@ class SubscriptionBusinessState extends State<SubscriptionBusiness> {
                 Center(
                   child: CustomButton(
                     text: "Subscribe",
-                    onPressed: () {
-                      if (selectedPlan.isNotEmpty) {
-                        //
-                      }
-                    },
+                    onPressed: _subscribe,
                     width: 150,
                   ),
                 ),

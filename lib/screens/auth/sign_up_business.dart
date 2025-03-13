@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_frontend_mobile/providers/auth_provider.dart';
+import 'package:go_frontend_mobile/providers/category_provider.dart';
 import 'package:go_frontend_mobile/services/routes.dart';
+import 'package:go_frontend_mobile/widgets/custom_dropdown_field.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
@@ -21,17 +22,26 @@ class SignUpBusinessState extends State<SignUpBusiness> {
   final _confirmPassword = TextEditingController();
   final _businessName = TextEditingController();
   final _ownerName = TextEditingController();
-  final _businessCategory = TextEditingController();
+
+  int? _selectedCategory;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Provider.of<CategoryProvider>(context, listen: false).loadCategories();
+      }
+    });
+  }
 
   bool isChecked = false;
 
-  void _registerBusiness() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-
+  void _continue() async {
     if (_password.text != _confirmPassword.text) {
-      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Passwords do not match'),
           backgroundColor: Colors.red,
         ),
@@ -39,37 +49,32 @@ class SignUpBusinessState extends State<SignUpBusiness> {
       return;
     }
 
-    bool success = await authProvider.registerUser(
-      name: _ownerName.text.trim(),
-      email: _email.text.trim().toLowerCase(),
-      password: _password.text,
-      roleId: 3,
-      businessName: _businessName.text,
-      businessCategory: _businessCategory.text,
-    );
-
-    if (!mounted) return;
-
-    if (success) {
+    if (_selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Business account created successfully!"),
-          backgroundColor: Colors.green,
-        ),
-      );
-      context.go(ConfigRoutes.whereToNext);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(authProvider.errorMessage ?? "Signup failed!"),
+          content: Text("Please select a business category."),
           backgroundColor: Colors.red,
         ),
       );
+      return;
     }
+
+    context.go(
+      ConfigRoutes.subscriptionBusiness,
+      extra: {
+        'email': _email.text.trim(),
+        'password': _password.text,
+        'category_id': _selectedCategory,
+        'businessName': _businessName.text.trim(),
+        'ownerName': _ownerName.text.trim(),
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final categoryProvider = Provider.of<CategoryProvider>(context);
+
     return Scaffold(
       body: Stack(
         children: [
@@ -134,12 +139,25 @@ class SignUpBusinessState extends State<SignUpBusiness> {
                   hintText: "Enter owner name",
                   controller: _ownerName,
                 ),
-                CustomTextField(
+
+                CustomDropdownField(
                   label: "Business Category",
-                  hintText: "Select category",
-                  isDropdown: true,
-                  controller: _businessCategory,
+                  hintText: "Select Category",
+                  value: _selectedCategory?.toString(),
+                  items:
+                      categoryProvider.categories.map((category) {
+                        return DropdownMenuItem(
+                          value: category['id'].toString(),
+                          child: Text(category['name']),
+                        );
+                      }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedCategory = int.tryParse(value!);
+                    });
+                  },
                 ),
+
                 CustomTextField(
                   label: "Password",
                   hintText: "Enter your password",
@@ -200,7 +218,7 @@ class SignUpBusinessState extends State<SignUpBusiness> {
                 Center(
                   child: CustomButton(
                     text: "Continue",
-                    onPressed: _registerBusiness,
+                    onPressed: _continue,
                     width: 150,
                   ),
                 ),
@@ -210,7 +228,7 @@ class SignUpBusinessState extends State<SignUpBusiness> {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      // Handle navigation to Login
+                      context.go(ConfigRoutes.signUp);
                     },
                     child: const Padding(
                       padding: EdgeInsets.only(left: 32),
