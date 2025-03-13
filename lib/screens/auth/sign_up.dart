@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/services/routes.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/welcome_header.dart';
+import '../../providers/auth_provider.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -12,6 +16,60 @@ class SignUp extends StatefulWidget {
 }
 
 class SignUpState extends State<SignUp> {
+  final _email = TextEditingController();
+  final _name = TextEditingController();
+  final _password = TextEditingController();
+  final _confirmPassword = TextEditingController();
+
+  @override
+  void dispose() {
+    _name.dispose();
+    _email.dispose();
+    _password.dispose();
+    _confirmPassword.dispose();
+    super.dispose();
+  }
+
+  void _signUp() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    if (_password.text != _confirmPassword.text) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Passwords do not match'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    bool success = await authProvider.registerUser(
+      name: _name.text.trim(),
+      email: _email.text.trim().toLowerCase(),
+      password: _password.text.trim(),
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Registration Successful!"),
+          backgroundColor: Colors.green,
+        ),
+      );
+      context.go(ConfigRoutes.whereToNext);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authProvider.errorMessage ?? "Registration failed!"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +87,7 @@ class SignUpState extends State<SignUp> {
           ),
 
           SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -43,46 +101,47 @@ class SignUpState extends State<SignUp> {
 
                 const SizedBox(height: 18),
 
-                Padding(
-                  padding: const EdgeInsets.only(left: 32),
-                  child: GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.arrow_back, color: AppColors.primary),
-                        const SizedBox(width: 8),
-                        Text(
-                          "Back",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.primary,
-                          ),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.arrow_back, color: AppColors.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Back",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.primary,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
 
                 const SizedBox(height: 6),
 
-                const CustomTextField(
+                CustomTextField(
                   label: 'Name',
                   hintText: 'Enter your name',
+                  controller: _name,
                 ),
-                const CustomTextField(
+                CustomTextField(
                   label: 'Email',
                   hintText: 'Enter your email',
+                  controller: _email,
                 ),
-                const CustomTextField(
+                CustomTextField(
                   label: "Password",
                   hintText: "Enter your password",
                   isPassword: true,
+                  controller: _password,
                 ),
-                const CustomTextField(
+                CustomTextField(
                   label: "Confirm Password",
                   hintText: "Confirm your password",
                   isPassword: true,
+                  controller: _confirmPassword,
                 ),
 
                 const SizedBox(height: 10),
@@ -90,9 +149,7 @@ class SignUpState extends State<SignUp> {
                 Center(
                   child: CustomButton(
                     text: "Sign Up",
-                    onPressed: () {
-                      // Handle Sign Up action
-                    },
+                    onPressed: _signUp,
                     width: 150,
                   ),
                 ),
@@ -102,7 +159,7 @@ class SignUpState extends State<SignUp> {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      // Handle navigation to Login screen
+                      context.go(ConfigRoutes.login);
                     },
                     child: const Padding(
                       padding: EdgeInsets.only(left: 32),

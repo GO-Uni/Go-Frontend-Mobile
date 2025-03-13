@@ -11,11 +11,12 @@ import '../screens/bookings_screen.dart';
 import '../screens/maps_screen.dart';
 import '../screens/profile_screen.dart';
 import '../screens/where_to_next_screen.dart';
+import '../screens/detailed_destination_screen.dart';
 import '../widgets/app_layout.dart';
 import 'routes.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: ConfigRoutes.signUpOptions,
+  initialLocation: ConfigRoutes.login,
   routes: [
     GoRoute(
       path: ConfigRoutes.signUpOptions,
@@ -53,7 +54,7 @@ final GoRouter appRouter = GoRouter(
         ),
         GoRoute(
           path: ConfigRoutes.profile,
-          builder: (context, state) => ProfileScreen(),
+          builder: (context, state) => ProfileScreen(user: businessUser),
         ),
         GoRoute(
           path: ConfigRoutes.destinations,
@@ -62,6 +63,11 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: ConfigRoutes.saved,
           builder: (context, state) => SavedScreen(),
+        ),
+
+        GoRoute(
+          path: ConfigRoutes.detailedDestination,
+          builder: (context, state) => DetailedDestinationScreen(),
         ),
       ],
     ),
