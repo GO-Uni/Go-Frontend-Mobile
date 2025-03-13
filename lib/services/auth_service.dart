@@ -14,7 +14,8 @@ class AuthService {
     required String password,
     int? roleId,
     String? businessName,
-    String? businessCategory,
+    int? businessCategory,
+    String? subscriptionType,
   }) async {
     try {
       log("🔵 Sending signup request...");
@@ -30,8 +31,8 @@ class AuthService {
         requestData.addAll({
           "business_name": businessName,
           "category_id": businessCategory,
-          "subscription_type": "monthly",
-          "payment_method": "manual",
+          "subscription_type": subscriptionType,
+          "payment_method": "pm_card_visa",
         });
       }
 

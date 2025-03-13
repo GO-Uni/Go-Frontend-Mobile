@@ -4,6 +4,7 @@ import 'services/router.dart';
 import 'theme/colors.dart';
 import 'theme/text_styles.dart';
 import 'providers/auth_provider.dart';
+import 'providers/category_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +16,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => CategoryProvider()),
+      ],
       child: MaterialApp.router(
         title: 'GO',
         debugShowCheckedModeBanner: false,
