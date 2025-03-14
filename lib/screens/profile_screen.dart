@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/services/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:go_frontend_mobile/providers/auth_provider.dart';
 import 'package:go_router/go_router.dart';
@@ -30,7 +31,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _logout() {
     Provider.of<AuthProvider>(context, listen: false).logoutUser();
-    context.go('/login');
+    context.go(ConfigRoutes.signUpOptions);
   }
 
   void _showChangePlanDialog() {}
