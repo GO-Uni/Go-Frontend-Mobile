@@ -3,11 +3,15 @@ import 'package:go_frontend_mobile/services/dio_client.dart';
 import '../services/auth_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:developer';
+import '../models/user_model.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService(DioClient());
 
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+
+  UserModel? _user;
+  UserModel? get user => _user;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -88,9 +92,11 @@ class AuthProvider extends ChangeNotifier {
     }
 
     _roleId = user['role_id'];
+    _user = UserModel.fromJson(user);
     log("User Role ID: $_roleId");
     log("Extracted User: $user");
     log("Extracted Token: $token");
+    log("Extracted User: ${_user?.toJson()}");
 
     await _secureStorage.write(key: 'auth_token', value: token);
     await _secureStorage.write(key: 'role_id', value: _roleId.toString());
@@ -116,6 +122,7 @@ class AuthProvider extends ChangeNotifier {
   Future<void> logoutUser() async {
     await _secureStorage.delete(key: 'auth_token');
     await _secureStorage.delete(key: 'role_id');
+    _user = null;
     notifyListeners();
   }
 }
