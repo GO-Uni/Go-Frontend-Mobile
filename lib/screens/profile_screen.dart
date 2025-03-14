@@ -19,6 +19,43 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   bool _isEditing = false;
 
+  late TextEditingController _nameController;
+  late TextEditingController _businessNameController;
+  late TextEditingController _ownerNameController;
+  late TextEditingController _businessCategoryController;
+  late TextEditingController _districtController;
+  late TextEditingController _qtyBookingController;
+
+  @override
+  void initState() {
+    super.initState();
+    final user = Provider.of<AuthProvider>(context, listen: false).user;
+
+    _nameController = TextEditingController(text: user?.name ?? "");
+    _businessNameController = TextEditingController(
+      text: user?.businessName ?? "",
+    );
+    _ownerNameController = TextEditingController(text: user?.ownerName ?? "");
+    _businessCategoryController = TextEditingController(
+      text: user?.businessCategory ?? "",
+    );
+    _districtController = TextEditingController(text: user?.district ?? "");
+    _qtyBookingController = TextEditingController(
+      text: user?.qtyBooking?.toString() ?? "",
+    );
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _businessNameController.dispose();
+    _ownerNameController.dispose();
+    _businessCategoryController.dispose();
+    _districtController.dispose();
+    _qtyBookingController.dispose();
+    super.dispose();
+  }
+
   void _toggleEditing() {
     setState(() {
       _isEditing = !_isEditing;
@@ -77,23 +114,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   if (user.roleId == 3) ...[
                     CustomTextField(
                       label: "Business Name",
-                      hintText: user.businessName ?? "Enter business name",
+                      hintText:
+                          _isEditing
+                              ? _businessNameController.text
+                              : (user.businessName ?? "Enter business name"),
+                      controller: _businessNameController,
                       readOnly: !_isEditing,
                     ),
                     CustomTextField(
                       label: "Owner Name",
-                      hintText: user.ownerName ?? "Enter owner name",
+                      hintText:
+                          _isEditing
+                              ? _ownerNameController.text
+                              : (user.ownerName ?? "Enter owner name"),
+                      controller: _ownerNameController,
                       readOnly: !_isEditing,
                     ),
                     CustomTextField(
                       label: "Business Category",
-                      hintText: user.businessCategory ?? "Select category",
+                      hintText:
+                          _isEditing
+                              ? _businessCategoryController.text
+                              : (user.businessCategory ?? "Select category"),
+                      controller: _businessCategoryController,
                       isDropdown: _isEditing,
                       readOnly: !_isEditing,
                     ),
                     CustomTextField(
                       label: "District",
-                      hintText: user.district ?? "Enter district",
+                      hintText:
+                          _isEditing
+                              ? _districtController.text
+                              : (user.district ?? "Enter district"),
+                      controller: _districtController,
                       readOnly: !_isEditing,
                     ),
                     Row(
@@ -119,7 +172,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Expanded(
                           child: CustomTextField(
                             label: "Qnty/Booking",
-                            hintText: user.qtyBooking?.toString() ?? "123",
+                            hintText:
+                                _isEditing
+                                    ? _qtyBookingController.text
+                                    : (user.qtyBooking?.toString() ?? "123"),
+                            controller: _qtyBookingController,
                             readOnly: !_isEditing,
                           ),
                         ),
@@ -138,7 +195,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   if (user.roleId == 2) ...[
                     CustomTextField(
                       label: "Name",
-                      hintText: user.name,
+                      hintText: _isEditing ? _nameController.text : user.name,
+
+                      controller: _nameController,
                       readOnly: !_isEditing,
                     ),
                   ],
