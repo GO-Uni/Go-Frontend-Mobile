@@ -27,19 +27,50 @@ class UserModel {
     this.subscriptionMethod,
   });
 
+  UserModel copyWith({
+    String? name,
+    String? email,
+    int? roleId,
+    String? businessName,
+    String? ownerName,
+    String? businessCategory,
+    String? district,
+    String? openingTime,
+    String? closingTime,
+    int? qtyBooking,
+    String? subscriptionMethod,
+  }) {
+    return UserModel(
+      name: name ?? this.name,
+      email: email ?? this.email,
+      roleId: roleId ?? this.roleId,
+      businessName: businessName ?? this.businessName,
+      ownerName: ownerName ?? this.ownerName,
+      businessCategory: businessCategory ?? this.businessCategory,
+      district: district ?? this.district,
+      openingTime: openingTime ?? this.openingTime,
+      closingTime: closingTime ?? this.closingTime,
+      qtyBooking: qtyBooking ?? this.qtyBooking,
+      subscriptionMethod: subscriptionMethod ?? this.subscriptionMethod,
+    );
+  }
+
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       name: json['name'] ?? "Unknown",
       email: json['email'] ?? "No Email",
       roleId: json['role_id'] ?? 2,
-      businessName: json['business_name'],
-      ownerName: json['owner_name'],
-      businessCategory: json['business_category'],
-      district: json['district'],
-      openingTime: json['opening_time'],
-      closingTime: json['closing_time'],
-      qtyBooking: json['qty_booking'],
-      subscriptionMethod: json['subscription_method'],
+      businessName: json['business_name'] as String?,
+      ownerName: json['owner_name'] as String?,
+      businessCategory: json['business_category'] as String?,
+      district: json['district'] as String?,
+      openingTime: json['opening_time'] as String?,
+      closingTime: json['closing_time'] as String?,
+      qtyBooking:
+          json['qty_booking'] != null
+              ? int.tryParse(json['qty_booking'].toString())
+              : null,
+      subscriptionMethod: json['subscription_method'] as String?,
     );
   }
 
@@ -48,16 +79,14 @@ class UserModel {
       "name": name,
       "email": email,
       "role_id": roleId,
-      if (roleId == 3) ...{
-        "business_name": businessName,
-        "owner_name": ownerName,
-        "business_category": businessCategory,
-        "district": district,
-        "opening_time": openingTime,
-        "closing_time": closingTime,
-        "qty_booking": qtyBooking,
-        "subscription_method": subscriptionMethod,
-      },
+      "business_name": businessName,
+      "owner_name": ownerName,
+      "business_category": businessCategory,
+      "district": district,
+      "opening_time": openingTime,
+      "closing_time": closingTime,
+      "qty_booking": qtyBooking,
+      "subscription_method": subscriptionMethod,
     };
   }
 }
