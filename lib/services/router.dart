@@ -64,7 +64,7 @@ final GoRouter appRouter = GoRouter(
         ),
         GoRoute(
           path: ConfigRoutes.profile,
-          builder: (context, state) => ProfileScreen(user: businessUser),
+          builder: (context, state) => ProfileScreen(),
         ),
         GoRoute(
           path: ConfigRoutes.destinations,

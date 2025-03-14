@@ -46,7 +46,7 @@ class ProfileHeader extends StatelessWidget {
                       style: AppTextStyles.bodyMedium.copyWith(fontSize: 14),
                     ),
                   ),
-                  if (user.userType == UserType.business) ...[
+                  if (user.roleId == 3) ...[
                     TextButton(
                       onPressed: () {},
                       style: TextButton.styleFrom(
