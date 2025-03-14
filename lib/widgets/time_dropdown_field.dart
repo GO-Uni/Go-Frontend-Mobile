@@ -19,7 +19,10 @@ class TimeDropdownField extends StatelessWidget {
   List<String> _generateTimeSlots() {
     List<String> times = [];
     for (int i = 8; i <= 23; i++) {
-      String hour = i > 12 ? (i - 12).toString() : i.toString();
+      String hour =
+          i > 12
+              ? (i - 12).toString().padLeft(2, '0')
+              : i.toString().padLeft(2, '0');
       String period = i >= 12 ? "PM" : "AM";
       times.add("$hour:00 $period");
       times.add("$hour:30 $period");

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:go_frontend_mobile/providers/auth_provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:go_frontend_mobile/widgets/custom_text_field.dart';
 import 'package:go_frontend_mobile/widgets/custom_button.dart';
 import '../theme/colors.dart';
 import '../widgets/profile_header.dart';
-import '../models/user_model.dart';
 import '../widgets/time_dropdown_field.dart';
 
 class ProfileScreen extends StatefulWidget {
-  final UserModel user;
-
-  const ProfileScreen({super.key, required this.user});
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -28,12 +28,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _toggleEditing();
   }
 
-  void _logout() {}
+  void _logout() {
+    Provider.of<AuthProvider>(context, listen: false).logoutUser();
+    context.go('/login');
+  }
 
   void _showChangePlanDialog() {}
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final user = authProvider.user;
+
+    if (user == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
       body: SingleChildScrollView(
@@ -42,7 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 15, left: 15),
-              child: ProfileHeader(user: widget.user),
+              child: ProfileHeader(user: user),
             ),
             const SizedBox(height: 5),
             Padding(
@@ -63,28 +73,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
 
-                  if (widget.user.userType == UserType.business) ...[
+                  if (user.roleId == 3) ...[
                     CustomTextField(
                       label: "Business Name",
-                      hintText:
-                          widget.user.businessName ?? "Enter business name",
+                      hintText: user.businessName ?? "Enter business name",
                       readOnly: !_isEditing,
                     ),
                     CustomTextField(
                       label: "Owner Name",
-                      hintText: widget.user.ownerName ?? "Enter owner name",
+                      hintText: user.ownerName ?? "Enter owner name",
                       readOnly: !_isEditing,
                     ),
                     CustomTextField(
                       label: "Business Category",
-                      hintText:
-                          widget.user.businessCategory ?? "Select category",
+                      hintText: user.businessCategory ?? "Select category",
                       isDropdown: _isEditing,
                       readOnly: !_isEditing,
                     ),
                     CustomTextField(
                       label: "District",
-                      hintText: widget.user.district ?? "Enter district",
+                      hintText: user.district ?? "Enter district",
                       readOnly: !_isEditing,
                     ),
                     Row(
@@ -92,7 +100,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Expanded(
                           child: TimeDropdownField(
                             label: "Opening",
-                            selectedTime: widget.user.openingTime ?? "08:00 AM",
+                            selectedTime: user.openingTime ?? "08:00 AM",
                             isEditing: _isEditing,
                             onChanged: (value) {},
                           ),
@@ -101,7 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Expanded(
                           child: TimeDropdownField(
                             label: "Closing",
-                            selectedTime: widget.user.closingTime ?? "08:00 PM",
+                            selectedTime: user.closingTime ?? "08:00 PM",
                             isEditing: _isEditing,
                             onChanged: (value) {},
                           ),
@@ -110,8 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Expanded(
                           child: CustomTextField(
                             label: "Qnty/Booking",
-                            hintText:
-                                widget.user.qtyBooking?.toString() ?? "123",
+                            hintText: user.qtyBooking?.toString() ?? "123",
                             readOnly: !_isEditing,
                           ),
                         ),
@@ -127,10 +134,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ],
 
-                  if (widget.user.userType == UserType.normal) ...[
+                  if (user.roleId == 2) ...[
                     CustomTextField(
                       label: "Name",
-                      hintText: widget.user.name,
+                      hintText: user.name,
                       readOnly: !_isEditing,
                     ),
                   ],
@@ -154,23 +161,3 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
-
-final UserModel businessUser = UserModel(
-  name: "Hanna",
-  email: "hanan@gmail.com",
-  userType: UserType.business,
-  businessName: "3Draze",
-  ownerName: "John Doe",
-  businessCategory: "Clothing",
-  district: "Lebanon",
-  openingTime: "8:00 AM",
-  closingTime: "8:00 PM",
-  qtyBooking: 125,
-  subscriptionMethod: "Monthly",
-);
-
-final UserModel normalUser = UserModel(
-  name: "Hanan",
-  email: "hanan@gmail.com",
-  userType: UserType.normal,
-);
