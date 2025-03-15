@@ -24,7 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late TextEditingController _ownerNameController;
   late TextEditingController _businessCategoryController;
   late TextEditingController _districtController;
-  late TextEditingController _qtyBookingController;
+  late TextEditingController _counterBookingController;
 
   @override
   void initState() {
@@ -40,8 +40,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       text: user?.businessCategory ?? "",
     );
     _districtController = TextEditingController(text: user?.district ?? "");
-    _qtyBookingController = TextEditingController(
-      text: user?.qtyBooking?.toString() ?? "",
+    _counterBookingController = TextEditingController(
+      text: user?.counterBooking?.toString() ?? "",
     );
   }
 
@@ -52,7 +52,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _ownerNameController.dispose();
     _businessCategoryController.dispose();
     _districtController.dispose();
-    _qtyBookingController.dispose();
+    _counterBookingController.dispose();
     super.dispose();
   }
 
@@ -186,9 +186,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             label: "Qnty/Booking",
                             hintText:
                                 _isEditing
-                                    ? _qtyBookingController.text
-                                    : (user.qtyBooking?.toString() ?? "123"),
-                            controller: _qtyBookingController,
+                                    ? _counterBookingController.text
+                                    : (user.counterBooking?.toString() ??
+                                        "123"),
+                            controller: _counterBookingController,
                             readOnly: !_isEditing,
                           ),
                         ),

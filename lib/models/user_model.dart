@@ -10,7 +10,7 @@ class UserModel {
   final String? district;
   final String? openingTime;
   final String? closingTime;
-  final int? qtyBooking;
+  final int? counterBooking;
   final String? subscriptionMethod;
 
   const UserModel({
@@ -23,7 +23,7 @@ class UserModel {
     this.district,
     this.openingTime,
     this.closingTime,
-    this.qtyBooking,
+    this.counterBooking,
     this.subscriptionMethod,
   });
 
@@ -37,7 +37,7 @@ class UserModel {
     String? district,
     String? openingTime,
     String? closingTime,
-    int? qtyBooking,
+    int? counterBooking,
     String? subscriptionMethod,
   }) {
     return UserModel(
@@ -50,7 +50,7 @@ class UserModel {
       district: district ?? this.district,
       openingTime: openingTime ?? this.openingTime,
       closingTime: closingTime ?? this.closingTime,
-      qtyBooking: qtyBooking ?? this.qtyBooking,
+      counterBooking: counterBooking ?? this.counterBooking,
       subscriptionMethod: subscriptionMethod ?? this.subscriptionMethod,
     );
   }
@@ -66,7 +66,7 @@ class UserModel {
       district: json['district'] as String?,
       openingTime: json['opening_time'] as String?,
       closingTime: json['closing_time'] as String?,
-      qtyBooking:
+      counterBooking:
           json['qty_booking'] != null
               ? int.tryParse(json['qty_booking'].toString())
               : null,
@@ -85,7 +85,7 @@ class UserModel {
       "district": district,
       "opening_time": openingTime,
       "closing_time": closingTime,
-      "qty_booking": qtyBooking,
+      "qty_booking": counterBooking,
       "subscription_method": subscriptionMethod,
     };
   }
