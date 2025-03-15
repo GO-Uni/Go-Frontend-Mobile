@@ -19,10 +19,7 @@ class TimeDropdownField extends StatelessWidget {
   List<String> _generateTimeSlots() {
     List<String> times = [];
     for (int i = 8; i <= 23; i++) {
-      String hour =
-          i > 12
-              ? (i - 12).toString().padLeft(2, '0')
-              : i.toString().padLeft(2, '0');
+      String hour = i > 12 ? (i - 12).toString() : i.toString();
       String period = i >= 12 ? "PM" : "AM";
       times.add("$hour:00 $period");
       times.add("$hour:30 $period");
@@ -32,6 +29,11 @@ class TimeDropdownField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final timeSlots = _generateTimeSlots();
+
+    final validSelectedTime =
+        timeSlots.contains(selectedTime) ? selectedTime : timeSlots.first;
+
     return Container(
       padding: const EdgeInsets.only(bottom: 6),
       child: Column(
@@ -47,7 +49,7 @@ class TimeDropdownField extends StatelessWidget {
           const SizedBox(height: 3),
 
           DropdownButtonFormField<String>(
-            value: selectedTime ?? "8:00 AM",
+            value: isEditing ? validSelectedTime : null,
             decoration: InputDecoration(
               hintText: selectedTime ?? "Select time",
               hintStyle: const TextStyle(
@@ -63,7 +65,7 @@ class TimeDropdownField extends StatelessWidget {
               ),
             ),
             items:
-                _generateTimeSlots()
+                timeSlots
                     .map(
                       (value) => DropdownMenuItem(
                         value: value,

@@ -56,20 +56,24 @@ class UserModel {
   }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
+    final businessProfile = json['business_profile'] ?? {};
+
     return UserModel(
       name: json['name'] ?? "Unknown",
       email: json['email'] ?? "No Email",
       roleId: json['role_id'] ?? 2,
-      businessName: json['business_name'] as String?,
-      ownerName: json['owner_name'] as String?,
-      businessCategory: json['business_category'] as String?,
-      district: json['district'] as String?,
-      openingTime: json['opening_time'] as String?,
-      closingTime: json['closing_time'] as String?,
+
+      businessName: businessProfile?['business_name'] as String?,
+      ownerName: businessProfile?['user_name'] as String?,
+      businessCategory: businessProfile?['business_category'] as String?,
+      district: businessProfile?['district'] as String?,
+      openingTime: businessProfile?['opening_time'] as String?,
+      closingTime: businessProfile?['closing_time'] as String?,
       counterBooking:
-          json['qty_booking'] != null
-              ? int.tryParse(json['qty_booking'].toString())
+          businessProfile?['counter_booking'] != null
+              ? int.tryParse(businessProfile['counter_booking'].toString())
               : null,
+
       subscriptionMethod: json['subscription_method'] as String?,
     );
   }
@@ -79,14 +83,18 @@ class UserModel {
       "name": name,
       "email": email,
       "role_id": roleId,
-      "business_name": businessName,
-      "owner_name": ownerName,
-      "business_category": businessCategory,
-      "district": district,
-      "opening_time": openingTime,
-      "closing_time": closingTime,
-      "qty_booking": counterBooking,
       "subscription_method": subscriptionMethod,
+
+      if (roleId == 3)
+        "business_profile": {
+          "business_name": businessName,
+          "owner_name": ownerName,
+          "category_name": businessCategory,
+          "district": district,
+          "opening_hour": openingTime,
+          "closing_hour": closingTime,
+          "counter_booking": counterBooking,
+        },
     };
   }
 }
