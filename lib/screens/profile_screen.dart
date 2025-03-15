@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/profile_provider.dart';
 import 'package:go_frontend_mobile/services/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:go_frontend_mobile/providers/auth_provider.dart';
@@ -24,6 +25,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late TextEditingController _ownerNameController;
   late TextEditingController _businessCategoryController;
   late TextEditingController _districtController;
+  late TextEditingController _openingHourController;
+  late TextEditingController _closingHourController;
   late TextEditingController _counterBookingController;
 
   @override
@@ -43,6 +46,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _counterBookingController = TextEditingController(
       text: user?.counterBooking?.toString() ?? "",
     );
+    _openingHourController = TextEditingController(
+      text: user?.openingTime ?? "08:00 AM",
+    );
+    _closingHourController = TextEditingController(
+      text: user?.closingTime ?? "08:00 PM",
+    );
+    _counterBookingController = TextEditingController(
+      text: user?.counterBooking?.toString() ?? "",
+    );
   }
 
   @override
@@ -52,6 +64,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _ownerNameController.dispose();
     _businessCategoryController.dispose();
     _districtController.dispose();
+    _openingHourController.dispose();
+    _closingHourController.dispose();
     _counterBookingController.dispose();
     super.dispose();
   }
@@ -62,8 +76,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  void _saveChanges() {
-    _toggleEditing();
+  void _saveChanges() async {
+    final profileProvider = Provider.of<ProfileProvider>(
+      context,
+      listen: false,
+    );
+    final user = profileProvider.user;
+
+    if (user == null) return;
+
+    bool success = await profileProvider.updateProfile(
+      name: _nameController.text.isNotEmpty ? _nameController.text : user.name,
+      businessName:
+          _businessNameController.text.isNotEmpty
+              ? _businessNameController.text
+              : user.businessName,
+      ownerName:
+          _ownerNameController.text.isNotEmpty
+              ? _ownerNameController.text
+              : user.ownerName,
+      district:
+          _districtController.text.isNotEmpty
+              ? _districtController.text
+              : user.district,
+      openingHour:
+          _openingHourController.text.isNotEmpty
+              ? _openingHourController.text
+              : user.openingTime,
+      closingHour:
+          _closingHourController.text.isNotEmpty
+              ? _closingHourController.text
+              : user.closingTime,
+      counterBooking:
+          _counterBookingController.text.isNotEmpty
+              ? int.tryParse(_counterBookingController.text)
+              : user.counterBooking,
+    );
+    if (!mounted) return;
+    if (success) {
+      setState(() {
+        _isEditing = false;
+      });
+    }
   }
 
   void _logout() {
@@ -114,38 +168,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   if (user.roleId == 3) ...[
                     CustomTextField(
                       label: "Business Name",
-                      hintText:
-                          _isEditing
-                              ? _businessNameController.text
-                              : (user.businessName ?? "Enter business name"),
+                      hintText: _businessNameController.text,
                       controller: _businessNameController,
                       readOnly: !_isEditing,
                     ),
                     CustomTextField(
                       label: "Owner Name",
-                      hintText:
-                          _isEditing
-                              ? _ownerNameController.text
-                              : (user.ownerName ?? "Enter owner name"),
+                      hintText: _businessCategoryController.text,
                       controller: _ownerNameController,
                       readOnly: !_isEditing,
                     ),
                     CustomTextField(
                       label: "Business Category",
-                      hintText:
-                          _isEditing
-                              ? _businessCategoryController.text
-                              : (user.businessCategory ?? "Select category"),
+                      hintText: _businessCategoryController.text,
                       controller: _businessCategoryController,
                       isDropdown: _isEditing,
                       readOnly: !_isEditing,
                     ),
                     CustomTextField(
                       label: "District",
-                      hintText:
-                          _isEditing
-                              ? _districtController.text
-                              : (user.district ?? "Enter district"),
+                      hintText: _districtController.text,
                       controller: _districtController,
                       readOnly: !_isEditing,
                     ),
@@ -166,7 +208,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Expanded(
                           child: TimeDropdownField(
                             label: "Opening",
-                            selectedTime: user.openingTime ?? "08:00 AM",
+                            selectedTime: _openingHourController.text,
                             isEditing: _isEditing,
                             onChanged: (value) {},
                           ),
@@ -175,7 +217,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Expanded(
                           child: TimeDropdownField(
                             label: "Closing",
-                            selectedTime: user.closingTime ?? "08:00 PM",
+                            selectedTime: _closingHourController.text,
                             isEditing: _isEditing,
                             onChanged: (value) {},
                           ),
