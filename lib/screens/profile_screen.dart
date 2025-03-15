@@ -23,7 +23,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   late TextEditingController _nameController;
   late TextEditingController _businessNameController;
-  late TextEditingController _ownerNameController;
   late TextEditingController _businessCategoryController;
   late TextEditingController _districtController;
   late TextEditingController _openingHourController;
@@ -39,7 +38,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _businessNameController = TextEditingController(
       text: user?.businessName ?? "",
     );
-    _ownerNameController = TextEditingController(text: user?.ownerName ?? "");
     _businessCategoryController = TextEditingController(
       text: user?.businessCategory ?? "",
     );
@@ -47,12 +45,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _counterBookingController = TextEditingController(
       text: user?.counterBooking?.toString() ?? "",
     );
-    _openingHourController = TextEditingController(
-      text: user?.openingTime ?? "08:00 AM",
-    );
-    _closingHourController = TextEditingController(
-      text: user?.closingTime ?? "08:00 PM",
-    );
+    _openingHourController = TextEditingController(text: user?.openingHour);
+    _closingHourController = TextEditingController(text: user?.closingHour);
     _counterBookingController = TextEditingController(
       text: user?.counterBooking?.toString() ?? "",
     );
@@ -62,7 +56,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void dispose() {
     _nameController.dispose();
     _businessNameController.dispose();
-    _ownerNameController.dispose();
     _businessCategoryController.dispose();
     _districtController.dispose();
     _openingHourController.dispose();
@@ -103,11 +96,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       openingHour:
           _openingHourController.text.isNotEmpty
               ? _openingHourController.text
-              : user.openingTime,
+              : user.openingHour,
       closingHour:
           _closingHourController.text.isNotEmpty
               ? _closingHourController.text
-              : user.closingTime,
+              : user.closingHour,
       counterBooking:
           _counterBookingController.text.isNotEmpty
               ? int.tryParse(_counterBookingController.text)
@@ -224,7 +217,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             label: "Opening",
                             selectedTime: _openingHourController.text,
                             isEditing: _isEditing,
-                            onChanged: (value) {},
+                            onChanged: (value) {
+                              setState(() {
+                                _openingHourController.text = value!;
+                              });
+                            },
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -233,7 +230,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             label: "Closing",
                             selectedTime: _closingHourController.text,
                             isEditing: _isEditing,
-                            onChanged: (value) {},
+                            onChanged: (value) {
+                              setState(() {
+                                _closingHourController.text = value!;
+                              });
+                            },
                           ),
                         ),
                         const SizedBox(width: 10),

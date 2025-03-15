@@ -57,8 +57,8 @@ class ProfileProvider extends ChangeNotifier {
           ownerName: name ?? _user!.ownerName,
           businessCategory: categoryId?.toString() ?? _user!.businessCategory,
           district: district ?? _user!.district,
-          openingTime: openingHour ?? _user!.openingTime,
-          closingTime: closingHour ?? _user!.closingTime,
+          openingHour: openingHour ?? _user!.openingHour,
+          closingHour: closingHour ?? _user!.closingHour,
           counterBooking: counterBooking ?? _user!.counterBooking,
         );
 

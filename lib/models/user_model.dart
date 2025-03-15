@@ -8,8 +8,8 @@ class UserModel {
   final String? ownerName;
   final String? businessCategory;
   final String? district;
-  final String? openingTime;
-  final String? closingTime;
+  final String? openingHour;
+  final String? closingHour;
   final int? counterBooking;
   final String? subscriptionMethod;
 
@@ -21,8 +21,8 @@ class UserModel {
     this.ownerName,
     this.businessCategory,
     this.district,
-    this.openingTime,
-    this.closingTime,
+    this.openingHour,
+    this.closingHour,
     this.counterBooking,
     this.subscriptionMethod,
   });
@@ -35,8 +35,8 @@ class UserModel {
     String? ownerName,
     String? businessCategory,
     String? district,
-    String? openingTime,
-    String? closingTime,
+    String? openingHour,
+    String? closingHour,
     int? counterBooking,
     String? subscriptionMethod,
   }) {
@@ -48,8 +48,8 @@ class UserModel {
       ownerName: ownerName ?? this.ownerName,
       businessCategory: businessCategory ?? this.businessCategory,
       district: district ?? this.district,
-      openingTime: openingTime ?? this.openingTime,
-      closingTime: closingTime ?? this.closingTime,
+      openingHour: openingHour ?? this.openingHour,
+      closingHour: closingHour ?? this.closingHour,
       counterBooking: counterBooking ?? this.counterBooking,
       subscriptionMethod: subscriptionMethod ?? this.subscriptionMethod,
     );
@@ -67,8 +67,8 @@ class UserModel {
       ownerName: businessProfile?['user_name'] as String?,
       businessCategory: businessProfile?['business_category'] as String?,
       district: businessProfile?['district'] as String?,
-      openingTime: businessProfile?['opening_time'] as String?,
-      closingTime: businessProfile?['closing_time'] as String?,
+      openingHour: businessProfile?['opening_hour'] as String?,
+      closingHour: businessProfile?['closing_hour'] as String?,
       counterBooking:
           businessProfile?['counter_booking'] != null
               ? int.tryParse(businessProfile['counter_booking'].toString())
@@ -91,8 +91,8 @@ class UserModel {
           "owner_name": ownerName,
           "category_name": businessCategory,
           "district": district,
-          "opening_hour": openingTime,
-          "closing_hour": closingTime,
+          "opening_hour": openingHour,
+          "closing_hour": closingHour,
           "counter_booking": counterBooking,
         },
     };

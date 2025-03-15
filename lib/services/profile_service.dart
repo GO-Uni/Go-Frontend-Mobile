@@ -19,6 +19,8 @@ class ProfileService {
         return false;
       }
 
+      log("📤 Sending Profile Update Request: $profileData");
+
       Response response = await _dioClient.dio.put(
         ApiRoutes.updateProfile,
         data: profileData,
