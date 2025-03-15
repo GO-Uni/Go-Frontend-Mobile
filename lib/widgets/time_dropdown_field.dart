@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Import for time formatting
 import '../theme/colors.dart';
 import '../theme/text_styles.dart';
 
@@ -16,13 +17,35 @@ class TimeDropdownField extends StatelessWidget {
     required this.onChanged,
   });
 
+  String _convertTo12HourFormat(String? time) {
+    if (time == null || time.isEmpty) return "08:00 AM";
+
+    try {
+      DateTime parsedTime = DateFormat("HH:mm:ss").parse(time);
+      return DateFormat("h:mm a").format(parsedTime);
+    } catch (e) {
+      return "08:00 AM";
+    }
+  }
+
+  String _convertTo24HourFormat(String? time) {
+    if (time == null || time.isEmpty) return "08:00:00";
+
+    try {
+      DateTime parsedTime = DateFormat("h:mm a").parse(time);
+      return DateFormat("HH:mm:ss").format(parsedTime);
+    } catch (e) {
+      return "08:00:00";
+    }
+  }
+
   List<String> _generateTimeSlots() {
     List<String> times = [];
     for (int i = 8; i <= 23; i++) {
-      String hour = i > 12 ? (i - 12).toString() : i.toString();
-      String period = i >= 12 ? "PM" : "AM";
-      times.add("$hour:00 $period");
-      times.add("$hour:30 $period");
+      DateTime time = DateTime(2000, 1, 1, i, 0);
+      times.add(DateFormat("h:mm a").format(time));
+      time = DateTime(2000, 1, 1, i, 30);
+      times.add(DateFormat("h:mm a").format(time));
     }
     return times;
   }
@@ -31,9 +54,11 @@ class TimeDropdownField extends StatelessWidget {
   Widget build(BuildContext context) {
     final timeSlots = _generateTimeSlots();
 
+    final formattedSelectedTime = _convertTo12HourFormat(selectedTime);
+
     final validSelectedTime =
-        (selectedTime != null && timeSlots.contains(selectedTime))
-            ? selectedTime
+        (timeSlots.contains(formattedSelectedTime))
+            ? formattedSelectedTime
             : timeSlots.first;
 
     return Container(
@@ -53,7 +78,7 @@ class TimeDropdownField extends StatelessWidget {
           DropdownButtonFormField<String>(
             value: validSelectedTime,
             decoration: InputDecoration(
-              hintText: selectedTime ?? "Select time",
+              hintText: formattedSelectedTime,
               hintStyle: const TextStyle(
                 fontSize: 11,
                 color: AppColors.lightGray,
@@ -75,7 +100,16 @@ class TimeDropdownField extends StatelessWidget {
                       ),
                     )
                     .toList(),
-            onChanged: isEditing ? onChanged : null,
+
+            // Convert selection back to 24-hour format before saving
+            onChanged:
+                isEditing
+                    ? (value) {
+                      String formattedValue = _convertTo24HourFormat(value);
+                      onChanged(formattedValue);
+                    }
+                    : null,
+
             icon: const Icon(Icons.keyboard_arrow_down, size: 20),
             style: AppTextStyles.bodyRegular,
           ),
