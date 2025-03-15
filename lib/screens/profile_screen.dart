@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/providers/profile_provider.dart';
 import 'package:go_frontend_mobile/services/routes.dart';
@@ -77,13 +78,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _saveChanges() async {
+    log("saved btn pressed");
     final profileProvider = Provider.of<ProfileProvider>(
       context,
       listen: false,
     );
     final user = profileProvider.user;
 
-    if (user == null) return;
+    if (user == null) {
+      log("User is null. Exiting update.");
+      return;
+    }
 
     bool success = await profileProvider.updateProfile(
       name: _nameController.text.isNotEmpty ? _nameController.text : user.name,
@@ -91,10 +96,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _businessNameController.text.isNotEmpty
               ? _businessNameController.text
               : user.businessName,
-      ownerName:
-          _ownerNameController.text.isNotEmpty
-              ? _ownerNameController.text
-              : user.ownerName,
       district:
           _districtController.text.isNotEmpty
               ? _districtController.text
@@ -112,11 +113,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ? int.tryParse(_counterBookingController.text)
               : user.counterBooking,
     );
+
     if (!mounted) return;
+
     if (success) {
+      log("Profile updated successfully!");
       setState(() {
         _isEditing = false;
       });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Profile updated successfully!")),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Failed to update profile. Please try again."),
+        ),
+      );
     }
   }
 
@@ -129,8 +143,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context);
-    final user = authProvider.user;
+    final profileProvider = Provider.of<ProfileProvider>(context);
+    final user = profileProvider.user;
 
     if (user == null) {
       return const Center(child: CircularProgressIndicator());
@@ -174,8 +188,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     CustomTextField(
                       label: "Owner Name",
-                      hintText: _businessCategoryController.text,
-                      controller: _ownerNameController,
+                      hintText: _nameController.text,
+                      controller: _nameController,
                       readOnly: !_isEditing,
                     ),
                     CustomTextField(
