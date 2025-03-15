@@ -32,7 +32,9 @@ class TimeDropdownField extends StatelessWidget {
     final timeSlots = _generateTimeSlots();
 
     final validSelectedTime =
-        timeSlots.contains(selectedTime) ? selectedTime : timeSlots.first;
+        (selectedTime != null && timeSlots.contains(selectedTime))
+            ? selectedTime
+            : timeSlots.first;
 
     return Container(
       padding: const EdgeInsets.only(bottom: 6),
@@ -49,7 +51,7 @@ class TimeDropdownField extends StatelessWidget {
           const SizedBox(height: 3),
 
           DropdownButtonFormField<String>(
-            value: isEditing ? validSelectedTime : null,
+            value: validSelectedTime,
             decoration: InputDecoration(
               hintText: selectedTime ?? "Select time",
               hintStyle: const TextStyle(
