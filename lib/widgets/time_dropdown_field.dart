@@ -40,7 +40,7 @@ class TimeDropdownField extends StatelessWidget {
           Text(
             label,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontSize: 14,
+              fontSize: 13,
               color: AppColors.darkGray,
             ),
           ),

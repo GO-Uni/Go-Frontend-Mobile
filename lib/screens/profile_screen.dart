@@ -149,6 +149,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       controller: _districtController,
                       readOnly: !_isEditing,
                     ),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.only(top: 10, bottom: 10),
+                      child: Text(
+                        "Bookings",
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontSize: 14,
+                          color: AppColors.darkGray,
+                        ),
+                      ),
+                    ),
+
                     Row(
                       children: [
                         Expanded(
