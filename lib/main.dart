@@ -20,7 +20,20 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CategoryProvider()),
-        ChangeNotifierProvider(create: (_) => ProfileProvider()),
+        ChangeNotifierProxyProvider<AuthProvider, ProfileProvider>(
+          create: (context) => ProfileProvider(),
+          update: (context, authProvider, profileProvider) {
+            if (authProvider.user != null) {
+              profileProvider?.setUser(authProvider.user!);
+            }
+
+            // if (profileProvider?.user != null) {
+            //   authProvider.updateUser(profileProvider!.user!);
+            // }
+
+            return profileProvider!;
+          },
+        ),
       ],
       child: MaterialApp.router(
         title: 'GO',
