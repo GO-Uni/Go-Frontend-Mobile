@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../theme/text_styles.dart';
-import '../services/routes.dart'; // Import routes
+import '../services/routes.dart';
 
 class DestinationCard extends StatefulWidget {
   final String imageUrl;
@@ -28,6 +28,11 @@ class DestinationCardState extends State<DestinationCard> {
 
   @override
   Widget build(BuildContext context) {
+    String truncatedDescription =
+        widget.description.length > 50
+            ? '${widget.description.substring(0, 50)}...'
+            : widget.description;
+
     return GestureDetector(
       onTap: () {
         context.go(
@@ -72,8 +77,9 @@ class DestinationCardState extends State<DestinationCard> {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        widget.description,
+                        truncatedDescription,
                         style: AppTextStyles.bodyMedium.copyWith(fontSize: 11),
+                        overflow: TextOverflow.ellipsis,
                       ),
                       SizedBox(height: 5),
                       Row(
