@@ -23,6 +23,7 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   Future<bool> updateProfile({
+    required Function(UserModel) onUpdate,
     String? name,
     String? businessName,
     int? categoryId,
@@ -61,6 +62,8 @@ class ProfileProvider extends ChangeNotifier {
           closingHour: closingHour ?? _user!.closingHour,
           counterBooking: counterBooking ?? _user!.counterBooking,
         );
+
+        onUpdate(_user!);
 
         notifyListeners();
 

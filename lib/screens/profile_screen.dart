@@ -84,6 +84,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     bool success = await profileProvider.updateProfile(
+      onUpdate: (user) {
+        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+        authProvider.updateUser(user);
+      },
       name: _nameController.text.isNotEmpty ? _nameController.text : user.name,
       businessName:
           _businessNameController.text.isNotEmpty
@@ -136,7 +140,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final profileProvider = Provider.of<ProfileProvider>(context);
+    final profileProvider = Provider.of<ProfileProvider>(
+      context,
+      listen: false,
+    );
     final user = profileProvider.user;
 
     if (user == null) {

@@ -28,11 +28,6 @@ class MyApp extends StatelessWidget {
             if (authProvider.user != null) {
               profileProvider?.setUser(authProvider.user!);
             }
-
-            // if (profileProvider?.user != null) {
-            //   authProvider.updateUser(profileProvider!.user!);
-            // }
-
             return profileProvider!;
           },
         ),

@@ -22,6 +22,11 @@ class AuthProvider extends ChangeNotifier {
   int? _roleId;
   int? get roleId => _roleId;
 
+  void updateUser(UserModel updatedUser) {
+    _user = updatedUser;
+    notifyListeners();
+  }
+
   Future<bool> registerUser({
     required String name,
     required String email,
