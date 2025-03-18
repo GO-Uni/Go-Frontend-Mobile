@@ -27,4 +27,20 @@ class DestinationService {
       return [];
     }
   }
+
+  Future<List<Map<String, dynamic>>> fetchAllDestinations() async {
+    try {
+      Response res = await _dioClient.dio.get(ApiRoutes.destinations);
+
+      if (res.data["status"] == "success") {
+        return List<Map<String, dynamic>>.from(res.data["data"]);
+      } else {
+        log("❌ API returned an error: ${res.data}");
+        return [];
+      }
+    } on DioException catch (e) {
+      log("❌ Error fetching destinations: ${e.message}");
+      return [];
+    }
+  }
 }
