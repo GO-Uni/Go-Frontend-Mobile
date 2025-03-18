@@ -17,6 +17,27 @@ class DestinationsScreenState extends State<DestinationsScreen> {
   String? category;
   bool hasFetched = false;
 
+  final List<Map<String, dynamic>> recommendedDestinations = [
+    {
+      "main_img":
+          "https://images.unsplash.com/photo-1726064855757-ac8720008fe0?q=80",
+      "business_name": "Grand Palace",
+      "description": "A beautiful historic palace.",
+    },
+    {
+      "main_img":
+          "https://images.unsplash.com/photo-1726064855757-ac8720008fe0?q=80",
+      "business_name": "Mountain View",
+      "description": "A breathtaking scenic mountain view.",
+    },
+    {
+      "main_img":
+          "https://images.unsplash.com/photo-1726064855757-ac8720008fe0?q=80",
+      "business_name": "Sunset Beach",
+      "description": "The perfect place to relax and watch the sunset.",
+    },
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -40,7 +61,7 @@ class DestinationsScreenState extends State<DestinationsScreen> {
       destinationProvider.fetchDestinationsByCategory(category!);
     } else if (!hasFetched) {
       hasFetched = true;
-      // destinationProvider.fetchAllDestinations();
+      destinationProvider.fetchAllDestinations();
     }
   }
 
@@ -74,6 +95,48 @@ class DestinationsScreenState extends State<DestinationsScreen> {
                     ),
                   ),
 
+                  if (!showCategory) ...[
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      sliver: SliverGrid(
+                        delegate: SliverChildBuilderDelegate((context, index) {
+                          final destination = recommendedDestinations[index];
+                          return DestinationCard(
+                            imageUrl:
+                                destination["main_img"] ??
+                                "https://images.unsplash.com/photo-1726064855757-ac8720008fe0?q=80",
+                            name: destination["business_name"] ?? "Unknown",
+                            description:
+                                destination["description"] ??
+                                "No description available",
+                            rating: 5,
+                          );
+                        }, childCount: recommendedDestinations.length),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 20,
+                              mainAxisSpacing: 20,
+                              childAspectRatio: 0.95,
+                            ),
+                      ),
+                    ),
+
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                          top: 15,
+                          left: 16,
+                          bottom: 12,
+                        ),
+                        child: Text(
+                          "All Destinations",
+                          style: AppTextStyles.bodyLarge.copyWith(fontSize: 24),
+                        ),
+                      ),
+                    ),
+                  ],
+
                   SliverPadding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     sliver: SliverGrid(
@@ -82,7 +145,7 @@ class DestinationsScreenState extends State<DestinationsScreen> {
                         return DestinationCard(
                           imageUrl:
                               destination["main_img"] ??
-                              "https://via.placeholder.com/150",
+                              "https://images.unsplash.com/photo-1726064855757-ac8720008fe0?q=80",
                           name: destination["business_name"] ?? "Unknown",
                           description:
                               destination["description"] ??
@@ -99,40 +162,6 @@ class DestinationsScreenState extends State<DestinationsScreen> {
                           ),
                     ),
                   ),
-
-                  if (!showCategory)
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 15, left: 16),
-                        child: Text(
-                          "All Destinations",
-                          style: AppTextStyles.bodyLarge.copyWith(fontSize: 24),
-                        ),
-                      ),
-                    ),
-
-                  if (!showCategory)
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      sliver: SliverGrid(
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          return DestinationCard(
-                            imageUrl:
-                                "https://images.unsplash.com/photo-1726064855757-ac8720008fe0?q=80",
-                            name: "Ancient Castle",
-                            description: "A historical place",
-                            rating: 3,
-                          );
-                        }, childCount: destinations.length),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 14,
-                              mainAxisSpacing: 25,
-                              childAspectRatio: 0.9,
-                            ),
-                      ),
-                    ),
                 ],
               ),
     );
