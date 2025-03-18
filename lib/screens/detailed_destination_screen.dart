@@ -84,9 +84,9 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          "- ${destination["address"] ?? "Address"}",
+                          "- ${destination["district"] ?? "Address"}",
                           style: AppTextStyles.bodyLarge.copyWith(
-                            fontSize: 14,
+                            fontSize: 16,
                             color: AppColors.lightGray,
                           ),
                         ),
@@ -117,14 +117,10 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              child: Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  height: 2,
-                  color: AppColors.primary.withValues(alpha: 0.3),
-                ),
+              child: Container(
+                height: 2,
+                width: double.infinity,
+                color: AppColors.primary.withValues(alpha: 0.3),
               ),
             ),
 

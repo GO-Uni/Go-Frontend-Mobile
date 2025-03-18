@@ -151,6 +151,7 @@ class DestinationsScreenState extends State<DestinationsScreen> {
                               destination["description"] ??
                               "No description available",
                           rating: 3,
+                          district: destination['district'],
                         );
                       }, childCount: destinations.length),
                       gridDelegate:
