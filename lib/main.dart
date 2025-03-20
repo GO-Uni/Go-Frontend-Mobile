@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/activity_provider.dart';
 import 'package:go_frontend_mobile/providers/destination_provider.dart';
 import 'package:provider/provider.dart';
 import 'services/router.dart';
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
           },
         ),
         ChangeNotifierProvider(create: (_) => DestinationProvider()),
+        ChangeNotifierProvider(create: (context) => ActivityProvider()),
       ],
       child: MaterialApp.router(
         title: 'GO',
