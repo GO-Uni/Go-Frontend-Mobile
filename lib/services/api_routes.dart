@@ -8,4 +8,6 @@ final class ApiRoutes {
   static String categoryDestinations(String category) {
     return "/destinations/category/$category";
   }
+
+  static const String rateDestination = "/activity/rate";
 }
