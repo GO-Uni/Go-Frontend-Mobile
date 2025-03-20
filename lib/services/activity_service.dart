@@ -45,4 +45,33 @@ class ActivityService {
       return false;
     }
   }
+
+  Future<bool> saveDestination({required int businessUserId}) async {
+    try {
+      String? token = await _secureStorage.read(key: 'auth_token');
+
+      if (token == null) {
+        log("No auth token found. User is not authenticated.");
+        return false;
+      }
+
+      Response response = await _dioClient.dio.post(
+        ApiRoutes.saveDestination,
+        data: {'business_user_id': businessUserId},
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      log("✅ Destination saved: ${response.data}");
+      return response.statusCode == 200;
+    } catch (e) {
+      log("❌ Error saving destination: $e");
+      return false;
+    }
+  }
 }

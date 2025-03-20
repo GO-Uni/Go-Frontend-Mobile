@@ -10,4 +10,6 @@ final class ApiRoutes {
   }
 
   static const String rateDestination = "/activity/rate";
+  static const String saveDestination = "/activity/save";
+  static const String unsaveDestination = "/activity/unsave";
 }
