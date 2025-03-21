@@ -40,10 +40,15 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
   }
 
   void _showReviewDialog() {
+    final businessUserId = destination["userid"] ?? 0;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return const ReviewDialog();
+        return ReviewDialog(
+          businessUserId: businessUserId,
+          profileImageUrl: destination["profileImageUrl"],
+        );
       },
     );
   }
