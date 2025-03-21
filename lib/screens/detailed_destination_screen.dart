@@ -203,10 +203,7 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                "Baalbek has a history that dates back at least 11,000 years, "
-                "encompassing significant periods such as Prehistoric, Canaanite, Hellenistic, "
-                "and Roman eras. It flourished under Roman rule but underwent transformations "
-                "during the Christianization period and the subsequent rise of Islam.",
+                destination["description"] ?? "No description available",
                 style: AppTextStyles.bodyRegular.copyWith(
                   fontSize: 14,
                   color: AppColors.mediumGray,
