@@ -77,4 +77,23 @@ class ActivityService {
       return false;
     }
   }
+
+  Future<bool> reviewDestination({
+    required int businessUserId,
+    required String review,
+  }) async {
+    try {
+      Response response = await _dioClient.dio.post(
+        ApiRoutes.reviewDestination,
+        data: {'business_user_id': businessUserId, 'review': review},
+        options: Options(headers: await _getHeaders()),
+      );
+
+      log("✅ Added Destination review successfully: ${response.data}");
+      return response.statusCode == 200;
+    } catch (e) {
+      log("❌ Error adding review destination: $e");
+      return false;
+    }
+  }
 }
