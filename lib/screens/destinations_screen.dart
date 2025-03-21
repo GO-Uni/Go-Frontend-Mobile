@@ -152,6 +152,7 @@ class DestinationsScreenState extends State<DestinationsScreen> {
                               "No description available",
                           rating: 3,
                           district: destination['district'],
+                          userid: destination['user_id'],
                         );
                       }, childCount: destinations.length),
                       gridDelegate:

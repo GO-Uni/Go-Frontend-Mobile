@@ -10,6 +10,7 @@ class DestinationCard extends StatefulWidget {
   final int rating;
   final bool? isBooked;
   final String? district;
+  final int? userid;
 
   const DestinationCard({
     super.key,
@@ -19,6 +20,7 @@ class DestinationCard extends StatefulWidget {
     required this.rating,
     this.isBooked,
     this.district,
+    this.userid,
   });
 
   @override
@@ -45,6 +47,7 @@ class DestinationCardState extends State<DestinationCard> {
             "description": widget.description,
             "rating": widget.rating,
             "district": widget.district,
+            "userid": widget.userid,
           },
         );
       },

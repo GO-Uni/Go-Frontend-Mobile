@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../theme/text_styles.dart';
 import '../theme/colors.dart';
 import '../widgets/review_widget.dart';
 import '../widgets/review_dialog.dart';
 import '../widgets/booking_dialog.dart';
+import '../providers/activity_provider.dart';
 
 class DetailedDestinationScreen extends StatefulWidget {
   const DetailedDestinationScreen({super.key});
@@ -17,7 +19,6 @@ class DetailedDestinationScreen extends StatefulWidget {
 class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
   late String selectedImage;
   late List<String> images;
-  bool isBookmarked = false;
   int selectedRating = 3;
   Map<String, dynamic> destination = {};
 
@@ -25,8 +26,9 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
+    // Get the destination data from the router's extra property
     final extra = GoRouterState.of(context).extra;
-    final destination = (extra is Map<String, dynamic>) ? extra : {};
+    destination = (extra is Map<String, dynamic>) ? extra : {};
 
     images =
         destination["images"]?.cast<String>() ??
@@ -49,6 +51,9 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Retrieve the businessUserId from the destination data. Adjust as needed.
+    final businessUserId = destination["userid"] ?? 0;
+
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
       body: SingleChildScrollView(
@@ -183,16 +188,34 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isBookmarked = !isBookmarked;
-                          });
+
+                      Consumer<ActivityProvider>(
+                        builder: (context, activityProvider, child) {
+                          if (activityProvider.isLoading) {
+                            return const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            );
+                          }
+                          return GestureDetector(
+                            onTap: () async {
+                              await activityProvider.toggleSaveDestination(
+                                businessUserId,
+                              );
+                            },
+                            child: Icon(
+                              activityProvider.isSaved
+                                  ? Icons.bookmark
+                                  : Icons.bookmark_border,
+                              color:
+                                  activityProvider.isSaved
+                                      ? Colors.green
+                                      : Colors.black,
+                              size: 28,
+                            ),
+                          );
                         },
-                        child: Icon(
-                          isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                          color: isBookmarked ? Colors.green : Colors.black,
-                        ),
                       ),
                     ],
                   ),
@@ -250,8 +273,7 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                 ],
               ),
             ),
-
-            ReviewCard(
+            const ReviewCard(
               name: "John Doe",
               review: "Wonderful place! Recommended",
               profileImageUrl: null,
