@@ -16,8 +16,10 @@ class DetailedDestinationScreen extends StatefulWidget {
 
 class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
   late String selectedImage;
+  late List<String> images;
   bool isBookmarked = false;
   int selectedRating = 3;
+  Map<String, dynamic> destination = {};
 
   @override
   void didChangeDependencies() {
@@ -26,8 +28,8 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
     final extra = GoRouterState.of(context).extra;
     final destination = (extra is Map<String, dynamic>) ? extra : {};
 
-    List<String> images =
-        destination["images"] ??
+    images =
+        destination["images"]?.cast<String>() ??
         [
           destination["imageUrl"] ??
               "https://images.pexels.com/photos/2990603/pexels-photo-2990603.jpeg?auto=compress&cs=tinysrgb&w=600",
@@ -47,17 +49,6 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final extra = GoRouterState.of(context).extra;
-    final destination = (extra is Map<String, dynamic>) ? extra : {};
-
-    List<String> images =
-        destination["images"] ??
-        [
-          destination["imageUrl"] ??
-              "https://images.pexels.com/photos/2990603/pexels-photo-2990603.jpeg?auto=compress&cs=tinysrgb&w=600",
-          "https://images.pexels.com/photos/2990603/pexels-photo-2990603.jpeg?auto=compress&cs=tinysrgb&w=600",
-        ];
-
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
       body: SingleChildScrollView(
