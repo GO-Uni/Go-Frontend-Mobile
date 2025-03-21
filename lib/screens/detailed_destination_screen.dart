@@ -26,7 +26,6 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    // Get the destination data from the router's extra property
     final extra = GoRouterState.of(context).extra;
     destination = (extra is Map<String, dynamic>) ? extra : {};
 
@@ -51,7 +50,6 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Retrieve the businessUserId from the destination data. Adjust as needed.
     final businessUserId = destination["userid"] ?? 0;
 
     return Scaffold(
@@ -74,7 +72,7 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                         Text(
                           destination["name"] ?? "Destination",
                           style: AppTextStyles.bodyLarge.copyWith(
-                            fontSize: 28,
+                            fontSize: 20,
                             color: AppColors.darkGray,
                           ),
                         ),
@@ -82,7 +80,7 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                         Text(
                           "- ${destination["district"] ?? "Address"}",
                           style: AppTextStyles.bodyLarge.copyWith(
-                            fontSize: 16,
+                            fontSize: 12,
                             color: AppColors.lightGray,
                           ),
                         ),
@@ -205,11 +203,11 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                               );
                             },
                             child: Icon(
-                              activityProvider.isSaved
+                              activityProvider.isSaved(businessUserId)
                                   ? Icons.bookmark
                                   : Icons.bookmark_border,
                               color:
-                                  activityProvider.isSaved
+                                  activityProvider.isSaved(businessUserId)
                                       ? Colors.green
                                       : Colors.black,
                               size: 28,
@@ -273,6 +271,7 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                 ],
               ),
             ),
+
             const ReviewCard(
               name: "John Doe",
               review: "Wonderful place! Recommended",

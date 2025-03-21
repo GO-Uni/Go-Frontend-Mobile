@@ -6,12 +6,15 @@ class ActivityProvider with ChangeNotifier {
   final ActivityService _activityService = ActivityService(DioClient());
 
   bool _isLoading = false;
-  bool _isSaved = false;
+  // A set to store the IDs of saved destinations
+  final Set<int> _savedDestinationIds = {};
   String? _errorMessage;
 
   bool get isLoading => _isLoading;
-  bool get isSaved => _isSaved;
   String? get errorMessage => _errorMessage;
+
+  bool isSaved(int businessUserId) =>
+      _savedDestinationIds.contains(businessUserId);
 
   Future<bool> rateDestination({
     required int businessUserId,
@@ -46,7 +49,7 @@ class ActivityProvider with ChangeNotifier {
 
     _isLoading = false;
     if (success) {
-      _isSaved = true;
+      _savedDestinationIds.add(businessUserId);
     } else {
       _errorMessage = "Failed to save destination. Please try again.";
     }
@@ -64,7 +67,7 @@ class ActivityProvider with ChangeNotifier {
 
     _isLoading = false;
     if (success) {
-      _isSaved = false;
+      _savedDestinationIds.remove(businessUserId);
     } else {
       _errorMessage = "Failed to unsave destination. Please try again.";
     }
@@ -72,7 +75,7 @@ class ActivityProvider with ChangeNotifier {
   }
 
   Future<void> toggleSaveDestination(int businessUserId) async {
-    if (_isSaved) {
+    if (isSaved(businessUserId)) {
       await unsaveDestination(businessUserId);
     } else {
       await saveDestination(businessUserId);
