@@ -6,7 +6,6 @@ class ActivityProvider with ChangeNotifier {
   final ActivityService _activityService = ActivityService(DioClient());
 
   bool _isLoading = false;
-  // A set to store the IDs of saved destinations
   final Set<int> _savedDestinationIds = {};
   String? _errorMessage;
 
@@ -80,5 +79,23 @@ class ActivityProvider with ChangeNotifier {
     } else {
       await saveDestination(businessUserId);
     }
+  }
+
+  Future<bool> reviewDestination(int businessUserId, String review) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    bool success = await _activityService.reviewDestination(
+      businessUserId: businessUserId,
+      review: review,
+    );
+
+    _isLoading = false;
+    if (!success) {
+      _errorMessage = "Failed to add review destination. Please try again.";
+    }
+    notifyListeners();
+    return success;
   }
 }
