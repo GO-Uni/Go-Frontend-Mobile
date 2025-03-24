@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../theme/text_styles.dart';
-import '../services/routes.dart'; // Import routes
+import '../services/routes.dart';
 
 class DestinationCard extends StatefulWidget {
   final String imageUrl;
@@ -9,6 +9,8 @@ class DestinationCard extends StatefulWidget {
   final String description;
   final int rating;
   final bool? isBooked;
+  final String? district;
+  final int? userid;
 
   const DestinationCard({
     super.key,
@@ -17,6 +19,8 @@ class DestinationCard extends StatefulWidget {
     required this.description,
     required this.rating,
     this.isBooked,
+    this.district,
+    this.userid,
   });
 
   @override
@@ -28,6 +32,11 @@ class DestinationCardState extends State<DestinationCard> {
 
   @override
   Widget build(BuildContext context) {
+    String truncatedDescription =
+        widget.description.length > 50
+            ? '${widget.description.substring(0, 50)}...'
+            : widget.description;
+
     return GestureDetector(
       onTap: () {
         context.go(
@@ -37,6 +46,8 @@ class DestinationCardState extends State<DestinationCard> {
             "name": widget.name,
             "description": widget.description,
             "rating": widget.rating,
+            "district": widget.district,
+            "userid": widget.userid,
           },
         );
       },
@@ -72,8 +83,9 @@ class DestinationCardState extends State<DestinationCard> {
                       ),
                       SizedBox(height: 4),
                       Text(
-                        widget.description,
+                        truncatedDescription,
                         style: AppTextStyles.bodyMedium.copyWith(fontSize: 11),
+                        overflow: TextOverflow.ellipsis,
                       ),
                       SizedBox(height: 5),
                       Row(

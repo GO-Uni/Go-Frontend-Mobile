@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../theme/text_styles.dart';
 import '../theme/colors.dart';
 import '../widgets/review_widget.dart';
 import '../widgets/review_dialog.dart';
 import '../widgets/booking_dialog.dart';
+import '../providers/activity_provider.dart';
 
 class DetailedDestinationScreen extends StatefulWidget {
   const DetailedDestinationScreen({super.key});
@@ -16,18 +18,19 @@ class DetailedDestinationScreen extends StatefulWidget {
 
 class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
   late String selectedImage;
-  bool isBookmarked = false;
+  late List<String> images;
   int selectedRating = 3;
+  Map<String, dynamic> destination = {};
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
     final extra = GoRouterState.of(context).extra;
-    final destination = (extra is Map<String, dynamic>) ? extra : {};
+    destination = (extra is Map<String, dynamic>) ? extra : {};
 
-    List<String> images =
-        destination["images"] ??
+    images =
+        destination["images"]?.cast<String>() ??
         [
           destination["imageUrl"] ??
               "https://images.pexels.com/photos/2990603/pexels-photo-2990603.jpeg?auto=compress&cs=tinysrgb&w=600",
@@ -37,26 +40,22 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
   }
 
   void _showReviewDialog() {
+    final businessUserId = destination["userid"] ?? 0;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return const ReviewDialog();
+        return ReviewDialog(
+          businessUserId: businessUserId,
+          profileImageUrl: destination["profileImageUrl"],
+        );
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final extra = GoRouterState.of(context).extra;
-    final destination = (extra is Map<String, dynamic>) ? extra : {};
-
-    List<String> images =
-        destination["images"] ??
-        [
-          destination["imageUrl"] ??
-              "https://images.pexels.com/photos/2990603/pexels-photo-2990603.jpeg?auto=compress&cs=tinysrgb&w=600",
-          "https://images.pexels.com/photos/2990603/pexels-photo-2990603.jpeg?auto=compress&cs=tinysrgb&w=600",
-        ];
+    final businessUserId = destination["userid"] ?? 0;
 
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
@@ -78,15 +77,15 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                         Text(
                           destination["name"] ?? "Destination",
                           style: AppTextStyles.bodyLarge.copyWith(
-                            fontSize: 28,
+                            fontSize: 20,
                             color: AppColors.darkGray,
                           ),
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          "- ${destination["address"] ?? "Address"}",
+                          "- ${destination["district"] ?? "Address"}",
                           style: AppTextStyles.bodyLarge.copyWith(
-                            fontSize: 14,
+                            fontSize: 12,
                             color: AppColors.lightGray,
                           ),
                         ),
@@ -117,14 +116,10 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              child: Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  height: 2,
-                  color: AppColors.primary.withValues(alpha: 0.3),
-                ),
+              child: Container(
+                height: 2,
+                width: double.infinity,
+                color: AppColors.primary.withValues(alpha: 0.3),
               ),
             ),
 
@@ -196,16 +191,34 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isBookmarked = !isBookmarked;
-                          });
+
+                      Consumer<ActivityProvider>(
+                        builder: (context, activityProvider, child) {
+                          if (activityProvider.isLoading) {
+                            return const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            );
+                          }
+                          return GestureDetector(
+                            onTap: () async {
+                              await activityProvider.toggleSaveDestination(
+                                businessUserId,
+                              );
+                            },
+                            child: Icon(
+                              activityProvider.isSaved(businessUserId)
+                                  ? Icons.bookmark
+                                  : Icons.bookmark_border,
+                              color:
+                                  activityProvider.isSaved(businessUserId)
+                                      ? Colors.green
+                                      : Colors.black,
+                              size: 28,
+                            ),
+                          );
                         },
-                        child: Icon(
-                          isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                          color: isBookmarked ? Colors.green : Colors.black,
-                        ),
                       ),
                     ],
                   ),
@@ -216,10 +229,7 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                "Baalbek has a history that dates back at least 11,000 years, "
-                "encompassing significant periods such as Prehistoric, Canaanite, Hellenistic, "
-                "and Roman eras. It flourished under Roman rule but underwent transformations "
-                "during the Christianization period and the subsequent rise of Islam.",
+                destination["description"] ?? "No description available",
                 style: AppTextStyles.bodyRegular.copyWith(
                   fontSize: 14,
                   color: AppColors.mediumGray,
@@ -267,7 +277,7 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
               ),
             ),
 
-            ReviewCard(
+            const ReviewCard(
               name: "John Doe",
               review: "Wonderful place! Recommended",
               profileImageUrl: null,

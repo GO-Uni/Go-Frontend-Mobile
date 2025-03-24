@@ -1,15 +1,20 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/profile_provider.dart';
+import 'package:go_frontend_mobile/services/routes.dart';
+import 'package:provider/provider.dart';
+import 'package:go_frontend_mobile/providers/auth_provider.dart';
+import 'package:go_router/go_router.dart';
 import 'package:go_frontend_mobile/widgets/custom_text_field.dart';
 import 'package:go_frontend_mobile/widgets/custom_button.dart';
 import '../theme/colors.dart';
 import '../widgets/profile_header.dart';
-import '../models/user_model.dart';
 import '../widgets/time_dropdown_field.dart';
+import '../widgets/custom_dropdown_field.dart';
+import 'package:go_frontend_mobile/providers/category_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
-  final UserModel user;
-
-  const ProfileScreen({super.key, required this.user});
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -18,22 +23,147 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   bool _isEditing = false;
 
+  late TextEditingController _nameController;
+  late TextEditingController _businessNameController;
+  late TextEditingController _districtController;
+  late TextEditingController _openingHourController;
+  late TextEditingController _closingHourController;
+  late TextEditingController _counterBookingController;
+
+  String _selectedCategoryId = "";
+
+  @override
+  void initState() {
+    super.initState();
+    final user = Provider.of<AuthProvider>(context, listen: false).user;
+
+    _nameController = TextEditingController(text: user?.name ?? "");
+    _businessNameController = TextEditingController(
+      text: user?.businessName ?? "",
+    );
+    _districtController = TextEditingController(text: user?.district ?? "");
+    _counterBookingController = TextEditingController(
+      text: user?.counterBooking?.toString() ?? "",
+    );
+    _openingHourController = TextEditingController(text: user?.openingHour);
+    _closingHourController = TextEditingController(text: user?.closingHour);
+    _counterBookingController = TextEditingController(
+      text: user?.counterBooking?.toString() ?? "",
+    );
+    _selectedCategoryId = user?.businessCategoryId ?? "";
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _businessNameController.dispose();
+    _districtController.dispose();
+    _openingHourController.dispose();
+    _closingHourController.dispose();
+    _counterBookingController.dispose();
+    super.dispose();
+  }
+
   void _toggleEditing() {
     setState(() {
       _isEditing = !_isEditing;
     });
   }
 
-  void _saveChanges() {
-    _toggleEditing();
+  void _saveChanges() async {
+    final profileProvider = Provider.of<ProfileProvider>(
+      context,
+      listen: false,
+    );
+    final user = profileProvider.user;
+
+    if (user == null) {
+      log("User is null. Exiting update.");
+      return;
+    }
+
+    final categoryProvider = Provider.of<CategoryProvider>(
+      context,
+      listen: false,
+    );
+    final selectedCategory = categoryProvider.categories.firstWhere(
+      (cat) => cat['id'].toString() == _selectedCategoryId,
+      orElse: () => {'name': ''},
+    );
+    final selectedCategoryName = selectedCategory['name'] ?? '';
+
+    bool success = await profileProvider.updateProfile(
+      onUpdate: (user) {
+        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+        authProvider.updateUser(user);
+      },
+      name: _nameController.text.isNotEmpty ? _nameController.text : user.name,
+      businessName:
+          _businessNameController.text.isNotEmpty
+              ? _businessNameController.text
+              : user.businessName,
+      district:
+          _districtController.text.isNotEmpty
+              ? _districtController.text
+              : user.district,
+      openingHour:
+          _openingHourController.text.isNotEmpty
+              ? _openingHourController.text
+              : user.openingHour,
+      closingHour:
+          _closingHourController.text.isNotEmpty
+              ? _closingHourController.text
+              : user.closingHour,
+      counterBooking:
+          _counterBookingController.text.isNotEmpty
+              ? int.tryParse(_counterBookingController.text)
+              : user.counterBooking,
+      categoryId:
+          _selectedCategoryId.isNotEmpty
+              ? int.tryParse(_selectedCategoryId)
+              : int.tryParse(user.businessCategoryId ?? ''),
+      categoryName: selectedCategoryName,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      log("Profile updated successfully!");
+      setState(() {
+        _isEditing = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Profile updated successfully!")),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Failed to update profile. Please try again."),
+        ),
+      );
+    }
   }
 
-  void _logout() {}
+  void _logout() {
+    Provider.of<AuthProvider>(context, listen: false).logoutUser();
+    context.go(ConfigRoutes.signUpOptions);
+  }
 
   void _showChangePlanDialog() {}
 
   @override
   Widget build(BuildContext context) {
+    final profileProvider = Provider.of<ProfileProvider>(
+      context,
+      listen: false,
+    );
+    final user = profileProvider.user;
+
+    if (user == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
       body: SingleChildScrollView(
@@ -42,7 +172,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 15, left: 15),
-              child: ProfileHeader(user: widget.user),
+              child: ProfileHeader(user: user),
             ),
             const SizedBox(height: 5),
             Padding(
@@ -63,47 +193,109 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
 
-                  if (widget.user.userType == UserType.business) ...[
+                  if (user.roleId == 3) ...[
                     CustomTextField(
                       label: "Business Name",
-                      hintText:
-                          widget.user.businessName ?? "Enter business name",
+                      hintText: _businessNameController.text,
+                      controller: _businessNameController,
                       readOnly: !_isEditing,
                     ),
                     CustomTextField(
                       label: "Owner Name",
-                      hintText: widget.user.ownerName ?? "Enter owner name",
+                      hintText: _nameController.text,
+                      controller: _nameController,
                       readOnly: !_isEditing,
                     ),
-                    CustomTextField(
-                      label: "Business Category",
-                      hintText:
-                          widget.user.businessCategory ?? "Select category",
-                      isDropdown: _isEditing,
-                      readOnly: !_isEditing,
+
+                    Consumer<CategoryProvider>(
+                      builder: (context, categoryProvider, child) {
+                        if (categoryProvider.isLoading) {
+                          return const CircularProgressIndicator();
+                        }
+
+                        List<DropdownMenuItem<String>> dropdownItems =
+                            categoryProvider.categories.map((category) {
+                              return DropdownMenuItem<String>(
+                                value: category['id'].toString(),
+                                child: Text(category['name'] ?? ''),
+                              );
+                            }).toList();
+
+                        if (!_isEditing) {
+                          var selectedCategory = categoryProvider.categories
+                              .firstWhere(
+                                (cat) =>
+                                    cat['id'].toString() == _selectedCategoryId,
+                                orElse: () => {'name': ''},
+                              );
+                          String displayCategoryName =
+                              selectedCategory['name'] ?? '';
+                          return CustomTextField(
+                            label: "Business Category",
+                            hintText: displayCategoryName,
+                            readOnly: true,
+                          );
+                        } else {
+                          return CustomDropdownField(
+                            label: "Business Category",
+                            hintText: "Select category",
+                            items: dropdownItems,
+                            value:
+                                _selectedCategoryId.isNotEmpty
+                                    ? _selectedCategoryId
+                                    : null,
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedCategoryId = value!;
+                              });
+                            },
+                          );
+                        }
+                      },
                     ),
                     CustomTextField(
                       label: "District",
-                      hintText: widget.user.district ?? "Enter district",
+                      hintText: _districtController.text,
+                      controller: _districtController,
                       readOnly: !_isEditing,
                     ),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.only(top: 10, bottom: 10),
+                      child: Text(
+                        "Bookings",
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontSize: 14,
+                          color: AppColors.darkGray,
+                        ),
+                      ),
+                    ),
+
                     Row(
                       children: [
                         Expanded(
                           child: TimeDropdownField(
                             label: "Opening",
-                            selectedTime: widget.user.openingTime ?? "08:00 AM",
+                            selectedTime: _openingHourController.text,
                             isEditing: _isEditing,
-                            onChanged: (value) {},
+                            onChanged: (value) {
+                              setState(() {
+                                _openingHourController.text = value!;
+                              });
+                            },
                           ),
                         ),
                         const SizedBox(width: 10),
                         Expanded(
                           child: TimeDropdownField(
                             label: "Closing",
-                            selectedTime: widget.user.closingTime ?? "08:00 PM",
+                            selectedTime: _closingHourController.text,
                             isEditing: _isEditing,
-                            onChanged: (value) {},
+                            onChanged: (value) {
+                              setState(() {
+                                _closingHourController.text = value!;
+                              });
+                            },
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -111,7 +303,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           child: CustomTextField(
                             label: "Qnty/Booking",
                             hintText:
-                                widget.user.qtyBooking?.toString() ?? "123",
+                                _isEditing
+                                    ? _counterBookingController.text
+                                    : (user.counterBooking?.toString() ??
+                                        "123"),
+                            controller: _counterBookingController,
                             readOnly: !_isEditing,
                           ),
                         ),
@@ -127,10 +323,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ],
 
-                  if (widget.user.userType == UserType.normal) ...[
+                  if (user.roleId == 2) ...[
                     CustomTextField(
                       label: "Name",
-                      hintText: widget.user.name,
+                      hintText: _isEditing ? _nameController.text : user.name,
+                      controller: _nameController,
                       readOnly: !_isEditing,
                     ),
                   ],
@@ -138,7 +335,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: 5),
               child: Align(
                 alignment: Alignment.center,
                 child: CustomButton(
@@ -148,29 +345,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 30),
           ],
         ),
       ),
     );
   }
 }
-
-final UserModel businessUser = UserModel(
-  name: "Hanna",
-  email: "hanan@gmail.com",
-  userType: UserType.business,
-  businessName: "3Draze",
-  ownerName: "John Doe",
-  businessCategory: "Clothing",
-  district: "Lebanon",
-  openingTime: "8:00 AM",
-  closingTime: "8:00 PM",
-  qtyBooking: 125,
-  subscriptionMethod: "Monthly",
-);
-
-final UserModel normalUser = UserModel(
-  name: "Hanan",
-  email: "hanan@gmail.com",
-  userType: UserType.normal,
-);

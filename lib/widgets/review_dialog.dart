@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/activity_provider.dart';
 import '../theme/text_styles.dart';
 import '../theme/colors.dart';
 import 'custom_button.dart';
 
 class ReviewDialog extends StatefulWidget {
+  final int businessUserId;
   final String? profileImageUrl;
 
-  const ReviewDialog({super.key, this.profileImageUrl});
+  const ReviewDialog({
+    super.key,
+    required this.businessUserId,
+    this.profileImageUrl,
+  });
 
   @override
   State<ReviewDialog> createState() => _ReviewDialogState();
@@ -14,6 +21,33 @@ class ReviewDialog extends StatefulWidget {
 
 class _ReviewDialogState extends State<ReviewDialog> {
   final TextEditingController _reviewController = TextEditingController();
+
+  Future<void> _handlePostReview() async {
+    final reviewText = _reviewController.text.trim();
+    if (reviewText.isEmpty) return;
+
+    final activityProvider = Provider.of<ActivityProvider>(
+      context,
+      listen: false,
+    );
+
+    final success = await activityProvider.reviewDestination(
+      widget.businessUserId,
+      reviewText,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      Navigator.of(context).pop();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Failed to post review. Please try again."),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +107,6 @@ class _ReviewDialogState extends State<ReviewDialog> {
                               ),
                             ),
                   ),
-
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -92,12 +125,23 @@ class _ReviewDialogState extends State<ReviewDialog> {
               ),
             ),
           ),
-
           Padding(
-            padding: const EdgeInsets.only(right: 40),
+            padding: const EdgeInsets.only(right: 40, top: 8),
             child: Align(
               alignment: Alignment.centerRight,
-              child: CustomButton(text: "Post", onPressed: () {}, width: 100),
+              child: Consumer<ActivityProvider>(
+                builder: (context, activityProvider, child) {
+                  return CustomButton(
+                    text: activityProvider.isLoading ? "Posting..." : "Post",
+                    onPressed: () {
+                      if (!activityProvider.isLoading) {
+                        _handlePostReview();
+                      }
+                    },
+                    width: 100,
+                  );
+                },
+              ),
             ),
           ),
         ],

@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -38,9 +37,6 @@ class LoginState extends State<Login> {
     );
 
     if (!mounted) return;
-
-    log("🔍 Login Success: $success");
-    log("🔍 Error Message (if any): ${authProvider.errorMessage}");
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -167,7 +163,7 @@ class LoginState extends State<Login> {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      // Handle navigation to Sign Up screen
+                      context.go(ConfigRoutes.signUp);
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(left: 32),

@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import '../services/sign_up_service.dart';
-import '../services/login_service.dart';
+import 'package:go_frontend_mobile/services/dio_client.dart';
+import '../services/auth_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:developer';
+import '../models/user_model.dart';
 
 class AuthProvider extends ChangeNotifier {
-  final SignUpService _signUpService = SignUpService();
-  final LoginService _loginService = LoginService();
+  final AuthService _authService = AuthService(DioClient());
 
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+
+  UserModel? _user;
+  UserModel? get user => _user;
 
   bool _isLoading = false;
   bool get isLoading => _isLoading;
@@ -16,19 +19,35 @@ class AuthProvider extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  int? _roleId;
+  int? get roleId => _roleId;
+
+  void updateUser(UserModel updatedUser) {
+    _user = updatedUser;
+    notifyListeners();
+  }
+
   Future<bool> registerUser({
     required String name,
     required String email,
     required String password,
+    int? roleId,
+    String? businessName,
+    int? businessCategory,
+    String? subscriptionType,
   }) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
-    final response = await _signUpService.registerUser(
+    final response = await _authService.registerUser(
       name: name,
       email: email,
       password: password,
+      roleId: roleId ?? 2,
+      businessName: businessName,
+      businessCategory: businessCategory,
+      subscriptionType: subscriptionType,
     );
 
     _isLoading = false;
@@ -51,7 +70,7 @@ class AuthProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
 
-    final response = await _loginService.loginUser(
+    final response = await _authService.loginUser(
       email: email,
       password: password,
     );
@@ -66,6 +85,9 @@ class AuthProvider extends ChangeNotifier {
     }
 
     final data = response['data']?['data'];
+    final user = data['user'];
+    final token = data['token'];
+
     if (data == null ||
         !data.containsKey('user') ||
         !data.containsKey('token')) {
@@ -74,12 +96,15 @@ class AuthProvider extends ChangeNotifier {
       return false;
     }
 
-    final user = data['user'];
-    final token = data['token'];
+    _roleId = user['role_id'];
+    _user = UserModel.fromJson(user);
+    log("User Role ID: $_roleId");
     log("Extracted User: $user");
     log("Extracted Token: $token");
+    log("Extracted User: ${_user?.toJson()}");
 
     await _secureStorage.write(key: 'auth_token', value: token);
+    await _secureStorage.write(key: 'role_id', value: _roleId.toString());
 
     notifyListeners();
     return true;
@@ -89,8 +114,20 @@ class AuthProvider extends ChangeNotifier {
     return await _secureStorage.read(key: 'auth_token');
   }
 
+  Future<int?> getRoleId() async {
+    String? roleIdStr = await _secureStorage.read(key: 'role_id');
+    if (roleIdStr != null) {
+      _roleId = int.tryParse(roleIdStr);
+      notifyListeners();
+      return _roleId;
+    }
+    return null;
+  }
+
   Future<void> logoutUser() async {
     await _secureStorage.delete(key: 'auth_token');
+    await _secureStorage.delete(key: 'role_id');
+    _user = null;
     notifyListeners();
   }
 }
