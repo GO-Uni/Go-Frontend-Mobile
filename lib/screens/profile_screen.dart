@@ -10,6 +10,8 @@ import 'package:go_frontend_mobile/widgets/custom_button.dart';
 import '../theme/colors.dart';
 import '../widgets/profile_header.dart';
 import '../widgets/time_dropdown_field.dart';
+import '../widgets/custom_dropdown_field.dart';
+import 'package:go_frontend_mobile/providers/category_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -23,11 +25,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   late TextEditingController _nameController;
   late TextEditingController _businessNameController;
-  late TextEditingController _businessCategoryController;
   late TextEditingController _districtController;
   late TextEditingController _openingHourController;
   late TextEditingController _closingHourController;
   late TextEditingController _counterBookingController;
+
+  String _selectedCategoryId = "";
 
   @override
   void initState() {
@@ -38,9 +41,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _businessNameController = TextEditingController(
       text: user?.businessName ?? "",
     );
-    _businessCategoryController = TextEditingController(
-      text: user?.businessCategory ?? "",
-    );
     _districtController = TextEditingController(text: user?.district ?? "");
     _counterBookingController = TextEditingController(
       text: user?.counterBooking?.toString() ?? "",
@@ -50,13 +50,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _counterBookingController = TextEditingController(
       text: user?.counterBooking?.toString() ?? "",
     );
+    _selectedCategoryId = user?.businessCategoryId ?? "";
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _businessNameController.dispose();
-    _businessCategoryController.dispose();
     _districtController.dispose();
     _openingHourController.dispose();
     _closingHourController.dispose();
@@ -71,7 +71,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _saveChanges() async {
-    log("saved btn pressed");
     final profileProvider = Provider.of<ProfileProvider>(
       context,
       listen: false,
@@ -82,6 +81,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       log("User is null. Exiting update.");
       return;
     }
+
+    final categoryProvider = Provider.of<CategoryProvider>(
+      context,
+      listen: false,
+    );
+    final selectedCategory = categoryProvider.categories.firstWhere(
+      (cat) => cat['id'].toString() == _selectedCategoryId,
+      orElse: () => {'name': ''},
+    );
+    final selectedCategoryName = selectedCategory['name'] ?? '';
 
     bool success = await profileProvider.updateProfile(
       onUpdate: (user) {
@@ -109,6 +118,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _counterBookingController.text.isNotEmpty
               ? int.tryParse(_counterBookingController.text)
               : user.counterBooking,
+      categoryId:
+          _selectedCategoryId.isNotEmpty
+              ? int.tryParse(_selectedCategoryId)
+              : int.tryParse(user.businessCategoryId ?? ''),
+      categoryName: selectedCategoryName,
     );
 
     if (!mounted) return;
@@ -192,12 +206,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       controller: _nameController,
                       readOnly: !_isEditing,
                     ),
-                    CustomTextField(
-                      label: "Business Category",
-                      hintText: _businessCategoryController.text,
-                      controller: _businessCategoryController,
-                      isDropdown: _isEditing,
-                      readOnly: !_isEditing,
+
+                    Consumer<CategoryProvider>(
+                      builder: (context, categoryProvider, child) {
+                        if (categoryProvider.isLoading) {
+                          return const CircularProgressIndicator();
+                        }
+
+                        List<DropdownMenuItem<String>> dropdownItems =
+                            categoryProvider.categories.map((category) {
+                              return DropdownMenuItem<String>(
+                                value: category['id'].toString(),
+                                child: Text(category['name'] ?? ''),
+                              );
+                            }).toList();
+
+                        if (!_isEditing) {
+                          var selectedCategory = categoryProvider.categories
+                              .firstWhere(
+                                (cat) =>
+                                    cat['id'].toString() == _selectedCategoryId,
+                                orElse: () => {'name': ''},
+                              );
+                          String displayCategoryName =
+                              selectedCategory['name'] ?? '';
+                          return CustomTextField(
+                            label: "Business Category",
+                            hintText: displayCategoryName,
+                            readOnly: true,
+                          );
+                        } else {
+                          return CustomDropdownField(
+                            label: "Business Category",
+                            hintText: "Select category",
+                            items: dropdownItems,
+                            value:
+                                _selectedCategoryId.isNotEmpty
+                                    ? _selectedCategoryId
+                                    : null,
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedCategoryId = value!;
+                              });
+                            },
+                          );
+                        }
+                      },
                     ),
                     CustomTextField(
                       label: "District",
@@ -273,7 +327,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     CustomTextField(
                       label: "Name",
                       hintText: _isEditing ? _nameController.text : user.name,
-
                       controller: _nameController,
                       readOnly: !_isEditing,
                     ),
@@ -282,7 +335,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: 5),
               child: Align(
                 alignment: Alignment.center,
                 child: CustomButton(
@@ -292,6 +345,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 30),
           ],
         ),
       ),
