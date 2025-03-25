@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../services/routes.dart';
 import '../../theme/colors.dart';
 import '../../widgets/custom_text_field.dart';
@@ -15,7 +17,44 @@ class Login extends StatefulWidget {
 }
 
 class LoginState extends State<Login> {
+  final _email = TextEditingController();
+  final _password = TextEditingController();
   bool isChecked = false;
+
+  @override
+  void dispose() {
+    _email.dispose();
+    _password.dispose();
+    super.dispose();
+  }
+
+  void _login() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    bool success = await authProvider.loginUser(
+      email: _email.text.trim(),
+      password: _password.text.trim(),
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Login Successful!"),
+          backgroundColor: Colors.green,
+        ),
+      );
+      context.go(ConfigRoutes.whereToNext);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authProvider.errorMessage ?? "Login failed!"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +73,7 @@ class LoginState extends State<Login> {
           ),
           SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -49,67 +88,64 @@ class LoginState extends State<Login> {
                 const SizedBox(height: 18),
 
                 GestureDetector(
-                  onTap: () => context.pop(),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 32),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.arrow_back, color: AppColors.primary),
-                        const SizedBox(width: 8),
-                        Text(
-                          "Back",
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.primary,
-                          ),
+                  onTap: () => context.go(ConfigRoutes.signUpOptions),
+
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.arrow_back, color: AppColors.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Back",
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.primary,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
 
                 const SizedBox(height: 6),
 
-                const CustomTextField(
+                CustomTextField(
                   label: 'Email',
                   hintText: 'Enter your email',
+                  controller: _email,
                 ),
-                const CustomTextField(
+                CustomTextField(
                   label: "Password",
                   hintText: "Enter your password",
                   isPassword: true,
+                  controller: _password,
                 ),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32),
-                  child: Row(
-                    children: [
-                      Checkbox(
-                        value: isChecked,
-                        activeColor: AppColors.primary,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isChecked = value ?? false;
-                          });
-                        },
-                      ),
-                      const Text("Remember me", style: TextStyle(fontSize: 14)),
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: () {
-                          // Handle Forgot Password action
-                        },
-                        child: const Text(
-                          "Forgot Password?",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.primary,
-                          ),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: isChecked,
+                      activeColor: AppColors.primary,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          isChecked = value ?? false;
+                        });
+                      },
+                    ),
+                    const Text("Remember me", style: TextStyle(fontSize: 14)),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: () {
+                        // Handle Forgot Password action
+                      },
+                      child: const Text(
+                        "Forgot Password?",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.primary,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 10),
@@ -117,10 +153,7 @@ class LoginState extends State<Login> {
                 Center(
                   child: CustomButton(
                     text: "Login",
-                    onPressed: () {
-                      // Handle Login action
-                      context.go(ConfigRoutes.whereToNext);
-                    },
+                    onPressed: _login,
                     width: 150,
                   ),
                 ),
@@ -130,7 +163,7 @@ class LoginState extends State<Login> {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      // Handle navigation to Sign Up screen
+                      context.go(ConfigRoutes.signUp);
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(left: 32),

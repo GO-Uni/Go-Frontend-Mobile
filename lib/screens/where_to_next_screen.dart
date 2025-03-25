@@ -1,25 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/services/routes.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../theme/text_styles.dart';
 import '../theme/colors.dart';
 import '../widgets/category_card.dart';
 import '../widgets/custom_button.dart';
+import '../providers/category_provider.dart';
 
 class WhereToNextScreen extends StatelessWidget {
   const WhereToNextScreen({super.key});
 
-  final List<Map<String, String>> categories = const [
-    {"title": "Historical Landmarks", "image": "assets/images/historical.png"},
-    {"title": "Natural Wonders", "image": "assets/images/natural.jpg"},
-    {"title": "Sports", "image": "assets/images/sports.jpg"},
-    {"title": "Historical Landmarks", "image": "assets/images/historical.png"},
-    {"title": "Natural Wonders", "image": "assets/images/natural.jpg"},
-    {"title": "Sports", "image": "assets/images/sports.jpg"},
-  ];
+  static const Map<String, String> categoryImages = {
+    "Restaurant": "assets/images/restaurant.jpeg",
+    "Hotel": "assets/images/hotel.jpeg",
+    "Shopping Mall": "assets/images/shopping_mall.jpeg",
+    "Entertainment": "assets/images/entertainment.jpeg",
+    "Historical Landmarks": "assets/images/historical.png",
+    "Natural Wonders": "assets/images/natural.jpg",
+    "Sports": "assets/images/sports.jpg",
+    "Aquatic Destinations": "assets/images/aquatic.jpeg",
+    "Night Life": "assets/images/night_life.jpeg",
+    "Outdoor Activities": "assets/images/outdoor.jpeg",
+  };
 
   @override
   Widget build(BuildContext context) {
+    final categoryProvider = Provider.of<CategoryProvider>(context);
+
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
       body: SafeArea(
@@ -42,38 +50,47 @@ class WhereToNextScreen extends StatelessWidget {
               SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 14),
-                child: Column(
-                  children: [
-                    GridView.builder(
-                      shrinkWrap: true,
-                      padding: EdgeInsets.zero,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: categories.length,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                          ),
-                      itemBuilder: (context, index) {
-                        return CategoryCard(
-                          title: categories[index]['title']!,
-                          imagePath: categories[index]['image']!,
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                child:
+                    categoryProvider.isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : categoryProvider.categories.isEmpty
+                        ? const Center(child: Text("No categories found"))
+                        : GridView.builder(
+                          shrinkWrap: true,
+                          padding: EdgeInsets.zero,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: categoryProvider.categories.length,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                              ),
+                          itemBuilder: (context, index) {
+                            final category = categoryProvider.categories[index];
+                            final imagePath =
+                                categoryImages[category['name']] ??
+                                "assets/images/default.jpeg";
+
+                            return CategoryCard(
+                              title: category['name'],
+                              imagePath: imagePath,
+                            );
+                          },
+                        ),
               ),
 
               Center(
                 child: CustomButton(
                   text: "View All Destinations",
                   onPressed: () {
-                    context.go(ConfigRoutes.destinations, extra: 0);
+                    context.go(
+                      ConfigRoutes.destinations,
+                      extra: {"tabIndex": 0},
+                    );
                   },
                   width: 200,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 30),
             ],
           ),
         ),

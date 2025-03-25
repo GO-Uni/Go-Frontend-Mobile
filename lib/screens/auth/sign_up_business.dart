@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/category_provider.dart';
+import 'package:go_frontend_mobile/services/routes.dart';
+import 'package:go_frontend_mobile/widgets/custom_dropdown_field.dart';
 import 'package:go_router/go_router.dart';
-//import '../theme/text_styles.dart';
+import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/custom_button.dart';
@@ -14,10 +17,64 @@ class SignUpBusiness extends StatefulWidget {
 }
 
 class SignUpBusinessState extends State<SignUpBusiness> {
+  final _email = TextEditingController();
+  final _password = TextEditingController();
+  final _confirmPassword = TextEditingController();
+  final _businessName = TextEditingController();
+  final _ownerName = TextEditingController();
+
+  int? _selectedCategory;
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Provider.of<CategoryProvider>(context, listen: false).loadCategories();
+      }
+    });
+  }
+
   bool isChecked = false;
+
+  void _continue() async {
+    if (_password.text != _confirmPassword.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Passwords do not match'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (_selectedCategory == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please select a business category."),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    context.go(
+      ConfigRoutes.subscriptionBusiness,
+      extra: {
+        'email': _email.text.trim(),
+        'password': _password.text,
+        'category_id': _selectedCategory,
+        'businessName': _businessName.text.trim(),
+        'ownerName': _ownerName.text.trim(),
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final categoryProvider = Provider.of<CategoryProvider>(context);
+
     return Scaffold(
       body: Stack(
         children: [
@@ -33,7 +90,7 @@ class SignUpBusinessState extends State<SignUpBusiness> {
           ),
 
           SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 50),
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -47,100 +104,113 @@ class SignUpBusinessState extends State<SignUpBusiness> {
 
                 const SizedBox(height: 18),
 
-                Padding(
-                  padding: const EdgeInsets.only(left: 32),
-                  child: GestureDetector(
-                    onTap: () => context.pop(),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.arrow_back, color: AppColors.primary),
-                        const SizedBox(width: 8),
-                        Text(
-                          "Back",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.primary,
-                          ),
+                GestureDetector(
+                  onTap: () => context.pop(),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.arrow_back, color: AppColors.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        "Back",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColors.primary,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
 
                 const SizedBox(height: 6),
 
-                const CustomTextField(
+                CustomTextField(
                   label: 'Email',
                   hintText: 'Enter your email',
+                  controller: _email,
                 ),
-                const CustomTextField(
+                CustomTextField(
                   label: "Business Name",
                   hintText: "Enter your business name",
+                  controller: _businessName,
                 ),
-                const CustomTextField(
+                CustomTextField(
                   label: "Owner Name",
                   hintText: "Enter owner name",
+                  controller: _ownerName,
                 ),
-                const CustomTextField(
+
+                CustomDropdownField(
                   label: "Business Category",
-                  hintText: "Select category",
-                  isDropdown: true,
+                  hintText: "Select Category",
+                  value: _selectedCategory?.toString(),
+                  items:
+                      categoryProvider.categories.map((category) {
+                        return DropdownMenuItem(
+                          value: category['id'].toString(),
+                          child: Text(category['name']),
+                        );
+                      }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedCategory = int.tryParse(value!);
+                    });
+                  },
                 ),
-                const CustomTextField(
+
+                CustomTextField(
                   label: "Password",
                   hintText: "Enter your password",
                   isPassword: true,
+                  controller: _password,
                 ),
-                const CustomTextField(
+                CustomTextField(
                   label: "Confirm Password",
                   hintText: "Confirm your password",
                   isPassword: true,
+                  controller: _confirmPassword,
                 ),
 
-                Padding(
-                  padding: const EdgeInsets.only(left: 32),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Checkbox(
-                        value: isChecked,
-                        activeColor: AppColors.primary,
-                        onChanged: (bool? value) {
-                          setState(() {
-                            isChecked = value!;
-                          });
-                        },
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Checkbox(
+                      value: isChecked,
+                      activeColor: AppColors.primary,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          isChecked = value!;
+                        });
+                      },
+                    ),
+                    const Text("Bookings", style: TextStyle(fontSize: 14)),
+                    const SizedBox(width: 170),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.help_outline,
+                        size: 20,
+                        color: Colors.grey,
                       ),
-                      const Text("Bookings", style: TextStyle(fontSize: 14)),
-                      const SizedBox(width: 150),
-                      IconButton(
-                        icon: const Icon(
-                          Icons.help_outline,
-                          size: 20,
-                          color: Colors.grey,
-                        ),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder:
-                                (context) => AlertDialog(
-                                  title: const Text("Bookings Help"),
-                                  content: const Text(
-                                    "Enable this option to allow bookings for your business.",
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text("OK"),
-                                    ),
-                                  ],
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder:
+                              (context) => AlertDialog(
+                                title: const Text("Bookings Help"),
+                                content: const Text(
+                                  "Enable this option to allow bookings for your business.",
                                 ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text("OK"),
+                                  ),
+                                ],
+                              ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 10),
@@ -148,9 +218,7 @@ class SignUpBusinessState extends State<SignUpBusiness> {
                 Center(
                   child: CustomButton(
                     text: "Continue",
-                    onPressed: () {
-                      // Handle SignUp action
-                    },
+                    onPressed: _continue,
                     width: 150,
                   ),
                 ),
@@ -160,7 +228,7 @@ class SignUpBusinessState extends State<SignUpBusiness> {
                 Center(
                   child: GestureDetector(
                     onTap: () {
-                      // Handle navigation to Login
+                      context.go(ConfigRoutes.signUp);
                     },
                     child: const Padding(
                       padding: EdgeInsets.only(left: 32),
