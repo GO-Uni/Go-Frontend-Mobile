@@ -98,4 +98,21 @@ class ActivityProvider with ChangeNotifier {
     notifyListeners();
     return success;
   }
+
+  Future<bool> getReviewsDestination(int businessUserId) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    bool success = await _activityService.getReviewsDestination(
+      businessUserId: businessUserId,
+    );
+
+    _isLoading = false;
+    if (!success) {
+      _errorMessage = "Failed to fetch review destination. Please try again.";
+    }
+    notifyListeners();
+    return success;
+  }
 }
