@@ -7,7 +7,7 @@ class DestinationCard extends StatefulWidget {
   final String imageUrl;
   final String name;
   final String description;
-  final int rating;
+  final double rating;
   final bool? isBooked;
   final String? district;
   final int? userid;

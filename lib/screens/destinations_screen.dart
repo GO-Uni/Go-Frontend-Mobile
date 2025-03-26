@@ -150,7 +150,10 @@ class DestinationsScreenState extends State<DestinationsScreen> {
                           description:
                               destination["description"] ??
                               "No description available",
-                          rating: 3,
+                          rating:
+                              (destination["rating"] as num?)?.toDouble() ??
+                              0.0,
+
                           district: destination['district'],
                           userid: destination['user_id'],
                         );
