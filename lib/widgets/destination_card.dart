@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/activity_provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../theme/text_styles.dart';
 import '../services/routes.dart';
 
@@ -28,8 +30,6 @@ class DestinationCard extends StatefulWidget {
 }
 
 class DestinationCardState extends State<DestinationCard> {
-  bool isBookmarked = false;
-
   @override
   Widget build(BuildContext context) {
     String truncatedDescription =
@@ -105,19 +105,36 @@ class DestinationCardState extends State<DestinationCard> {
                             }),
                           ),
                           Spacer(),
-                          GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                isBookmarked = !isBookmarked;
-                              });
-                            },
-                            child: Icon(
-                              isBookmarked
-                                  ? Icons.bookmark
-                                  : Icons.bookmark_border,
-                              color: isBookmarked ? Colors.green : Colors.black,
+                          if (widget.userid != null)
+                            Consumer<ActivityProvider>(
+                              builder: (context, activityProvider, child) {
+                                final businessUserId = widget.userid!;
+                                final isSaved = activityProvider.isSaved(
+                                  businessUserId,
+                                );
+
+                                return GestureDetector(
+                                  onTap: () async {
+                                    await activityProvider
+                                        .toggleSaveDestination(businessUserId);
+                                  },
+                                  child: Icon(
+                                    isSaved
+                                        ? Icons.bookmark
+                                        : Icons.bookmark_border,
+                                    color:
+                                        isSaved ? Colors.green : Colors.black,
+                                    size: 20,
+                                  ),
+                                );
+                              },
+                            )
+                          else
+                            const Icon(
+                              Icons.bookmark_border,
+                              size: 20,
+                              color: Colors.grey,
                             ),
-                          ),
                         ],
                       ),
                     ],
