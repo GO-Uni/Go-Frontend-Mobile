@@ -50,7 +50,8 @@ class SavedScreen extends StatelessWidget {
                     imageUrl: destination["imageUrl"],
                     name: destination["name"],
                     description: destination["description"],
-                    rating: destination["rating"],
+                    rating: (destination["rating"] as num).toDouble(),
+
                     isBooked: destination["isBooked"],
                   ),
                 );
