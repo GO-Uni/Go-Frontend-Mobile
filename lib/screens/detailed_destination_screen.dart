@@ -69,251 +69,282 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+      body: SafeArea(
+        top: false,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.only(bottom: 20, top: 10),
+              child: Column(
                 children: [
-                  Expanded(
+                  // Header Section
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      textBaseline: TextBaseline.alphabetic,
                       children: [
-                        Text(
-                          destination["name"] ?? "Destination",
-                          style: AppTextStyles.bodyLarge.copyWith(
-                            fontSize: 20,
-                            color: AppColors.darkGray,
+                        Expanded(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            textBaseline: TextBaseline.alphabetic,
+                            children: [
+                              Text(
+                                destination["name"] ?? "Destination",
+                                style: AppTextStyles.bodyLarge.copyWith(
+                                  fontSize: 20,
+                                  color: AppColors.darkGray,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                "- ${destination["district"] ?? "Address"}",
+                                style: AppTextStyles.bodyLarge.copyWith(
+                                  fontSize: 12,
+                                  color: AppColors.lightGray,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Text(
-                          "- ${destination["district"] ?? "Address"}",
-                          style: AppTextStyles.bodyLarge.copyWith(
-                            fontSize: 12,
-                            color: AppColors.lightGray,
-                          ),
+                        const Icon(
+                          Icons.location_pin,
+                          color: AppColors.darkGreen,
+                          size: 30,
                         ),
                       ],
                     ),
                   ),
-                  const Icon(
-                    Icons.location_pin,
-                    color: AppColors.darkGreen,
-                    size: 30,
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.network(
+                        selectedImage,
+                        width: double.infinity,
+                        height: 250,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
-                ],
-              ),
-            ),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.network(
-                  selectedImage,
-                  width: double.infinity,
-                  height: 250,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
+                    child: Container(
+                      height: 2,
+                      width: double.infinity,
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                    ),
+                  ),
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              child: Container(
-                height: 2,
-                width: double.infinity,
-                color: AppColors.primary.withValues(alpha: 0.3),
-              ),
-            ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 1,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Thumbnails
+                        SizedBox(
+                          height: 60,
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: images.length,
+                            itemBuilder: (context, index) {
+                              bool isSelected = selectedImage == images[index];
 
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 1),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Thumbnails
-                  SizedBox(
-                    height: 60,
-                    width: MediaQuery.of(context).size.width * 0.7,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: images.length,
-                      itemBuilder: (context, index) {
-                        bool isSelected = selectedImage == images[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selectedImage = images[index];
+                                  });
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 10),
+                                  child: Stack(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(16),
+                                        child: Image.network(
+                                          images[index],
+                                          width: 60,
+                                          height: 60,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      if (isSelected)
+                                        Container(
+                                          width: 60,
+                                          height: 60,
+                                          decoration: BoxDecoration(
+                                            color: Colors.grey.withValues(
+                                              alpha: 0.5,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              16,
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
 
+                        Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return const BookingDialog();
+                                  },
+                                );
+                              },
+                              child: Text(
+                                "BOOK",
+                                style: AppTextStyles.bodyLarge.copyWith(
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+
+                            Consumer<ActivityProvider>(
+                              builder: (context, activityProvider, child) {
+                                if (activityProvider.isLoading) {
+                                  return const SizedBox(
+                                    width: 24,
+                                    height: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  );
+                                }
+                                return GestureDetector(
+                                  onTap: () async {
+                                    await activityProvider
+                                        .toggleSaveDestination(businessUserId);
+                                  },
+                                  child: Icon(
+                                    activityProvider.isSaved(businessUserId)
+                                        ? Icons.bookmark
+                                        : Icons.bookmark_border,
+                                    color:
+                                        activityProvider.isSaved(businessUserId)
+                                            ? Colors.green
+                                            : Colors.black,
+                                    size: 28,
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      destination["description"] ?? "No description available",
+                      style: AppTextStyles.bodyRegular.copyWith(
+                        fontSize: 14,
+                        color: AppColors.mediumGray,
+                      ),
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      children: List.generate(5, (index) {
                         return GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedImage = images[index];
+                              selectedRating = index + 1;
                             });
                           },
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: Stack(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(16),
-                                  child: Image.network(
-                                    images[index],
-                                    width: 60,
-                                    height: 60,
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                                if (isSelected)
-                                  Container(
-                                    width: 60,
-                                    height: 60,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.withValues(alpha: 0.5),
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                  ),
-                              ],
-                            ),
+                          child: Icon(
+                            index < selectedRating ? Icons.star : Icons.star,
+                            color:
+                                index < selectedRating
+                                    ? Colors.amber
+                                    : AppColors.lightGray,
+                            size: 28,
                           ),
                         );
-                      },
+                      }),
                     ),
                   ),
 
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return const BookingDialog();
-                            },
-                          );
-                        },
-                        child: Text(
-                          "BOOK",
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "REVIEWS",
                           style: AppTextStyles.bodyLarge.copyWith(fontSize: 16),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-
-                      Consumer<ActivityProvider>(
-                        builder: (context, activityProvider, child) {
-                          if (activityProvider.isLoading) {
-                            return const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            );
-                          }
-                          return GestureDetector(
-                            onTap: () async {
-                              await activityProvider.toggleSaveDestination(
-                                businessUserId,
-                              );
-                            },
-                            child: Icon(
-                              activityProvider.isSaved(businessUserId)
-                                  ? Icons.bookmark
-                                  : Icons.bookmark_border,
-                              color:
-                                  activityProvider.isSaved(businessUserId)
-                                      ? Colors.green
-                                      : Colors.black,
-                              size: 28,
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                destination["description"] ?? "No description available",
-                style: AppTextStyles.bodyRegular.copyWith(
-                  fontSize: 14,
-                  color: AppColors.mediumGray,
-                ),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                children: List.generate(5, (index) {
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedRating = index + 1;
-                      });
-                    },
-                    child: Icon(
-                      index < selectedRating ? Icons.star : Icons.star,
-                      color:
-                          index < selectedRating
-                              ? Colors.amber
-                              : AppColors.lightGray,
-                      size: 28,
+                        GestureDetector(
+                          onTap: _showReviewDialog,
+                          child: const Icon(Icons.add, size: 24),
+                        ),
+                      ],
                     ),
-                  );
-                }),
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "REVIEWS",
-                    style: AppTextStyles.bodyLarge.copyWith(fontSize: 16),
                   ),
-                  GestureDetector(
-                    onTap: _showReviewDialog,
-                    child: const Icon(Icons.add, size: 24),
+
+                  Consumer<ActivityProvider>(
+                    builder: (context, activityProvider, child) {
+                      final reviews = activityProvider.getReviewsForUser(
+                        businessUserId,
+                      );
+
+                      if (reviews.isEmpty) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          child: Text("No reviews available."),
+                        );
+                      }
+
+                      return Column(
+                        children:
+                            reviews.map((review) {
+                              return ReviewCard(
+                                name: review["user_name"] ?? "Anonymous",
+                                review: review["review_value"] ?? "",
+                                profileImageUrl: review["profileImageUrl"],
+                              );
+                            }).toList(),
+                      );
+                    },
                   ),
                 ],
               ),
-            ),
-
-            Consumer<ActivityProvider>(
-              builder: (context, activityProvider, child) {
-                final reviews = activityProvider.getReviewsForUser(
-                  businessUserId,
-                );
-
-                if (reviews.isEmpty) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Text("No reviews available."),
-                  );
-                }
-
-                return Column(
-                  children:
-                      reviews.map((review) {
-                        return ReviewCard(
-                          name: review["user_name"] ?? "Anonymous",
-                          review: review["review_value"] ?? "",
-                          profileImageUrl:
-                              null, // Replace with real image if available
-                        );
-                      }).toList(),
-                );
-              },
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
