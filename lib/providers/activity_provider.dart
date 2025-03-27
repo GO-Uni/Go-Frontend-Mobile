@@ -91,10 +91,13 @@ class ActivityProvider with ChangeNotifier {
       review: review,
     );
 
-    _isLoading = false;
-    if (!success) {
+    if (success) {
+      await getReviewsDestination(businessUserId);
+    } else {
       _errorMessage = "Failed to add review destination. Please try again.";
     }
+
+    _isLoading = false;
     notifyListeners();
     return success;
   }
