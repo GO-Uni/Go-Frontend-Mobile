@@ -37,6 +37,16 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
         ];
 
     selectedImage = images.first;
+
+    final businessUserId = destination["userid"];
+    if (businessUserId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Provider.of<ActivityProvider>(
+          context,
+          listen: false,
+        ).getReviewsDestination(businessUserId);
+      });
+    }
   }
 
   void _showReviewDialog() {
@@ -277,10 +287,31 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
               ),
             ),
 
-            const ReviewCard(
-              name: "John Doe",
-              review: "Wonderful place! Recommended",
-              profileImageUrl: null,
+            Consumer<ActivityProvider>(
+              builder: (context, activityProvider, child) {
+                final reviews = activityProvider.getReviewsForUser(
+                  businessUserId,
+                );
+
+                if (reviews.isEmpty) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Text("No reviews available."),
+                  );
+                }
+
+                return Column(
+                  children:
+                      reviews.map((review) {
+                        return ReviewCard(
+                          name: review["user_name"] ?? "Anonymous",
+                          review: review["review_value"] ?? "",
+                          profileImageUrl:
+                              null, // Replace with real image if available
+                        );
+                      }).toList(),
+                );
+              },
             ),
           ],
         ),

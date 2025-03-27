@@ -99,14 +99,26 @@ class ActivityProvider with ChangeNotifier {
     return success;
   }
 
+  final Map<int, List<Map<String, dynamic>>> _reviewsByUserId = {};
+
+  Map<int, List<Map<String, dynamic>>> get reviewsByUserId => _reviewsByUserId;
+
+  List<Map<String, dynamic>> getReviewsForUser(int businessUserId) {
+    return _reviewsByUserId[businessUserId] ?? [];
+  }
+
   Future<bool> getReviewsDestination(int businessUserId) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
-    bool success = await _activityService.getReviewsDestination(
+    final success = await _activityService.getReviewsDestination(
       businessUserId: businessUserId,
     );
+
+    if (success && _activityService.lastFetchedReviews != null) {
+      _reviewsByUserId[businessUserId] = _activityService.lastFetchedReviews!;
+    }
 
     _isLoading = false;
     if (!success) {

@@ -97,11 +97,19 @@ class ActivityService {
     }
   }
 
+  List<Map<String, dynamic>>? lastFetchedReviews;
+
   Future<bool> getReviewsDestination({required int businessUserId}) async {
     try {
       Response response = await _dioClient.dio.get(
         ApiRoutes.getReviewsDestination(businessUserId),
       );
+
+      if (response.statusCode == 200 && response.data["data"] != null) {
+        lastFetchedReviews = List<Map<String, dynamic>>.from(
+          response.data["data"],
+        );
+      }
 
       log("✅ Reviews Destination fetched successfully: ${response.data}");
       return response.statusCode == 200;
