@@ -27,4 +27,11 @@ class SavedProvider with ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
+
+  void clearSavedDestinations() {
+    _savedDestinations = [];
+    _isLoading = false;
+    _error = null;
+    notifyListeners();
+  }
 }

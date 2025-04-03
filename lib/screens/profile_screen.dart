@@ -146,7 +146,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _logout() {
-    Provider.of<AuthProvider>(context, listen: false).logoutUser();
+    Provider.of<AuthProvider>(context, listen: false).logoutUser(context);
     context.go(ConfigRoutes.signUpOptions);
   }
 

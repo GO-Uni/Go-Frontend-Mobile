@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/saved_provider.dart';
 import 'package:go_frontend_mobile/services/dio_client.dart';
+import 'package:provider/provider.dart';
 import '../services/auth_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:developer';
@@ -129,10 +131,28 @@ class AuthProvider extends ChangeNotifier {
     return null;
   }
 
-  Future<void> logoutUser() async {
+  Future<void> logoutUser(BuildContext context) async {
     await _secureStorage.delete(key: 'auth_token');
     await _secureStorage.delete(key: 'role_id');
+    await _secureStorage.delete(key: 'user_id');
+
     _user = null;
+    _roleId = null;
+    _userId = null;
+    _errorMessage = null;
+    _isLoading = false;
     notifyListeners();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      try {
+        final savedProvider = Provider.of<SavedProvider>(
+          context,
+          listen: false,
+        );
+        savedProvider.clearSavedDestinations();
+      } catch (e) {
+        debugPrint("⚠️ Could not clear SavedProvider: $e");
+      }
+    });
   }
 }
