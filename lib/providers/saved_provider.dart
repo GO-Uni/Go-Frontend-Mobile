@@ -12,13 +12,13 @@ class SavedProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  Future<void> fetchSavedDestinations(int userId) async {
+  Future<void> fetchSavedDestinations() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
-      final data = await _savedService.getSavedDestinations(userId);
+      final data = await _savedService.getSavedDestinations();
       _savedDestinations = data;
     } catch (e) {
       _error = "Failed to load saved destinations.";
