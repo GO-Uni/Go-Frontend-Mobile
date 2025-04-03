@@ -65,6 +65,7 @@ class _SavedScreenState extends State<SavedScreen> {
                   description: destination["description"] ?? "No description",
                   rating: (destination["rating"] as num?)?.toDouble() ?? 0.0,
                   isBooked: false,
+                  userid: destination['user_id'],
                 ),
               );
             },
