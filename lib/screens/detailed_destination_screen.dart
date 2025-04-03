@@ -19,8 +19,8 @@ class DetailedDestinationScreen extends StatefulWidget {
 class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
   late String selectedImage;
   late List<String> images;
-  int selectedRating = 3;
   Map<String, dynamic> destination = {};
+  int? selectedRating;
 
   @override
   void didChangeDependencies() {
@@ -280,26 +280,57 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                           style: AppTextStyles.bodyLarge.copyWith(fontSize: 16),
                         ),
                         const SizedBox(height: 6),
-                        Row(
-                          children: List.generate(5, (index) {
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  selectedRating = index + 1;
-                                });
-                              },
-                              child: Icon(
-                                index < selectedRating
-                                    ? Icons.star
-                                    : Icons.star,
-                                color:
-                                    index < selectedRating
-                                        ? Colors.amber
-                                        : AppColors.lightGray,
-                                size: 28,
-                              ),
+
+                        Consumer<ActivityProvider>(
+                          builder: (context, activityProvider, _) {
+                            return Row(
+                              children: List.generate(5, (index) {
+                                return GestureDetector(
+                                  onTap: () async {
+                                    final rating = index + 1;
+                                    final currentContext = context;
+
+                                    setState(() {
+                                      selectedRating = rating;
+                                    });
+
+                                    final success = await activityProvider
+                                        .rateDestination(
+                                          businessUserId: businessUserId,
+                                          rating: rating.toDouble(),
+                                        );
+
+                                    if (!currentContext.mounted) return;
+
+                                    ScaffoldMessenger.of(
+                                      currentContext,
+                                    ).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          success
+                                              ? "Thanks! You rated this $rating stars."
+                                              : activityProvider.errorMessage ??
+                                                  "Rating failed.",
+                                        ),
+                                        backgroundColor:
+                                            success ? null : Colors.red,
+                                      ),
+                                    );
+                                  },
+                                  child: Icon(
+                                    index < (selectedRating ?? 0)
+                                        ? Icons.star
+                                        : Icons.star_border,
+                                    color:
+                                        index < (selectedRating ?? 0)
+                                            ? Colors.amber
+                                            : AppColors.lightGray,
+                                    size: 28,
+                                  ),
+                                );
+                              }),
                             );
-                          }),
+                          },
                         ),
                       ],
                     ),
