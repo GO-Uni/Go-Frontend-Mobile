@@ -22,6 +22,9 @@ class AuthProvider extends ChangeNotifier {
   int? _roleId;
   int? get roleId => _roleId;
 
+  int? _userId;
+  int? get userId => _userId;
+
   void updateUser(UserModel updatedUser) {
     _user = updatedUser;
     notifyListeners();
@@ -97,6 +100,7 @@ class AuthProvider extends ChangeNotifier {
     }
 
     _roleId = user['role_id'];
+    _userId = user['id'];
     _user = UserModel.fromJson(user);
     log("User Role ID: $_roleId");
     log("Extracted User: $user");
@@ -105,6 +109,7 @@ class AuthProvider extends ChangeNotifier {
 
     await _secureStorage.write(key: 'auth_token', value: token);
     await _secureStorage.write(key: 'role_id', value: _roleId.toString());
+    await _secureStorage.write(key: 'user_id', value: _userId.toString());
 
     notifyListeners();
     return true;
