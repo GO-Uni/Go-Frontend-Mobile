@@ -272,24 +272,36 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                       horizontal: 16,
                       vertical: 8,
                     ),
-                    child: Row(
-                      children: List.generate(5, (index) {
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedRating = index + 1;
-                            });
-                          },
-                          child: Icon(
-                            index < selectedRating ? Icons.star : Icons.star,
-                            color:
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Rate this destination",
+                          style: AppTextStyles.bodyLarge.copyWith(fontSize: 16),
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: List.generate(5, (index) {
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedRating = index + 1;
+                                });
+                              },
+                              child: Icon(
                                 index < selectedRating
-                                    ? Colors.amber
-                                    : AppColors.lightGray,
-                            size: 28,
-                          ),
-                        );
-                      }),
+                                    ? Icons.star
+                                    : Icons.star,
+                                color:
+                                    index < selectedRating
+                                        ? Colors.amber
+                                        : AppColors.lightGray,
+                                size: 28,
+                              ),
+                            );
+                          }),
+                        ),
+                      ],
                     ),
                   ),
 
