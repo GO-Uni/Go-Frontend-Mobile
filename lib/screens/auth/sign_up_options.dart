@@ -78,6 +78,7 @@ class SignUpOptions extends StatelessWidget {
                     listen: false,
                   );
                   authProvider.continueAsGuest();
+                  context.go(ConfigRoutes.whereToNext);
                 },
               ),
               const Spacer(),

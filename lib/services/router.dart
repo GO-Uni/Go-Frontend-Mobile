@@ -21,9 +21,10 @@ GoRouter createRouter(AuthProvider authProvider) {
   return GoRouter(
     refreshListenable: authProvider,
     initialLocation:
-        authProvider.isLoggedIn
+        (authProvider.isLoggedIn || authProvider.isGuest)
             ? ConfigRoutes.whereToNext
             : ConfigRoutes.signUpOptions,
+
     routes: [
       GoRoute(
         path: ConfigRoutes.signUpOptions,
@@ -75,7 +76,7 @@ GoRouter createRouter(AuthProvider authProvider) {
           ),
           GoRoute(
             path: ConfigRoutes.profile,
-            builder: (context, state) => ProfileScreen(),
+            builder: (context, state) => (ProfileScreen()),
           ),
           GoRoute(
             path: ConfigRoutes.destinations,
@@ -96,8 +97,8 @@ GoRouter createRouter(AuthProvider authProvider) {
     redirect: (context, state) {
       final isLoading = authProvider.isLoading;
       final isLoggedIn = authProvider.isLoggedIn;
-      final currentLocation = state.uri.path;
       final isGuest = authProvider.isGuest;
+      final currentLocation = state.uri.path;
 
       if (isLoading) {
         if (currentLocation != '/loading') return '/loading';
@@ -114,23 +115,11 @@ GoRouter createRouter(AuthProvider authProvider) {
           currentLocation == ConfigRoutes.login ||
           currentLocation == ConfigRoutes.signUpOptions;
 
-      final guestRestrictedRoutes = [
-        ConfigRoutes.profile,
-        ConfigRoutes.bookings,
-        ConfigRoutes.saved,
-        ConfigRoutes.chatbot,
-        ConfigRoutes.maps,
-        ConfigRoutes.detailedDestination,
-      ];
-
-      if (isGuest && guestRestrictedRoutes.contains(currentLocation)) {
-        return ConfigRoutes.whereToNext;
-      }
-
       if (!isLoggedIn && !isGuest && !isAuthRoute) {
         return ConfigRoutes.signUpOptions;
       }
-      if ((isLoggedIn || isGuest) && isAuthRoute) {
+
+      if (isLoggedIn && isAuthRoute) {
         return ConfigRoutes.whereToNext;
       }
 
