@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/profile_provider.dart';
 import 'package:go_frontend_mobile/providers/saved_provider.dart';
 import 'package:go_frontend_mobile/services/dio_client.dart';
 import 'package:provider/provider.dart';
@@ -142,6 +143,9 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> logoutUser(BuildContext context) async {
+    final savedProvider = context.read<SavedProvider>();
+    final profileProvider = context.read<ProfileProvider>();
+
     await _secureStorage.delete(key: 'auth_token');
     await _secureStorage.delete(key: 'role_id');
     await _secureStorage.delete(key: 'user_id');
@@ -155,17 +159,12 @@ class AuthProvider extends ChangeNotifier {
     _isGuest = false;
     notifyListeners();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      try {
-        final savedProvider = Provider.of<SavedProvider>(
-          context,
-          listen: false,
-        );
-        savedProvider.clearSavedDestinations();
-      } catch (e) {
-        debugPrint("⚠️ Could not clear SavedProvider: $e");
-      }
-    });
+    try {
+      savedProvider.clearSavedDestinations();
+      profileProvider.clearProfile();
+    } catch (e) {
+      debugPrint("⚠️ Could not clear providers: $e");
+    }
   }
 
   Future<bool> tryAutoLogin() async {
