@@ -73,8 +73,11 @@ class ActivityProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleSaveDestination(int businessUserId) async {
-    if (isSaved(businessUserId)) {
+  Future<void> toggleSaveDestination(
+    int businessUserId,
+    bool currentlySaved,
+  ) async {
+    if (currentlySaved) {
       await unsaveDestination(businessUserId);
     } else {
       await saveDestination(businessUserId);

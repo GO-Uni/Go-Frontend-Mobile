@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/saved_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/destination_provider.dart';
@@ -43,6 +44,9 @@ class DestinationsScreenState extends State<DestinationsScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchDestinations();
+
+      final savedProvider = Provider.of<SavedProvider>(context, listen: false);
+      savedProvider.fetchSavedDestinations();
     });
   }
 

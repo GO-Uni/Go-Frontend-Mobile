@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/providers/activity_provider.dart';
+import 'package:go_frontend_mobile/providers/saved_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../theme/text_styles.dart';
@@ -108,10 +109,15 @@ class DestinationCard extends StatelessWidget {
                             ),
                             const Spacer(),
                             if (userid != null)
-                              Consumer<ActivityProvider>(
-                                builder: (context, activityProvider, _) {
+                              Consumer2<ActivityProvider, SavedProvider>(
+                                builder: (
+                                  context,
+                                  activityProvider,
+                                  savedProvider,
+                                  _,
+                                ) {
                                   final businessUserId = userid!;
-                                  final isSaved = activityProvider.isSaved(
+                                  final isSaved = savedProvider.isSaved(
                                     businessUserId,
                                   );
 
@@ -123,7 +129,10 @@ class DestinationCard extends StatelessWidget {
                                         await activityProvider
                                             .toggleSaveDestination(
                                               businessUserId,
+                                              isSaved,
                                             );
+                                        await savedProvider
+                                            .fetchSavedDestinations();
                                       },
                                       child: Padding(
                                         padding: const EdgeInsets.all(3.5),
@@ -156,7 +165,7 @@ class DestinationCard extends StatelessWidget {
                 ],
               ),
 
-              // Booked
+              // Booked or Book tag
               if (isBooked == true)
                 Positioned(
                   top: 8,

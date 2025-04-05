@@ -232,10 +232,16 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                                     ),
                                   );
                                 }
+                                final isSaved = activityProvider.isSaved(
+                                  businessUserId,
+                                );
                                 return GestureDetector(
                                   onTap: () async {
                                     await activityProvider
-                                        .toggleSaveDestination(businessUserId);
+                                        .toggleSaveDestination(
+                                          businessUserId,
+                                          isSaved,
+                                        );
                                   },
                                   child: Icon(
                                     activityProvider.isSaved(businessUserId)

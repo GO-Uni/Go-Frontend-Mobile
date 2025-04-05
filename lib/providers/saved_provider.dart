@@ -34,4 +34,8 @@ class SavedProvider with ChangeNotifier {
     _error = null;
     notifyListeners();
   }
+
+  bool isSaved(int businessUserId) {
+    return _savedDestinations.any((dest) => dest['user_id'] == businessUserId);
+  }
 }
