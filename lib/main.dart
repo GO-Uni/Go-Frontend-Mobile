@@ -38,19 +38,24 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => ActivityProvider()),
         ChangeNotifierProvider(create: (context) => SavedProvider()),
       ],
-      child: MaterialApp.router(
-        title: 'GO',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          fontFamily: 'Inter',
-          primaryColor: AppColors.primary,
-          textTheme: TextTheme(
-            bodyLarge: AppTextStyles.bodyLarge,
-            bodyMedium: AppTextStyles.bodyMedium,
-            bodySmall: AppTextStyles.bodySmall,
-          ),
-        ),
-        routerConfig: appRouter,
+      child: Consumer<AuthProvider>(
+        builder: (context, authProvider, _) {
+          final router = createRouter(authProvider);
+          return MaterialApp.router(
+            title: 'GO',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              fontFamily: 'Inter',
+              primaryColor: AppColors.primary,
+              textTheme: TextTheme(
+                bodyLarge: AppTextStyles.bodyLarge,
+                bodyMedium: AppTextStyles.bodyMedium,
+                bodySmall: AppTextStyles.bodySmall,
+              ),
+            ),
+            routerConfig: router,
+          );
+        },
       ),
     );
   }

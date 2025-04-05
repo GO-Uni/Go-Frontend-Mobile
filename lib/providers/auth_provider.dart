@@ -148,6 +148,7 @@ class AuthProvider extends ChangeNotifier {
     _userId = null;
     _errorMessage = null;
     _isLoading = false;
+    _isLoggedIn = false;
     notifyListeners();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
