@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/providers/activity_provider.dart';
 import 'package:go_frontend_mobile/providers/destination_provider.dart';
 import 'package:go_frontend_mobile/providers/saved_provider.dart';
+import 'package:go_frontend_mobile/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'services/router.dart';
 import 'theme/colors.dart';
@@ -23,10 +24,10 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(
-          create: (context) => CategoryProvider()..loadCategories(),
+          create: (_) => CategoryProvider()..loadCategories(),
         ),
         ChangeNotifierProxyProvider<AuthProvider, ProfileProvider>(
-          create: (context) => ProfileProvider(),
+          create: (_) => ProfileProvider(),
           update: (context, authProvider, profileProvider) {
             if (authProvider.user != null) {
               profileProvider?.setUser(authProvider.user!);
@@ -35,22 +36,58 @@ class MyApp extends StatelessWidget {
           },
         ),
         ChangeNotifierProvider(create: (_) => DestinationProvider()),
-        ChangeNotifierProvider(create: (context) => ActivityProvider()),
-        ChangeNotifierProvider(create: (context) => SavedProvider()),
+        ChangeNotifierProvider(create: (_) => ActivityProvider()),
+        ChangeNotifierProvider(create: (_) => SavedProvider()),
       ],
-      child: MaterialApp.router(
-        title: 'GO',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          fontFamily: 'Inter',
-          primaryColor: AppColors.primary,
-          textTheme: TextTheme(
-            bodyLarge: AppTextStyles.bodyLarge,
-            bodyMedium: AppTextStyles.bodyMedium,
-            bodySmall: AppTextStyles.bodySmall,
-          ),
+      child: const AppInitializer(),
+    );
+  }
+}
+
+class AppInitializer extends StatefulWidget {
+  const AppInitializer({super.key});
+
+  @override
+  State<AppInitializer> createState() => _AppInitializerState();
+}
+
+class _AppInitializerState extends State<AppInitializer> {
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  Future<void> _init() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    await Future.delayed(const Duration(seconds: 2));
+
+    await authProvider.tryAutoLogin();
+
+    setState(() {
+      _isInitialized = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isInitialized) {
+      return const MaterialApp(home: SplashScreen());
+    }
+
+    return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
+      routerConfig: appRouter,
+      theme: ThemeData(
+        fontFamily: 'Inter',
+        primaryColor: AppColors.primary,
+        textTheme: TextTheme(
+          bodyLarge: AppTextStyles.bodyLarge,
+          bodyMedium: AppTextStyles.bodyMedium,
+          bodySmall: AppTextStyles.bodySmall,
         ),
-        routerConfig: appRouter,
       ),
     );
   }

@@ -12,6 +12,9 @@ class AuthProvider extends ChangeNotifier {
 
   final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
+  bool _isLoggedIn = false;
+  bool get isLoggedIn => _isLoggedIn;
+
   UserModel? _user;
   UserModel? get user => _user;
 
@@ -63,6 +66,8 @@ class AuthProvider extends ChangeNotifier {
       return false;
     }
 
+    _isLoggedIn = true;
+
     notifyListeners();
     return true;
   }
@@ -113,6 +118,8 @@ class AuthProvider extends ChangeNotifier {
     await _secureStorage.write(key: 'role_id', value: _roleId.toString());
     await _secureStorage.write(key: 'user_id', value: _userId.toString());
 
+    _isLoggedIn = true;
+
     notifyListeners();
     return true;
   }
@@ -154,5 +161,23 @@ class AuthProvider extends ChangeNotifier {
         debugPrint("⚠️ Could not clear SavedProvider: $e");
       }
     });
+  }
+
+  Future<bool> tryAutoLogin() async {
+    final token = await _secureStorage.read(key: 'auth_token');
+    final userIdStr = await _secureStorage.read(key: 'user_id');
+    final roleIdStr = await _secureStorage.read(key: 'role_id');
+
+    if (token != null && userIdStr != null && roleIdStr != null) {
+      _userId = int.tryParse(userIdStr);
+      _roleId = int.tryParse(roleIdStr);
+      _isLoggedIn = true;
+      notifyListeners();
+      return true;
+    }
+
+    _isLoggedIn = false;
+    notifyListeners();
+    return false;
   }
 }
