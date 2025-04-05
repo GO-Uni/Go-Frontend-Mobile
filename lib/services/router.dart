@@ -1,7 +1,4 @@
-import 'package:go_frontend_mobile/providers/auth_provider.dart';
-import 'package:go_frontend_mobile/screens/splash_screen.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import '../screens/auth/sign_up_options.dart';
 import '../screens/auth/sign_up_business.dart';
 import '../screens/auth/sign_up.dart';
@@ -20,44 +17,22 @@ import 'routes.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: ConfigRoutes.signUpOptions,
-  redirect: (context, state) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final loggedIn = authProvider.isLoggedIn;
-    final isSplash = state.fullPath == '/splash';
-    final isAuthRoute = [
-      ConfigRoutes.login,
-      ConfigRoutes.signUp,
-      ConfigRoutes.signUpOptions,
-      ConfigRoutes.signUpBusiness,
-      ConfigRoutes.subscriptionBusiness,
-    ].contains(state.fullPath);
-
-    if (!loggedIn && !isAuthRoute && !isSplash) {
-      return ConfigRoutes.login;
-    }
-
-    if (loggedIn && isAuthRoute) {
-      return ConfigRoutes.whereToNext;
-    }
-
-    return null;
-  },
   routes: [
-    GoRoute(path: '/splash', builder: (_, __) => const SplashScreen()),
-    GoRoute(path: ConfigRoutes.login, builder: (_, __) => const Login()),
-    GoRoute(path: ConfigRoutes.signUp, builder: (_, __) => const SignUp()),
     GoRoute(
       path: ConfigRoutes.signUpOptions,
-      builder: (_, __) => const SignUpOptions(),
+      builder: (context, state) => SignUpOptions(),
     ),
     GoRoute(
       path: ConfigRoutes.signUpBusiness,
-      builder: (_, __) => const SignUpBusiness(),
+      builder: (context, state) => SignUpBusiness(),
     ),
+    GoRoute(path: ConfigRoutes.signUp, builder: (context, state) => SignUp()),
+    GoRoute(path: ConfigRoutes.login, builder: (context, state) => Login()),
     GoRoute(
       path: ConfigRoutes.subscriptionBusiness,
       builder: (context, state) {
         final args = state.extra as Map<String, dynamic>? ?? {};
+
         return SubscriptionBusiness(
           email: args['email'] ?? '',
           password: args['password'] ?? '',
@@ -67,40 +42,42 @@ final GoRouter appRouter = GoRouter(
         );
       },
     ),
+
     ShellRoute(
       builder: (context, state, child) => AppLayout(child: child),
       routes: [
         GoRoute(
           path: ConfigRoutes.whereToNext,
-          builder: (_, __) => const WhereToNextScreen(),
-        ),
-        GoRoute(
-          path: ConfigRoutes.profile,
-          builder: (_, __) => const ProfileScreen(),
-        ),
-        GoRoute(
-          path: ConfigRoutes.destinations,
-          builder: (_, __) => const DestinationsScreen(),
-        ),
-        GoRoute(
-          path: ConfigRoutes.saved,
-          builder: (_, __) => const SavedScreen(),
-        ),
-        GoRoute(
-          path: ConfigRoutes.chatbot,
-          builder: (_, __) => const ChatbotScreen(),
-        ),
-        GoRoute(
-          path: ConfigRoutes.maps,
-          builder: (_, __) => const MapsScreen(),
+          builder: (context, state) => WhereToNextScreen(),
         ),
         GoRoute(
           path: ConfigRoutes.bookings,
-          builder: (_, __) => const BookingsScreen(),
+          builder: (context, state) => BookingsScreen(),
         ),
         GoRoute(
+          path: ConfigRoutes.chatbot,
+          builder: (context, state) => ChatbotScreen(),
+        ),
+        GoRoute(
+          path: ConfigRoutes.maps,
+          builder: (context, state) => MapsScreen(),
+        ),
+        GoRoute(
+          path: ConfigRoutes.profile,
+          builder: (context, state) => ProfileScreen(),
+        ),
+        GoRoute(
+          path: ConfigRoutes.destinations,
+          builder: (context, state) => DestinationsScreen(),
+        ),
+        GoRoute(
+          path: ConfigRoutes.saved,
+          builder: (context, state) => SavedScreen(),
+        ),
+
+        GoRoute(
           path: ConfigRoutes.detailedDestination,
-          builder: (_, __) => const DetailedDestinationScreen(),
+          builder: (context, state) => DetailedDestinationScreen(),
         ),
       ],
     ),
