@@ -23,6 +23,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   bool _isEditing = false;
+  bool _isGuest = false;
+  bool _dialogShown = false;
 
   late TextEditingController _nameController;
   late TextEditingController _businessNameController;
@@ -36,22 +38,46 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    final user = Provider.of<AuthProvider>(context, listen: false).user;
 
-    _nameController = TextEditingController(text: user?.name ?? "");
-    _businessNameController = TextEditingController(
-      text: user?.businessName ?? "",
-    );
-    _districtController = TextEditingController(text: user?.district ?? "");
-    _counterBookingController = TextEditingController(
-      text: user?.counterBooking?.toString() ?? "",
-    );
-    _openingHourController = TextEditingController(text: user?.openingHour);
-    _closingHourController = TextEditingController(text: user?.closingHour);
-    _counterBookingController = TextEditingController(
-      text: user?.counterBooking?.toString() ?? "",
-    );
-    _selectedCategoryId = user?.businessCategoryId ?? "";
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    _isGuest = authProvider.isGuest;
+
+    if (!_isGuest) {
+      final user = authProvider.user;
+
+      _nameController = TextEditingController(text: user?.name ?? "");
+      _businessNameController = TextEditingController(
+        text: user?.businessName ?? "",
+      );
+      _districtController = TextEditingController(text: user?.district ?? "");
+      _openingHourController = TextEditingController(text: user?.openingHour);
+      _closingHourController = TextEditingController(text: user?.closingHour);
+      _counterBookingController = TextEditingController(
+        text: user?.counterBooking?.toString() ?? "",
+      );
+      _selectedCategoryId = user?.businessCategoryId ?? "";
+    } else {
+      _nameController = TextEditingController();
+      _businessNameController = TextEditingController();
+      _districtController = TextEditingController();
+      _openingHourController = TextEditingController();
+      _closingHourController = TextEditingController();
+      _counterBookingController = TextEditingController();
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_isGuest && !_dialogShown) {
+      _dialogShown = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          showDialog(context: context, builder: (_) => const DiscoverDialog());
+        }
+      });
+    }
   }
 
   @override
@@ -63,25 +89,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _closingHourController.dispose();
     _counterBookingController.dispose();
     super.dispose();
-  }
-
-  bool _dialogShown = false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    final isGuest = context.read<AuthProvider>().isGuest;
-
-    if (isGuest && !_dialogShown) {
-      _dialogShown = true;
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          showDialog(context: context, builder: (_) => const DiscoverDialog());
-        }
-      });
-    }
   }
 
   void _toggleEditing() {
@@ -174,6 +181,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isGuest) {
+      return const Scaffold(
+        backgroundColor: AppColors.lightGreen,
+        body: Center(child: SizedBox.shrink()),
+      );
+    }
+
     final profileProvider = Provider.of<ProfileProvider>(
       context,
       listen: false,

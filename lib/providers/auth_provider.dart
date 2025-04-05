@@ -123,6 +123,7 @@ class AuthProvider extends ChangeNotifier {
     await _secureStorage.write(key: 'user_id', value: _userId.toString());
 
     _isLoggedIn = true;
+    _isGuest = false;
 
     notifyListeners();
     return true;
