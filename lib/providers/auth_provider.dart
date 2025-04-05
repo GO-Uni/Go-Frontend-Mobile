@@ -30,6 +30,9 @@ class AuthProvider extends ChangeNotifier {
   int? _userId;
   int? get userId => _userId;
 
+  bool _isGuest = false;
+  bool get isGuest => _isGuest;
+
   void updateUser(UserModel updatedUser) {
     _user = updatedUser;
     notifyListeners();
@@ -149,6 +152,7 @@ class AuthProvider extends ChangeNotifier {
     _errorMessage = null;
     _isLoading = false;
     _isLoggedIn = false;
+    _isGuest = false;
     notifyListeners();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -169,6 +173,8 @@ class AuthProvider extends ChangeNotifier {
     final userIdStr = await _secureStorage.read(key: 'user_id');
     final roleIdStr = await _secureStorage.read(key: 'role_id');
 
+    _isGuest = false;
+
     if (token != null && userIdStr != null && roleIdStr != null) {
       _userId = int.tryParse(userIdStr);
       _roleId = int.tryParse(roleIdStr);
@@ -180,5 +186,15 @@ class AuthProvider extends ChangeNotifier {
     _isLoggedIn = false;
     notifyListeners();
     return false;
+  }
+
+  void continueAsGuest() {
+    _isGuest = true;
+    _isLoggedIn = false;
+    _user = null;
+    _roleId = null;
+    _userId = null;
+    _errorMessage = null;
+    notifyListeners();
   }
 }

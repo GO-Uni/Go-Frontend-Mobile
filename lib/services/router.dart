@@ -97,6 +97,7 @@ GoRouter createRouter(AuthProvider authProvider) {
       final isLoading = authProvider.isLoading;
       final isLoggedIn = authProvider.isLoggedIn;
       final currentLocation = state.uri.path;
+      final isGuest = authProvider.isGuest;
 
       if (isLoading) {
         if (currentLocation != '/loading') return '/loading';
@@ -104,7 +105,7 @@ GoRouter createRouter(AuthProvider authProvider) {
       }
 
       if (!isLoading && currentLocation == '/loading') {
-        return isLoggedIn
+        return (isLoggedIn || isGuest)
             ? ConfigRoutes.whereToNext
             : ConfigRoutes.signUpOptions;
       }
@@ -113,8 +114,25 @@ GoRouter createRouter(AuthProvider authProvider) {
           currentLocation == ConfigRoutes.login ||
           currentLocation == ConfigRoutes.signUpOptions;
 
-      if (!isLoggedIn && !isAuthRoute) return ConfigRoutes.signUpOptions;
-      if (isLoggedIn && isAuthRoute) return ConfigRoutes.whereToNext;
+      final guestRestrictedRoutes = [
+        ConfigRoutes.profile,
+        ConfigRoutes.bookings,
+        ConfigRoutes.saved,
+        ConfigRoutes.chatbot,
+        ConfigRoutes.maps,
+        ConfigRoutes.detailedDestination,
+      ];
+
+      if (isGuest && guestRestrictedRoutes.contains(currentLocation)) {
+        return ConfigRoutes.whereToNext;
+      }
+
+      if (!isLoggedIn && !isGuest && !isAuthRoute) {
+        return ConfigRoutes.signUpOptions;
+      }
+      if ((isLoggedIn || isGuest) && isAuthRoute) {
+        return ConfigRoutes.whereToNext;
+      }
 
       return null;
     },
