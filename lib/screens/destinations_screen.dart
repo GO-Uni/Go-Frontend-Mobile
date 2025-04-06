@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/auth_provider.dart';
 import 'package:go_frontend_mobile/providers/saved_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -76,6 +77,9 @@ class DestinationsScreenState extends State<DestinationsScreen> {
     final isLoading = destinationProvider.isLoading;
     final bool showCategory = category?.isNotEmpty ?? false;
 
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final isGuest = authProvider.isGuest;
+
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
       body:
@@ -114,6 +118,7 @@ class DestinationsScreenState extends State<DestinationsScreen> {
                                 destination["description"] ??
                                 "No description available",
                             rating: 5,
+                            isGuest: isGuest,
                           );
                         }, childCount: recommendedDestinations.length),
                         gridDelegate:
@@ -160,6 +165,7 @@ class DestinationsScreenState extends State<DestinationsScreen> {
 
                           district: destination['district'],
                           userid: destination['user_id'],
+                          isGuest: isGuest,
                         );
                       }, childCount: destinations.length),
                       gridDelegate:

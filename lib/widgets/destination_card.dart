@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/providers/activity_provider.dart';
 import 'package:go_frontend_mobile/providers/saved_provider.dart';
+import 'package:go_frontend_mobile/widgets/discover_dialog.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../theme/text_styles.dart';
@@ -14,6 +15,7 @@ class DestinationCard extends StatelessWidget {
   final bool? isBooked;
   final String? district;
   final int? userid;
+  final bool isGuest;
 
   const DestinationCard({
     super.key,
@@ -24,6 +26,7 @@ class DestinationCard extends StatelessWidget {
     this.isBooked,
     this.district,
     this.userid,
+    required this.isGuest,
   });
 
   @override
@@ -38,17 +41,24 @@ class DestinationCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () {
-          context.go(
-            ConfigRoutes.detailedDestination,
-            extra: {
-              "imageUrl": imageUrl,
-              "name": name,
-              "description": description,
-              "rating": rating,
-              "district": district,
-              "userid": userid,
-            },
-          );
+          if (isGuest) {
+            showDialog(
+              context: context,
+              builder: (context) => const DiscoverDialog(),
+            );
+          } else {
+            context.go(
+              ConfigRoutes.detailedDestination,
+              extra: {
+                "imageUrl": imageUrl,
+                "name": name,
+                "description": description,
+                "rating": rating,
+                "district": district,
+                "userid": userid,
+              },
+            );
+          }
         },
         child: Container(
           width: 140,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import '../providers/saved_provider.dart';
 import '../theme/colors.dart';
@@ -26,6 +27,9 @@ class _SavedScreenState extends State<SavedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final isGuest = authProvider.isGuest;
+
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
       body: Consumer<SavedProvider>(
@@ -66,6 +70,7 @@ class _SavedScreenState extends State<SavedScreen> {
                   rating: (destination["rating"] as num?)?.toDouble() ?? 0.0,
                   isBooked: false,
                   userid: destination['user_id'],
+                  isGuest: isGuest,
                 ),
               );
             },
