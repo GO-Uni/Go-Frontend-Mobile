@@ -118,7 +118,7 @@ class DestinationCard extends StatelessWidget {
                               }),
                             ),
                             const Spacer(),
-                            if (userid != null)
+                            if (!isGuest && userid != null)
                               Consumer2<ActivityProvider, SavedProvider>(
                                 builder: (
                                   context,
@@ -162,10 +162,13 @@ class DestinationCard extends StatelessWidget {
                                 },
                               )
                             else
-                              const Icon(
-                                Icons.bookmark_border,
-                                size: 18,
-                                color: Colors.grey,
+                              Tooltip(
+                                message: 'Sign up to save destinations',
+                                child: Icon(
+                                  Icons.bookmark_border,
+                                  size: 18,
+                                  color: Colors.grey.shade400,
+                                ),
                               ),
                           ],
                         ),
