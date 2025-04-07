@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/providers/activity_provider.dart';
 import 'package:go_frontend_mobile/providers/destination_provider.dart';
+import 'package:go_frontend_mobile/providers/saved_provider.dart';
 import 'package:provider/provider.dart';
 import 'services/router.dart';
 import 'theme/colors.dart';
@@ -35,20 +36,26 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(create: (_) => DestinationProvider()),
         ChangeNotifierProvider(create: (context) => ActivityProvider()),
+        ChangeNotifierProvider(create: (context) => SavedProvider()),
       ],
-      child: MaterialApp.router(
-        title: 'GO',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          fontFamily: 'Inter',
-          primaryColor: AppColors.primary,
-          textTheme: TextTheme(
-            bodyLarge: AppTextStyles.bodyLarge,
-            bodyMedium: AppTextStyles.bodyMedium,
-            bodySmall: AppTextStyles.bodySmall,
-          ),
-        ),
-        routerConfig: appRouter,
+      child: Consumer<AuthProvider>(
+        builder: (context, authProvider, _) {
+          final router = createRouter(authProvider);
+          return MaterialApp.router(
+            title: 'GO',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              fontFamily: 'Inter',
+              primaryColor: AppColors.primary,
+              textTheme: TextTheme(
+                bodyLarge: AppTextStyles.bodyLarge,
+                bodyMedium: AppTextStyles.bodyMedium,
+                bodySmall: AppTextStyles.bodySmall,
+              ),
+            ),
+            routerConfig: router,
+          );
+        },
       ),
     );
   }

@@ -22,7 +22,10 @@ class CategoryCard extends StatelessWidget {
 
         if (!context.mounted) return;
 
-        context.go(ConfigRoutes.destinations, extra: {"category": title});
+        context.go(
+          ConfigRoutes.destinations,
+          extra: {"tabIndex": 0, "category": title},
+        );
       },
       child: Column(
         children: [

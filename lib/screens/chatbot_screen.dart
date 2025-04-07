@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_frontend_mobile/providers/auth_provider.dart';
 import 'package:go_frontend_mobile/theme/colors.dart';
 import 'package:go_frontend_mobile/theme/text_styles.dart';
+import 'package:go_frontend_mobile/widgets/discover_dialog.dart';
+import 'package:provider/provider.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({super.key});
@@ -15,6 +18,27 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     {"sender": "bot", "message": "Hey! How can I help you?"},
     {"sender": "user", "message": "Give me historical places..."},
   ];
+
+  bool _dialogShown = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final isGuest = context.read<AuthProvider>().isGuest;
+
+    if (isGuest && !_dialogShown) {
+      _dialogShown = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => const DiscoverDialog(),
+          );
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +57,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
               },
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Container(
@@ -104,7 +127,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                 ),
               ),
             ),
-
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
@@ -117,7 +139,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
               style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
             ),
           ),
-
           if (isUser)
             Container(
               margin: const EdgeInsets.only(left: 8),
