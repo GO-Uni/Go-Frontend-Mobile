@@ -13,4 +13,12 @@ final class ApiRoutes {
   static const String saveDestination = "/activity/save";
   static const String unsaveDestination = "/activity/unsave";
   static const String reviewDestination = "/activity/review";
+
+  static String getReviewsDestination(int businessUserId) {
+    return "/destinations/reviews/$businessUserId";
+  }
+
+  static String getSavedDestination(int userId) {
+    return "/user/$userId/saved";
+  }
 }

@@ -73,8 +73,11 @@ class ActivityProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleSaveDestination(int businessUserId) async {
-    if (isSaved(businessUserId)) {
+  Future<void> toggleSaveDestination(
+    int businessUserId,
+    bool currentlySaved,
+  ) async {
+    if (currentlySaved) {
       await unsaveDestination(businessUserId);
     } else {
       await saveDestination(businessUserId);
@@ -91,9 +94,41 @@ class ActivityProvider with ChangeNotifier {
       review: review,
     );
 
+    if (success) {
+      await getReviewsDestination(businessUserId);
+    } else {
+      _errorMessage = "Failed to add review destination. Please try again.";
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return success;
+  }
+
+  final Map<int, List<Map<String, dynamic>>> _reviewsByUserId = {};
+
+  Map<int, List<Map<String, dynamic>>> get reviewsByUserId => _reviewsByUserId;
+
+  List<Map<String, dynamic>> getReviewsForUser(int businessUserId) {
+    return _reviewsByUserId[businessUserId] ?? [];
+  }
+
+  Future<bool> getReviewsDestination(int businessUserId) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    final success = await _activityService.getReviewsDestination(
+      businessUserId: businessUserId,
+    );
+
+    if (success && _activityService.lastFetchedReviews != null) {
+      _reviewsByUserId[businessUserId] = _activityService.lastFetchedReviews!;
+    }
+
     _isLoading = false;
     if (!success) {
-      _errorMessage = "Failed to add review destination. Please try again.";
+      _errorMessage = "Failed to fetch review destination. Please try again.";
     }
     notifyListeners();
     return success;

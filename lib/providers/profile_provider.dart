@@ -87,4 +87,9 @@ class ProfileProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  void clearProfile() {
+    _user = null;
+    notifyListeners();
+  }
 }

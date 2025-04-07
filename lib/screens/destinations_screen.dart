@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/auth_provider.dart';
+import 'package:go_frontend_mobile/providers/saved_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/destination_provider.dart';
@@ -43,6 +45,9 @@ class DestinationsScreenState extends State<DestinationsScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchDestinations();
+
+      final savedProvider = Provider.of<SavedProvider>(context, listen: false);
+      savedProvider.fetchSavedDestinations();
     });
   }
 
@@ -71,6 +76,9 @@ class DestinationsScreenState extends State<DestinationsScreen> {
     final destinations = destinationProvider.destinations;
     final isLoading = destinationProvider.isLoading;
     final bool showCategory = category?.isNotEmpty ?? false;
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final isGuest = authProvider.isGuest;
 
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
@@ -110,6 +118,7 @@ class DestinationsScreenState extends State<DestinationsScreen> {
                                 destination["description"] ??
                                 "No description available",
                             rating: 5,
+                            isGuest: isGuest,
                           );
                         }, childCount: recommendedDestinations.length),
                         gridDelegate:
@@ -150,9 +159,13 @@ class DestinationsScreenState extends State<DestinationsScreen> {
                           description:
                               destination["description"] ??
                               "No description available",
-                          rating: 3,
+                          rating:
+                              (destination["rating"] as num?)?.toDouble() ??
+                              0.0,
+
                           district: destination['district'],
                           userid: destination['user_id'],
+                          isGuest: isGuest,
                         );
                       }, childCount: destinations.length),
                       gridDelegate:

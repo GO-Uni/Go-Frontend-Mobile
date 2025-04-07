@@ -1,63 +1,81 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
+import '../providers/saved_provider.dart';
 import '../theme/colors.dart';
 import '../widgets/destination_card.dart';
 
-class SavedScreen extends StatelessWidget {
+class SavedScreen extends StatefulWidget {
   const SavedScreen({super.key});
 
   @override
+  State<SavedScreen> createState() => _SavedScreenState();
+}
+
+class _SavedScreenState extends State<SavedScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<SavedProvider>(
+        context,
+        listen: false,
+      ).fetchSavedDestinations();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> savedDestinations = [
-      {
-        "imageUrl":
-            "https://images.pexels.com/photos/16414732/pexels-photo-16414732/free-photo-of-ancient-greek-ruin.jpeg?auto=compress&cs=tinysrgb&w=600",
-        "name": "Baalbek Ruins",
-        "description": "Ancient Roman temple",
-        "rating": 4,
-        "isBooked": true,
-      },
-      {
-        "imageUrl":
-            "https://images.pexels.com/photos/4632800/pexels-photo-4632800.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-        "name": "Harissa",
-        "description": "Beautiful mountain view",
-        "rating": 5,
-        "isBooked": true,
-      },
-      {
-        "imageUrl":
-            "https://images.pexels.com/photos/16414732/pexels-photo-16414732/free-photo-of-ancient-greek-ruin.jpeg?auto=compress&cs=tinysrgb&w=600",
-        "name": "Baalbek Ruins",
-        "description": "Ancient Roman temple",
-        "rating": 4,
-        "isBooked": false,
-      },
-    ];
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final isGuest = authProvider.isGuest;
 
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.only(top: 14, left: 10, right: 10),
-              itemCount: savedDestinations.length,
-              itemBuilder: (context, index) {
-                final destination = savedDestinations[index];
-                return Padding(
-                  padding: EdgeInsets.only(left: 12, right: 12, bottom: 12),
-                  child: DestinationCard(
-                    imageUrl: destination["imageUrl"],
-                    name: destination["name"],
-                    description: destination["description"],
-                    rating: destination["rating"],
-                    isBooked: destination["isBooked"],
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
+      body: Consumer<SavedProvider>(
+        builder: (context, savedProvider, _) {
+          if (savedProvider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (savedProvider.error != null) {
+            return Center(
+              child: Text(
+                savedProvider.error!,
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
+          }
+
+          final savedDestinations = savedProvider.savedDestinations;
+
+          if (savedDestinations.isEmpty) {
+            return const Center(child: Text("No saved destinations found."));
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.only(top: 14, left: 10, right: 10),
+            itemCount: savedDestinations.length,
+            itemBuilder: (context, index) {
+              final destination = savedDestinations[index];
+
+              return Padding(
+                padding: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
+                child: DestinationCard(
+                  imageUrl:
+                      destination["main_img"] ??
+                      "https://images.pexels.com/photos/16414732/pexels-photo-16414732/free-photo-of-ancient-greek-ruin.jpeg?auto=compress&cs=tinysrgb&w=600",
+                  name: destination["business_name"] ?? "Unknown",
+                  description: destination["description"] ?? "No description",
+                  rating: (destination["rating"] as num?)?.toDouble() ?? 0.0,
+                  isBooked: false,
+                  userid: destination['user_id'],
+                  isGuest: isGuest,
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }

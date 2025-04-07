@@ -45,7 +45,6 @@ class LoginState extends State<Login> {
           backgroundColor: Colors.green,
         ),
       );
-      context.go(ConfigRoutes.whereToNext);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
