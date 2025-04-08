@@ -208,7 +208,9 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
-                                    return const BookingDialog();
+                                    return BookingDialog(
+                                      destinationId: businessUserId,
+                                    );
                                   },
                                 );
                               },

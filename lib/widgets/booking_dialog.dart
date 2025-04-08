@@ -1,11 +1,16 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:go_frontend_mobile/providers/destination_provider.dart';
 
 import 'custom_button.dart';
 import 'booking_slot.dart';
 
 class BookingDialog extends StatefulWidget {
-  const BookingDialog({super.key});
+  final int destinationId;
+  const BookingDialog({super.key, required this.destinationId});
 
   @override
   State<BookingDialog> createState() => _BookingDialogState();
@@ -15,11 +20,28 @@ class _BookingDialogState extends State<BookingDialog> {
   DateTime _selectedDate = DateTime.now();
   String? _selectedTimeSlot;
 
-  final List<String> _timeSlots = [
-    "8:00 am - 8:30 am",
-    "9:00 am - 9:30 am",
-    "9:30 am - 10:00 am",
-  ];
+  List<String> _availableSlots = [];
+
+  @override
+  void initState() {
+    super.initState();
+    final provider = context.read<DestinationProvider>();
+    final destination = provider.destinations.firstWhere(
+      (dest) => dest['user_id'] == widget.destinationId,
+      orElse: () => {},
+    );
+
+    log("Destination ID: ${widget.destinationId}");
+
+    log("Destination slots: ${destination['available_booking_slots']}");
+
+    if (destination.isNotEmpty &&
+        destination['available_booking_slots'] != null) {
+      _availableSlots = List<String>.from(
+        destination['available_booking_slots'],
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,24 +74,28 @@ class _BookingDialogState extends State<BookingDialog> {
         ),
 
         const SizedBox(height: 4),
+
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            children:
-                _timeSlots.map((slot) {
-                  bool isBooked = slot == "8:00 am - 8:30 am";
-                  return BookingSlot(
-                    timeSlot: slot,
-                    isBooked: isBooked,
-                    isSelected: _selectedTimeSlot == slot,
-                    onTap: () {
-                      setState(() {
-                        _selectedTimeSlot = slot;
-                      });
-                    },
-                  );
-                }).toList(),
-          ),
+          child:
+              _availableSlots.isNotEmpty
+                  ? Column(
+                    children:
+                        _availableSlots.map((slot) {
+                          bool isBooked = false;
+                          return BookingSlot(
+                            timeSlot: slot,
+                            isBooked: isBooked,
+                            isSelected: _selectedTimeSlot == slot,
+                            onTap: () {
+                              setState(() {
+                                _selectedTimeSlot = slot;
+                              });
+                            },
+                          );
+                        }).toList(),
+                  )
+                  : const Text("No slots available"),
         ),
 
         const SizedBox(height: 15),

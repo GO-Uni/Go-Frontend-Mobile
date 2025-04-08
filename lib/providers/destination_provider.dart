@@ -23,7 +23,7 @@ class DestinationProvider extends ChangeNotifier {
       _destinations = await _destinationService.fetchDestinationsByCategory(
         category,
       );
-      log("✅ Destinations cat loaded: ${_destinations.length}");
+      log("✅ Destinations cat loaded length: ${_destinations.length}");
     } catch (e) {
       _destinations = [];
       log("❌ Error fetching destinations: $e");
