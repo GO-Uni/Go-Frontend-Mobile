@@ -111,9 +111,13 @@ GoRouter createRouter(AuthProvider authProvider) {
             : ConfigRoutes.signUpOptions;
       }
 
-      final isAuthRoute =
-          currentLocation == ConfigRoutes.login ||
-          currentLocation == ConfigRoutes.signUpOptions;
+      final isAuthRoute = [
+        ConfigRoutes.login,
+        ConfigRoutes.signUp,
+        ConfigRoutes.signUpBusiness,
+        ConfigRoutes.signUpOptions,
+        ConfigRoutes.subscriptionBusiness,
+      ].contains(currentLocation);
 
       if (!isLoggedIn && !isGuest && !isAuthRoute) {
         return ConfigRoutes.signUpOptions;
