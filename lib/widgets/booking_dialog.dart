@@ -79,21 +79,26 @@ class _BookingDialogState extends State<BookingDialog> {
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child:
               _availableSlots.isNotEmpty
-                  ? Column(
-                    children:
-                        _availableSlots.map((slot) {
-                          bool isBooked = false;
-                          return BookingSlot(
-                            timeSlot: slot,
-                            isBooked: isBooked,
-                            isSelected: _selectedTimeSlot == slot,
-                            onTap: () {
-                              setState(() {
-                                _selectedTimeSlot = slot;
-                              });
-                            },
-                          );
-                        }).toList(),
+                  ? SizedBox(
+                    height: 200,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _availableSlots.length,
+                      itemBuilder: (context, index) {
+                        final slot = _availableSlots[index];
+                        bool isBooked = false;
+                        return BookingSlot(
+                          timeSlot: slot,
+                          isBooked: isBooked,
+                          isSelected: _selectedTimeSlot == slot,
+                          onTap: () {
+                            setState(() {
+                              _selectedTimeSlot = slot;
+                            });
+                          },
+                        );
+                      },
+                    ),
                   )
                   : const Text("No slots available"),
         ),
