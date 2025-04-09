@@ -17,6 +17,10 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
   String destinationName = "Business Name";
   String district = "Business District";
   String description = "No description available.";
+  int? userId;
+
+  final TextEditingController _descriptionController = TextEditingController();
+  bool isEditing = false;
 
   @override
   void initState() {
@@ -30,6 +34,7 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
               ? "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/13/f9/cd/d0/gardens.jpg?w=900&h=500&s=1"
               : "https://images.pexels.com/photos/2990603/pexels-photo-2990603.jpeg?auto=compress&cs=tinysrgb&w=600",
         ];
+        userId = user?.userId;
         selectedImage = images.first;
         destinationName = user?.businessName ?? "Business Name";
         district = user?.district ?? "Business District";
@@ -37,8 +42,15 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
             user?.businessDescription?.isNotEmpty == true
                 ? user!.businessDescription!
                 : "No description available.";
+        _descriptionController.text = description;
       });
     });
+  }
+
+  @override
+  void dispose() {
+    _descriptionController.dispose();
+    super.dispose();
   }
 
   @override
@@ -164,19 +176,48 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
                         },
                       ),
                     ),
-                    const Icon(Icons.edit, size: 20),
+                    IconButton(
+                      icon: Icon(isEditing ? Icons.check : Icons.edit),
+                      onPressed: () {
+                        setState(() {
+                          isEditing = !isEditing;
+                          if (!isEditing) {
+                            description = _descriptionController.text;
+                          }
+                        });
+                      },
+                    ),
                   ],
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  description,
-                  style: AppTextStyles.bodyRegular.copyWith(
-                    fontSize: 14,
-                    color: AppColors.mediumGray,
-                  ),
-                ),
+                child:
+                    isEditing
+                        ? TextField(
+                          controller: _descriptionController,
+                          maxLines: null,
+                          decoration: const InputDecoration(
+                            hintText: "Enter business description",
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: AppColors.darkGreen,
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          style: AppTextStyles.bodyRegular.copyWith(
+                            fontSize: 14,
+                            color: AppColors.darkGreen,
+                          ),
+                        )
+                        : Text(
+                          description,
+                          style: AppTextStyles.bodyRegular.copyWith(
+                            fontSize: 14,
+                            color: AppColors.mediumGray,
+                          ),
+                        ),
               ),
             ],
           ),
