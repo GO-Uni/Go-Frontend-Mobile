@@ -13,6 +13,7 @@ class UserModel {
   final String? closingHour;
   final int? counterBooking;
   final String? subscriptionMethod;
+  final String? businessDescription;
 
   const UserModel({
     required this.name,
@@ -27,6 +28,7 @@ class UserModel {
     this.closingHour,
     this.counterBooking,
     this.subscriptionMethod,
+    this.businessDescription,
   });
 
   UserModel copyWith({
@@ -42,6 +44,7 @@ class UserModel {
     String? closingHour,
     int? counterBooking,
     String? subscriptionMethod,
+    String? description,
   }) {
     return UserModel(
       name: name ?? this.name,
@@ -56,6 +59,7 @@ class UserModel {
       closingHour: closingHour ?? this.closingHour,
       counterBooking: counterBooking ?? this.counterBooking,
       subscriptionMethod: subscriptionMethod ?? this.subscriptionMethod,
+      businessDescription: businessDescription,
     );
   }
 
@@ -74,6 +78,7 @@ class UserModel {
       district: businessProfile['district'] as String?,
       openingHour: businessProfile['opening_hour'] as String?,
       closingHour: businessProfile['closing_hour'] as String?,
+      businessDescription: businessProfile['description'] as String,
       counterBooking:
           businessProfile['counter_booking'] != null
               ? int.tryParse(businessProfile['counter_booking'].toString())
@@ -100,6 +105,7 @@ class UserModel {
           "opening_hour": openingHour,
           "closing_hour": closingHour,
           "counter_booking": counterBooking,
+          'business_description': businessDescription,
         },
     };
   }
