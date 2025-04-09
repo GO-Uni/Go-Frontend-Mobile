@@ -16,4 +16,5 @@ final class ConfigRoutes {
   static const String saved = '/saved';
 
   static const String detailedDestination = '/detailedDestination';
+  static const String editDestination = '/editDestination';
 }
