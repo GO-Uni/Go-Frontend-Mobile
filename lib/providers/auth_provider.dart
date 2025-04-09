@@ -70,7 +70,28 @@ class AuthProvider extends ChangeNotifier {
       return false;
     }
 
+    final data = response['data']?['data'];
+    final user = data['user'];
+    final token = data['token'];
+
+    if (data == null ||
+        !data.containsKey('user') ||
+        !data.containsKey('token')) {
+      _errorMessage = "Invalid response format from server";
+      notifyListeners();
+      return false;
+    }
+
+    _roleId = user['role_id'];
+    _userId = user['id'];
+    _user = UserModel.fromJson(user);
+
+    await _secureStorage.write(key: 'auth_token', value: token);
+    await _secureStorage.write(key: 'role_id', value: _roleId.toString());
+    await _secureStorage.write(key: 'user_id', value: _userId.toString());
+
     _isLoggedIn = true;
+    _isGuest = false;
 
     notifyListeners();
     return true;
