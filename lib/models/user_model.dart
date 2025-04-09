@@ -14,6 +14,7 @@ class UserModel {
   final int? counterBooking;
   final String? subscriptionMethod;
   final String? businessDescription;
+  final int? userId;
 
   const UserModel({
     required this.name,
@@ -29,6 +30,7 @@ class UserModel {
     this.counterBooking,
     this.subscriptionMethod,
     this.businessDescription,
+    required this.userId,
   });
 
   UserModel copyWith({
@@ -50,6 +52,7 @@ class UserModel {
       name: name ?? this.name,
       email: email ?? this.email,
       roleId: roleId ?? this.roleId,
+      userId: userId,
       businessName: businessName ?? this.businessName,
       ownerName: ownerName ?? this.ownerName,
       businessCategory: businessCategory ?? this.businessCategory,
@@ -70,6 +73,7 @@ class UserModel {
       name: json['name'] ?? "Unknown",
       email: json['email'] ?? "No Email",
       roleId: json['role_id'] ?? 2,
+      userId: json['id'],
 
       businessName: businessProfile['business_name'] as String?,
       ownerName: businessProfile['user_name'] as String?,
@@ -94,6 +98,7 @@ class UserModel {
       "email": email,
       "role_id": roleId,
       "subscription_method": subscriptionMethod,
+      "userId": userId,
 
       if (roleId == 3)
         "business_profile": {
