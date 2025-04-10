@@ -69,4 +69,10 @@ class DestinationProvider extends ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
+
+  void clearDestinations() {
+    _destinations = [];
+    _recommendedDestinations = [];
+    notifyListeners();
+  }
 }

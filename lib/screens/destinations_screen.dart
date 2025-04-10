@@ -30,6 +30,24 @@ class DestinationsScreenState extends State<DestinationsScreen> {
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!hasFetched) {
+      hasFetched = true;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final destinationProvider = Provider.of<DestinationProvider>(
+          context,
+          listen: false,
+        );
+        destinationProvider.fetchRecommendedDestinations();
+        destinationProvider.fetchAllDestinations();
+      });
+    }
+  }
+
   void _fetchDestinations() {
     final extra = GoRouterState.of(context).extra;
     final selectedCategory =

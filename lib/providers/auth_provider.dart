@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/destination_provider.dart';
 import 'package:go_frontend_mobile/providers/profile_provider.dart';
 import 'package:go_frontend_mobile/providers/saved_provider.dart';
 import 'package:go_frontend_mobile/services/dio_client.dart';
@@ -167,6 +168,7 @@ class AuthProvider extends ChangeNotifier {
   Future<void> logoutUser(BuildContext context) async {
     final savedProvider = context.read<SavedProvider>();
     final profileProvider = context.read<ProfileProvider>();
+    final destinationProvider = context.read<DestinationProvider>();
 
     await _secureStorage.delete(key: 'auth_token');
     await _secureStorage.delete(key: 'role_id');
@@ -184,6 +186,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       savedProvider.clearSavedDestinations();
       profileProvider.clearProfile();
+      destinationProvider.clearDestinations();
     } catch (e) {
       debugPrint("⚠️ Could not clear providers: $e");
     }
