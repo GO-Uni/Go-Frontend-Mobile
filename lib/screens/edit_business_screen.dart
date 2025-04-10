@@ -200,6 +200,10 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
                                 description =
                                     updatedUser.businessDescription ?? "";
                               });
+                              Provider.of<AuthProvider>(
+                                context,
+                                listen: false,
+                              ).updateUser(updatedUser);
                             },
                           );
 
