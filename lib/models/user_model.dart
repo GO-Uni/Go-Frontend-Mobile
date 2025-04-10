@@ -46,7 +46,7 @@ class UserModel {
     String? closingHour,
     int? counterBooking,
     String? subscriptionMethod,
-    String? description,
+    String? businessDescription,
   }) {
     return UserModel(
       name: name ?? this.name,
@@ -62,7 +62,7 @@ class UserModel {
       closingHour: closingHour ?? this.closingHour,
       counterBooking: counterBooking ?? this.counterBooking,
       subscriptionMethod: subscriptionMethod ?? this.subscriptionMethod,
-      businessDescription: businessDescription,
+      businessDescription: businessDescription ?? this.businessDescription,
     );
   }
 

@@ -32,6 +32,7 @@ class ProfileProvider extends ChangeNotifier {
     String? openingHour,
     String? closingHour,
     int? counterBooking,
+    String? businessDescription,
   }) async {
     _isUpdating = true;
     _errorMessage = null;
@@ -47,6 +48,8 @@ class ProfileProvider extends ChangeNotifier {
         if (openingHour != null) "opening_hour": openingHour,
         if (closingHour != null) "closing_hour": closingHour,
         if (counterBooking != null) "counter_booking": counterBooking,
+        if (businessDescription != null)
+          "business_description": businessDescription,
       },
     };
 
@@ -64,6 +67,8 @@ class ProfileProvider extends ChangeNotifier {
           openingHour: openingHour ?? _user!.openingHour,
           closingHour: closingHour ?? _user!.closingHour,
           counterBooking: counterBooking ?? _user!.counterBooking,
+          businessDescription:
+              businessDescription ?? _user!.businessDescription,
         );
 
         onUpdate(_user!);
