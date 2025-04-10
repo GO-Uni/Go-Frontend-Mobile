@@ -21,4 +21,8 @@ final class ApiRoutes {
   static String getSavedDestination(int userId) {
     return "/user/$userId/saved";
   }
+
+  static String getRecommendedDestination(int userId) {
+    return "/recommend-destinations/$userId";
+  }
 }
