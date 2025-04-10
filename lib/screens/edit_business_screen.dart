@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/profile_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:go_frontend_mobile/theme/colors.dart';
 import 'package:go_frontend_mobile/theme/text_styles.dart';
@@ -55,6 +56,8 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final messenger = ScaffoldMessenger.of(context);
+
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
       body: SafeArea(
@@ -103,6 +106,7 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
                   ],
                 ),
               ),
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Image.network(
@@ -114,6 +118,7 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
                   fit: BoxFit.cover,
                 ),
               ),
+              // Divider
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 14,
@@ -125,6 +130,7 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
                   color: AppColors.primary.withValues(alpha: 0.3),
                 ),
               ),
+
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -178,7 +184,48 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
                     ),
                     IconButton(
                       icon: Icon(isEditing ? Icons.check : Icons.edit),
-                      onPressed: () {
+                      onPressed: () async {
+                        if (isEditing) {
+                          final profileProvider = Provider.of<ProfileProvider>(
+                            context,
+                            listen: false,
+                          );
+
+                          final success = await profileProvider.updateProfile(
+                            businessDescription:
+                                _descriptionController.text.trim(),
+                            onUpdate: (updatedUser) {
+                              if (!mounted) return;
+                              setState(() {
+                                description =
+                                    updatedUser.businessDescription ?? "";
+                              });
+                            },
+                          );
+
+                          if (!mounted) return;
+
+                          if (success) {
+                            messenger.showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Description updated successfully!',
+                                ),
+                              ),
+                            );
+                          } else {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  profileProvider.errorMessage ??
+                                      'Update failed',
+                                ),
+                              ),
+                            );
+                          }
+                        }
+
+                        if (!mounted) return;
                         setState(() {
                           isEditing = !isEditing;
                           if (!isEditing) {
@@ -190,6 +237,7 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
                   ],
                 ),
               ),
+
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child:

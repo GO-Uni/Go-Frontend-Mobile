@@ -48,8 +48,7 @@ class ProfileProvider extends ChangeNotifier {
         if (openingHour != null) "opening_hour": openingHour,
         if (closingHour != null) "closing_hour": closingHour,
         if (counterBooking != null) "counter_booking": counterBooking,
-        if (businessDescription != null)
-          "business_description": businessDescription,
+        if (businessDescription != null) "description": businessDescription,
       },
     };
 
