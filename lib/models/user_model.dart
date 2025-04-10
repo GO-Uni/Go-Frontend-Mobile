@@ -82,7 +82,7 @@ class UserModel {
       district: businessProfile['district'] as String?,
       openingHour: businessProfile['opening_hour'] as String?,
       closingHour: businessProfile['closing_hour'] as String?,
-      businessDescription: businessProfile['description'] as String,
+      businessDescription: businessProfile['description'] as String?,
       counterBooking:
           businessProfile['counter_booking'] != null
               ? int.tryParse(businessProfile['counter_booking'].toString())

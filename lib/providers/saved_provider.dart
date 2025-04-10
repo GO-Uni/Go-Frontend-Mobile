@@ -38,4 +38,14 @@ class SavedProvider with ChangeNotifier {
   bool isSaved(int businessUserId) {
     return _savedDestinations.any((dest) => dest['user_id'] == businessUserId);
   }
+
+  void addSavedDestination(int businessUserId) {
+    _savedDestinations.add({'user_id': businessUserId});
+    notifyListeners();
+  }
+
+  void removeSavedDestination(int businessUserId) {
+    _savedDestinations.removeWhere((d) => d['user_id'] == businessUserId);
+    notifyListeners();
+  }
 }

@@ -141,6 +141,7 @@ class DestinationCard extends StatelessWidget {
                                             .toggleSaveDestination(
                                               businessUserId,
                                               isSaved,
+                                              savedProvider,
                                             );
                                         await savedProvider
                                             .fetchSavedDestinations();

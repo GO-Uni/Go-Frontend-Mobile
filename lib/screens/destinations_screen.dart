@@ -177,6 +177,7 @@ class DestinationsScreenState extends State<DestinationsScreen> {
                           ),
                     ),
                   ),
+                  SliverToBoxAdapter(child: SizedBox(height: 30)),
                 ],
               ),
     );

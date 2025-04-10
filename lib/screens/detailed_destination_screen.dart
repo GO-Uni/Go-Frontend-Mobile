@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/saved_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../theme/text_styles.dart';
@@ -223,8 +224,13 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                             ),
                             const SizedBox(width: 8),
 
-                            Consumer<ActivityProvider>(
-                              builder: (context, activityProvider, child) {
+                            Consumer2<ActivityProvider, SavedProvider>(
+                              builder: (
+                                context,
+                                activityProvider,
+                                savedProvider,
+                                child,
+                              ) {
                                 if (activityProvider.isLoading) {
                                   return const SizedBox(
                                     width: 24,
@@ -243,6 +249,7 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                                         .toggleSaveDestination(
                                           businessUserId,
                                           isSaved,
+                                          savedProvider,
                                         );
                                   },
                                   child: Icon(
