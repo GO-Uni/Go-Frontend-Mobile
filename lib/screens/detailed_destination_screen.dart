@@ -42,10 +42,9 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
     final businessUserId = destination["userid"];
     if (businessUserId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Provider.of<ActivityProvider>(
-          context,
-          listen: false,
-        ).getReviewsDestination(businessUserId);
+        final provider = Provider.of<ActivityProvider>(context, listen: false);
+        provider.getReviewsDestination(businessUserId);
+        provider.checkIfUserRated(businessUserId);
       });
     }
   }
@@ -298,40 +297,55 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
 
                         Consumer<ActivityProvider>(
                           builder: (context, activityProvider, _) {
+                            final isRated = activityProvider.hasRated;
+
                             return Row(
                               children: List.generate(5, (index) {
                                 return GestureDetector(
-                                  onTap: () async {
-                                    final rating = index + 1;
-                                    final currentContext = context;
+                                  onTap:
+                                      isRated
+                                          ? null
+                                          : () async {
+                                            final rating = index + 1;
+                                            final currentContext = context;
 
-                                    setState(() {
-                                      selectedRating = rating;
-                                    });
+                                            setState(() {
+                                              selectedRating = rating;
+                                            });
 
-                                    final success = await activityProvider
-                                        .rateDestination(
-                                          businessUserId: businessUserId,
-                                          rating: rating.toDouble(),
-                                        );
+                                            final success =
+                                                await activityProvider
+                                                    .rateDestination(
+                                                      businessUserId:
+                                                          businessUserId,
+                                                      rating: rating.toDouble(),
+                                                    );
 
-                                    if (!currentContext.mounted) return;
+                                            if (success) {
+                                              await activityProvider
+                                                  .checkIfUserRated(
+                                                    businessUserId,
+                                                  );
+                                            }
 
-                                    ScaffoldMessenger.of(
-                                      currentContext,
-                                    ).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          success
-                                              ? "Thanks! You rated this $rating stars."
-                                              : activityProvider.errorMessage ??
-                                                  "Rating failed.",
-                                        ),
-                                        backgroundColor:
-                                            success ? null : Colors.red,
-                                      ),
-                                    );
-                                  },
+                                            if (!currentContext.mounted) return;
+
+                                            ScaffoldMessenger.of(
+                                              currentContext,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  success
+                                                      ? "Thanks! You rated this $rating stars."
+                                                      : activityProvider
+                                                              .errorMessage ??
+                                                          "Rating failed.",
+                                                ),
+                                                backgroundColor:
+                                                    success ? null : Colors.red,
+                                              ),
+                                            );
+                                          },
                                   child: Icon(
                                     index < (selectedRating ?? 0)
                                         ? Icons.star

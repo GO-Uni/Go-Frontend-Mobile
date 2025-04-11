@@ -16,6 +16,9 @@ class ActivityProvider with ChangeNotifier {
   bool isSaved(int businessUserId) =>
       _savedDestinationIds.contains(businessUserId);
 
+  bool _hasRated = false;
+  bool get hasRated => _hasRated;
+
   Future<bool> rateDestination({
     required int businessUserId,
     required double rating,
@@ -144,5 +147,15 @@ class ActivityProvider with ChangeNotifier {
     }
     notifyListeners();
     return success;
+  }
+
+  Future<void> checkIfUserRated(int businessUserId) async {
+    _isLoading = true;
+    notifyListeners();
+
+    _hasRated = await _activityService.checkIfUserRated(businessUserId);
+
+    _isLoading = false;
+    notifyListeners();
   }
 }

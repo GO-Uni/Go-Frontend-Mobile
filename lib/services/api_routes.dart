@@ -25,4 +25,8 @@ final class ApiRoutes {
   static String getRecommendedDestination(int userId) {
     return "/recommend-destinations/$userId";
   }
+
+  static String checkIfUserRated(int businessUserId) {
+    return "/user/check-rated/$businessUserId";
+  }
 }
