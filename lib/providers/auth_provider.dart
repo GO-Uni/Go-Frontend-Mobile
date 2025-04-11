@@ -115,6 +115,7 @@ class AuthProvider extends ChangeNotifier {
     log("🔵 Raw Response: $response");
 
     if (response.containsKey('error') && response['error'] == true) {
+      _isLoading = false;
       _errorMessage = response['message'] ?? "Invalid response from server";
       notifyListeners();
       return false;
@@ -127,6 +128,7 @@ class AuthProvider extends ChangeNotifier {
     if (data == null ||
         !data.containsKey('user') ||
         !data.containsKey('token')) {
+      _isLoading = false;
       _errorMessage = "Invalid response format from server";
       notifyListeners();
       return false;
@@ -146,6 +148,7 @@ class AuthProvider extends ChangeNotifier {
 
     _isLoggedIn = true;
     _isGuest = false;
+    _isLoading = false;
 
     notifyListeners();
     return true;

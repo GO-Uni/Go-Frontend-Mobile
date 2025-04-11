@@ -5,6 +5,7 @@ final class ConfigRoutes {
   static const String login = '/login';
   static const String subscriptionBusiness = '/subscription-business';
 
+  static const String loading = '/loading';
   // Navigation bar routes
   static const String whereToNext = '/';
   static const String chatbot = '/chatbot';
