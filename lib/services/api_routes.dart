@@ -31,6 +31,6 @@ final class ApiRoutes {
   }
 
   static String getDestinationsByName(String name) {
-    return '/api/destinations/name/$name';
+    return '/destinations/name/$name';
   }
 }

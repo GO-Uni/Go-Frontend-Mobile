@@ -12,6 +12,9 @@ class DestinationProvider extends ChangeNotifier {
   List<Map<String, dynamic>> _destinations = [];
   List<Map<String, dynamic>> get destinations => _destinations;
 
+  List<Map<String, dynamic>> _searchDestinations = [];
+  List<Map<String, dynamic>> get searchDestinations => _searchDestinations;
+
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
@@ -81,14 +84,21 @@ class DestinationProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _destinations = await _destinationService.fetchDestinationsByName(name);
-      log("✅ Destinations by name loaded: ${_destinations.length}");
+      _searchDestinations = await _destinationService.fetchDestinationsByName(
+        name,
+      );
+      log("✅ Search destinations loaded: ${_searchDestinations.length}");
     } catch (e) {
-      _destinations = [];
-      log("❌ Error fetching destinations by name: $e");
+      _searchDestinations = [];
+      log("❌ Error searching destinations: $e");
     }
 
     _isLoading = false;
+    notifyListeners();
+  }
+
+  void clearSearchResults() {
+    _searchDestinations = [];
     notifyListeners();
   }
 }

@@ -8,12 +8,18 @@ class Header extends StatelessWidget {
   final Function(int) onTabSelected;
   final HeaderVariant variant;
   final int? initialTabIndex;
+  final TextEditingController? searchController;
+  final Function(String)? onSearchChanged;
+  final Function(Map<String, dynamic>)? onDestinationTap;
 
   const Header({
     super.key,
     required this.onTabSelected,
     this.variant = HeaderVariant.compactHeader,
     this.initialTabIndex,
+    this.searchController,
+    this.onSearchChanged,
+    this.onDestinationTap,
   });
 
   @override
@@ -59,6 +65,8 @@ class Header extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextField(
+                    controller: searchController,
+                    onChanged: onSearchChanged,
                     style: AppTextStyles.bodyMedium,
                     decoration: InputDecoration(
                       hintText: "Discover places...",
@@ -116,7 +124,7 @@ class Header extends StatelessWidget {
           onTap: (index) => onTabSelected(index),
           indicator:
               initialTabIndex == null
-                  ? BoxDecoration()
+                  ? const BoxDecoration()
                   : const UnderlineTabIndicator(
                     borderSide: BorderSide(width: 2, color: AppColors.primary),
                     insets: EdgeInsets.symmetric(horizontal: 120),
