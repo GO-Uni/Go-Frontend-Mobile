@@ -79,10 +79,7 @@ class Header extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.search, color: Colors.black),
-                ),
+                Icon(Icons.search, color: Colors.black),
               ],
             ),
           ),
