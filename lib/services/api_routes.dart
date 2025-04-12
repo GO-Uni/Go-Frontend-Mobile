@@ -29,4 +29,8 @@ final class ApiRoutes {
   static String checkIfUserRated(int businessUserId) {
     return "/user/check-rated/$businessUserId";
   }
+
+  static String getDestinationsByName(String name) {
+    return '/api/destinations/name/$name';
+  }
 }

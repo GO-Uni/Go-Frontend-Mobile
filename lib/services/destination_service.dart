@@ -72,4 +72,24 @@ class DestinationService {
       return [];
     }
   }
+
+  Future<List<Map<String, dynamic>>> fetchDestinationsByName(
+    String name,
+  ) async {
+    try {
+      Response res = await _dioClient.dio.get(
+        ApiRoutes.getDestinationsByName(name),
+      );
+
+      if (res.data["status"] == "success") {
+        return List<Map<String, dynamic>>.from(res.data["data"]);
+      } else {
+        log("❌ API returned an error: ${res.data}");
+        return [];
+      }
+    } on DioException catch (e) {
+      log("❌ Error fetching destinations by name: ${e.message}");
+      return [];
+    }
+  }
 }

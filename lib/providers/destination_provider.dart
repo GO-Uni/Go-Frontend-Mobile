@@ -75,4 +75,20 @@ class DestinationProvider extends ChangeNotifier {
     _recommendedDestinations = [];
     notifyListeners();
   }
+
+  Future<void> fetchDestinationsByName(String name) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      _destinations = await _destinationService.fetchDestinationsByName(name);
+      log("✅ Destinations by name loaded: ${_destinations.length}");
+    } catch (e) {
+      _destinations = [];
+      log("❌ Error fetching destinations by name: $e");
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
 }
