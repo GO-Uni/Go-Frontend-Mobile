@@ -36,15 +36,6 @@ class DestinationsScreenState extends State<DestinationsScreen> {
 
     if (!hasFetched) {
       hasFetched = true;
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final destinationProvider = Provider.of<DestinationProvider>(
-          context,
-          listen: false,
-        );
-        destinationProvider.fetchRecommendedDestinations();
-        destinationProvider.fetchAllDestinations();
-      });
     }
   }
 
@@ -58,15 +49,12 @@ class DestinationsScreenState extends State<DestinationsScreen> {
       listen: false,
     );
 
-    if (!hasFetched) {
-      hasFetched = true;
-      destinationProvider.fetchRecommendedDestinations();
-      destinationProvider.fetchAllDestinations();
-    }
-
     if (selectedCategory != null) {
       category = selectedCategory;
       destinationProvider.fetchDestinationsByCategory(category!);
+    } else {
+      destinationProvider.fetchRecommendedDestinations();
+      destinationProvider.fetchAllDestinations();
     }
   }
 

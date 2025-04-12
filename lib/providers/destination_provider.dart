@@ -24,13 +24,15 @@ class DestinationProvider extends ChangeNotifier {
 
   Future<void> fetchDestinationsByCategory(String category) async {
     _isLoading = true;
+    _destinations = [];
     notifyListeners();
 
     try {
+      log("🕒 Before API call. Current destinations: ${_destinations.length}");
       _destinations = await _destinationService.fetchDestinationsByCategory(
         category,
       );
-      log("✅ Destinations cat loaded length: ${_destinations.length}");
+      log("✅ After API call. Fetched: ${_destinations.length}");
     } catch (e) {
       _destinations = [];
       log("❌ Error fetching destinations: $e");
