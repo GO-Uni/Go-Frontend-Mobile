@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/auth_provider.dart';
 import 'package:go_frontend_mobile/services/routes.dart';
 import 'package:go_frontend_mobile/theme/colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:go_frontend_mobile/theme/text_styles.dart';
+import 'package:provider/provider.dart';
 
 class DiscoverDialog extends StatelessWidget {
   const DiscoverDialog({super.key});
@@ -48,6 +50,12 @@ class DiscoverDialog extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 onPressed: () {
+                  final authProvider = Provider.of<AuthProvider>(
+                    context,
+                    listen: false,
+                  );
+                  authProvider.continueAsGuest();
+                  authProvider.setIsGuest(false);
                   Navigator.of(context).pop();
                   context.go(ConfigRoutes.signUpOptions);
                 },
