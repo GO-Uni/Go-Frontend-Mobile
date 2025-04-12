@@ -90,6 +90,7 @@ class DestinationCard extends StatelessWidget {
                       children: [
                         Text(
                           name,
+                          maxLines: 1,
                           style: AppTextStyles.bodyLarge.copyWith(fontSize: 13),
                         ),
                         const SizedBox(height: 2),
@@ -140,6 +141,7 @@ class DestinationCard extends StatelessWidget {
                                             .toggleSaveDestination(
                                               businessUserId,
                                               isSaved,
+                                              savedProvider,
                                             );
                                         await savedProvider
                                             .fetchSavedDestinations();

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/services/routes.dart';
+import 'package:go_router/go_router.dart';
 import '../theme/colors.dart';
 import '../theme/text_styles.dart';
 import '../models/user_model.dart';
@@ -48,7 +50,9 @@ class ProfileHeader extends StatelessWidget {
                   ),
                   if (user.roleId == 3) ...[
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.go(ConfigRoutes.editDestination);
+                      },
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
                         minimumSize: Size.zero,

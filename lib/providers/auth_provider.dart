@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/destination_provider.dart';
 import 'package:go_frontend_mobile/providers/profile_provider.dart';
 import 'package:go_frontend_mobile/providers/saved_provider.dart';
 import 'package:go_frontend_mobile/services/dio_client.dart';
@@ -70,7 +71,28 @@ class AuthProvider extends ChangeNotifier {
       return false;
     }
 
+    final data = response['data']?['data'];
+    final user = data['user'];
+    final token = data['token'];
+
+    if (data == null ||
+        !data.containsKey('user') ||
+        !data.containsKey('token')) {
+      _errorMessage = "Invalid response format from server";
+      notifyListeners();
+      return false;
+    }
+
+    _roleId = user['role_id'];
+    _userId = user['id'];
+    _user = UserModel.fromJson(user);
+
+    await _secureStorage.write(key: 'auth_token', value: token);
+    await _secureStorage.write(key: 'role_id', value: _roleId.toString());
+    await _secureStorage.write(key: 'user_id', value: _userId.toString());
+
     _isLoggedIn = true;
+    _isGuest = false;
 
     notifyListeners();
     return true;
@@ -93,6 +115,7 @@ class AuthProvider extends ChangeNotifier {
     log("🔵 Raw Response: $response");
 
     if (response.containsKey('error') && response['error'] == true) {
+      _isLoading = false;
       _errorMessage = response['message'] ?? "Invalid response from server";
       notifyListeners();
       return false;
@@ -105,6 +128,7 @@ class AuthProvider extends ChangeNotifier {
     if (data == null ||
         !data.containsKey('user') ||
         !data.containsKey('token')) {
+      _isLoading = false;
       _errorMessage = "Invalid response format from server";
       notifyListeners();
       return false;
@@ -124,6 +148,7 @@ class AuthProvider extends ChangeNotifier {
 
     _isLoggedIn = true;
     _isGuest = false;
+    _isLoading = false;
 
     notifyListeners();
     return true;
@@ -146,6 +171,7 @@ class AuthProvider extends ChangeNotifier {
   Future<void> logoutUser(BuildContext context) async {
     final savedProvider = context.read<SavedProvider>();
     final profileProvider = context.read<ProfileProvider>();
+    final destinationProvider = context.read<DestinationProvider>();
 
     await _secureStorage.delete(key: 'auth_token');
     await _secureStorage.delete(key: 'role_id');
@@ -163,6 +189,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       savedProvider.clearSavedDestinations();
       profileProvider.clearProfile();
+      destinationProvider.clearDestinations();
     } catch (e) {
       debugPrint("⚠️ Could not clear providers: $e");
     }
@@ -195,6 +222,11 @@ class AuthProvider extends ChangeNotifier {
     _roleId = null;
     _userId = null;
     _errorMessage = null;
+    notifyListeners();
+  }
+
+  void setIsGuest(bool value) {
+    _isGuest = value;
     notifyListeners();
   }
 }

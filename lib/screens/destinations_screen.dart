@@ -19,27 +19,6 @@ class DestinationsScreenState extends State<DestinationsScreen> {
   String? category;
   bool hasFetched = false;
 
-  final List<Map<String, dynamic>> recommendedDestinations = [
-    {
-      "main_img":
-          "https://images.unsplash.com/photo-1726064855757-ac8720008fe0?q=80",
-      "business_name": "Grand Palace",
-      "description": "A beautiful historic palace.",
-    },
-    {
-      "main_img":
-          "https://images.unsplash.com/photo-1726064855757-ac8720008fe0?q=80",
-      "business_name": "Mountain View",
-      "description": "A breathtaking scenic mountain view.",
-    },
-    {
-      "main_img":
-          "https://images.unsplash.com/photo-1726064855757-ac8720008fe0?q=80",
-      "business_name": "Sunset Beach",
-      "description": "The perfect place to relax and watch the sunset.",
-    },
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -49,6 +28,24 @@ class DestinationsScreenState extends State<DestinationsScreen> {
       final savedProvider = Provider.of<SavedProvider>(context, listen: false);
       savedProvider.fetchSavedDestinations();
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!hasFetched) {
+      hasFetched = true;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final destinationProvider = Provider.of<DestinationProvider>(
+          context,
+          listen: false,
+        );
+        destinationProvider.fetchRecommendedDestinations();
+        destinationProvider.fetchAllDestinations();
+      });
+    }
   }
 
   void _fetchDestinations() {
@@ -61,12 +58,15 @@ class DestinationsScreenState extends State<DestinationsScreen> {
       listen: false,
     );
 
+    if (!hasFetched) {
+      hasFetched = true;
+      destinationProvider.fetchRecommendedDestinations();
+      destinationProvider.fetchAllDestinations();
+    }
+
     if (selectedCategory != null) {
       category = selectedCategory;
       destinationProvider.fetchDestinationsByCategory(category!);
-    } else if (!hasFetched) {
-      hasFetched = true;
-      destinationProvider.fetchAllDestinations();
     }
   }
 
@@ -107,20 +107,35 @@ class DestinationsScreenState extends State<DestinationsScreen> {
                     SliverPadding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       sliver: SliverGrid(
-                        delegate: SliverChildBuilderDelegate((context, index) {
-                          final destination = recommendedDestinations[index];
-                          return DestinationCard(
-                            imageUrl:
-                                destination["main_img"] ??
-                                "https://images.unsplash.com/photo-1726064855757-ac8720008fe0?q=80",
-                            name: destination["business_name"] ?? "Unknown",
-                            description:
-                                destination["description"] ??
-                                "No description available",
-                            rating: 5,
-                            isGuest: isGuest,
-                          );
-                        }, childCount: recommendedDestinations.length),
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            final recommended =
+                                destinationProvider.recommendedDestinations;
+                            if (index >= recommended.length) return null;
+
+                            final destination = recommended[index];
+
+                            return DestinationCard(
+                              imageUrl:
+                                  destination["main_img"] ??
+                                  "https://images.unsplash.com/photo-1726064855757-ac8720008fe0?q=80",
+                              name: destination["business_name"] ?? "Unknown",
+                              description:
+                                  destination["description"] ??
+                                  "No description available",
+                              rating:
+                                  (destination["rating"] as num?)?.toDouble() ??
+                                  0.0,
+                              isGuest: isGuest,
+                              district: destination["district"],
+                              userid: destination["user_id"],
+                            );
+                          },
+                          childCount:
+                              destinationProvider
+                                  .recommendedDestinations
+                                  .length,
+                        ),
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
@@ -177,6 +192,7 @@ class DestinationsScreenState extends State<DestinationsScreen> {
                           ),
                     ),
                   ),
+                  SliverToBoxAdapter(child: SizedBox(height: 30)),
                 ],
               ),
     );

@@ -118,4 +118,23 @@ class ActivityService {
       return false;
     }
   }
+
+  Future<bool> checkIfUserRated(int businessUserId) async {
+    try {
+      final response = await _dioClient.dio.get(
+        ApiRoutes.checkIfUserRated(businessUserId),
+        options: Options(headers: await _getHeaders()),
+      );
+
+      if (response.statusCode == 200) {
+        final rated = response.data['data']['rated'] as bool;
+        log("✅ Check if rated: $rated");
+        return rated;
+      }
+      return false;
+    } catch (e) {
+      log("❌ Error checking if user rated: $e");
+      return false;
+    }
+  }
 }

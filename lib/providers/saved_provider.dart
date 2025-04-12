@@ -21,7 +21,13 @@ class SavedProvider with ChangeNotifier {
       final data = await _savedService.getSavedDestinations();
       _savedDestinations = data;
     } catch (e) {
-      _error = "Failed to load saved destinations.";
+      if (e.toString().contains("No saved destinations") ||
+          e.toString().contains("404")) {
+        _savedDestinations = [];
+        _error = null;
+      } else {
+        _error = "Failed to load saved destinations.";
+      }
     }
 
     _isLoading = false;
@@ -37,5 +43,15 @@ class SavedProvider with ChangeNotifier {
 
   bool isSaved(int businessUserId) {
     return _savedDestinations.any((dest) => dest['user_id'] == businessUserId);
+  }
+
+  void addSavedDestination(int businessUserId) {
+    _savedDestinations.add({'user_id': businessUserId});
+    notifyListeners();
+  }
+
+  void removeSavedDestination(int businessUserId) {
+    _savedDestinations.removeWhere((d) => d['user_id'] == businessUserId);
+    notifyListeners();
   }
 }

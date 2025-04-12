@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/saved_provider.dart';
 import 'package:go_frontend_mobile/services/dio_client.dart';
 import '../services/activity_service.dart';
 
@@ -14,6 +15,9 @@ class ActivityProvider with ChangeNotifier {
 
   bool isSaved(int businessUserId) =>
       _savedDestinationIds.contains(businessUserId);
+
+  bool _hasRated = false;
+  bool get hasRated => _hasRated;
 
   Future<bool> rateDestination({
     required int businessUserId,
@@ -37,7 +41,7 @@ class ActivityProvider with ChangeNotifier {
     return success;
   }
 
-  Future<void> saveDestination(int businessUserId) async {
+  Future<bool> saveDestination(int businessUserId) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -53,9 +57,11 @@ class ActivityProvider with ChangeNotifier {
       _errorMessage = "Failed to save destination. Please try again.";
     }
     notifyListeners();
+
+    return success;
   }
 
-  Future<void> unsaveDestination(int businessUserId) async {
+  Future<bool> unsaveDestination(int businessUserId) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -71,16 +77,25 @@ class ActivityProvider with ChangeNotifier {
       _errorMessage = "Failed to unsave destination. Please try again.";
     }
     notifyListeners();
+
+    return success;
   }
 
   Future<void> toggleSaveDestination(
     int businessUserId,
     bool currentlySaved,
+    SavedProvider savedProvider,
   ) async {
     if (currentlySaved) {
-      await unsaveDestination(businessUserId);
+      bool result = await unsaveDestination(businessUserId);
+      if (result) {
+        savedProvider.removeSavedDestination(businessUserId);
+      }
     } else {
-      await saveDestination(businessUserId);
+      bool result = await saveDestination(businessUserId);
+      if (result) {
+        savedProvider.addSavedDestination(businessUserId);
+      }
     }
   }
 
@@ -132,5 +147,15 @@ class ActivityProvider with ChangeNotifier {
     }
     notifyListeners();
     return success;
+  }
+
+  Future<void> checkIfUserRated(int businessUserId) async {
+    _isLoading = true;
+    notifyListeners();
+
+    _hasRated = await _activityService.checkIfUserRated(businessUserId);
+
+    _isLoading = false;
+    notifyListeners();
   }
 }

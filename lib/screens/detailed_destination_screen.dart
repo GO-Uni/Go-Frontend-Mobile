@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/saved_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../theme/text_styles.dart';
@@ -41,10 +42,9 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
     final businessUserId = destination["userid"];
     if (businessUserId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        Provider.of<ActivityProvider>(
-          context,
-          listen: false,
-        ).getReviewsDestination(businessUserId);
+        final provider = Provider.of<ActivityProvider>(context, listen: false);
+        provider.getReviewsDestination(businessUserId);
+        provider.checkIfUserRated(businessUserId);
       });
     }
   }
@@ -208,7 +208,9 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
-                                    return const BookingDialog();
+                                    return BookingDialog(
+                                      destinationId: businessUserId,
+                                    );
                                   },
                                 );
                               },
@@ -221,8 +223,13 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                             ),
                             const SizedBox(width: 8),
 
-                            Consumer<ActivityProvider>(
-                              builder: (context, activityProvider, child) {
+                            Consumer2<ActivityProvider, SavedProvider>(
+                              builder: (
+                                context,
+                                activityProvider,
+                                savedProvider,
+                                child,
+                              ) {
                                 if (activityProvider.isLoading) {
                                   return const SizedBox(
                                     width: 24,
@@ -241,6 +248,7 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                                         .toggleSaveDestination(
                                           businessUserId,
                                           isSaved,
+                                          savedProvider,
                                         );
                                   },
                                   child: Icon(
@@ -289,40 +297,55 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
 
                         Consumer<ActivityProvider>(
                           builder: (context, activityProvider, _) {
+                            final isRated = activityProvider.hasRated;
+
                             return Row(
                               children: List.generate(5, (index) {
                                 return GestureDetector(
-                                  onTap: () async {
-                                    final rating = index + 1;
-                                    final currentContext = context;
+                                  onTap:
+                                      isRated
+                                          ? null
+                                          : () async {
+                                            final rating = index + 1;
+                                            final currentContext = context;
 
-                                    setState(() {
-                                      selectedRating = rating;
-                                    });
+                                            setState(() {
+                                              selectedRating = rating;
+                                            });
 
-                                    final success = await activityProvider
-                                        .rateDestination(
-                                          businessUserId: businessUserId,
-                                          rating: rating.toDouble(),
-                                        );
+                                            final success =
+                                                await activityProvider
+                                                    .rateDestination(
+                                                      businessUserId:
+                                                          businessUserId,
+                                                      rating: rating.toDouble(),
+                                                    );
 
-                                    if (!currentContext.mounted) return;
+                                            if (success) {
+                                              await activityProvider
+                                                  .checkIfUserRated(
+                                                    businessUserId,
+                                                  );
+                                            }
 
-                                    ScaffoldMessenger.of(
-                                      currentContext,
-                                    ).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          success
-                                              ? "Thanks! You rated this $rating stars."
-                                              : activityProvider.errorMessage ??
-                                                  "Rating failed.",
-                                        ),
-                                        backgroundColor:
-                                            success ? null : Colors.red,
-                                      ),
-                                    );
-                                  },
+                                            if (!currentContext.mounted) return;
+
+                                            ScaffoldMessenger.of(
+                                              currentContext,
+                                            ).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  success
+                                                      ? "Thanks! You rated this $rating stars."
+                                                      : activityProvider
+                                                              .errorMessage ??
+                                                          "Rating failed.",
+                                                ),
+                                                backgroundColor:
+                                                    success ? null : Colors.red,
+                                              ),
+                                            );
+                                          },
                                   child: Icon(
                                     index < (selectedRating ?? 0)
                                         ? Icons.star

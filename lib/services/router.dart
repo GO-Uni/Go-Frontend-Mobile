@@ -14,6 +14,7 @@ import '../screens/profile_screen.dart';
 import '../screens/where_to_next_screen.dart';
 import '../screens/detailed_destination_screen.dart';
 import '../screens/loading_screen.dart';
+import '../screens/edit_business_screen.dart';
 import '../widgets/app_layout.dart';
 import 'routes.dart';
 
@@ -91,6 +92,10 @@ GoRouter createRouter(AuthProvider authProvider) {
             path: ConfigRoutes.detailedDestination,
             builder: (context, state) => DetailedDestinationScreen(),
           ),
+          GoRoute(
+            path: ConfigRoutes.editDestination,
+            builder: (context, state) => EditBusinessScreen(),
+          ),
         ],
       ),
     ],
@@ -111,9 +116,13 @@ GoRouter createRouter(AuthProvider authProvider) {
             : ConfigRoutes.signUpOptions;
       }
 
-      final isAuthRoute =
-          currentLocation == ConfigRoutes.login ||
-          currentLocation == ConfigRoutes.signUpOptions;
+      final isAuthRoute = [
+        ConfigRoutes.login,
+        ConfigRoutes.signUp,
+        ConfigRoutes.signUpBusiness,
+        ConfigRoutes.signUpOptions,
+        ConfigRoutes.subscriptionBusiness,
+      ].contains(currentLocation);
 
       if (!isLoggedIn && !isGuest && !isAuthRoute) {
         return ConfigRoutes.signUpOptions;
