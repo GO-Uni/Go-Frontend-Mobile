@@ -5,7 +5,7 @@ import 'package:go_frontend_mobile/theme/colors.dart';
 
 class ChangePlanDialog extends StatefulWidget {
   final String currentPlan;
-  final void Function(String selectedPlan) onSave;
+  final Future<void> Function(String selectedPlan) onSave;
 
   const ChangePlanDialog({
     super.key,
@@ -20,6 +20,7 @@ class ChangePlanDialog extends StatefulWidget {
 class _ChangePlanDialogState extends State<ChangePlanDialog> {
   late String oppositePlan;
   String selectedPlan = "";
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -74,10 +75,25 @@ class _ChangePlanDialogState extends State<ChangePlanDialog> {
                   Padding(
                     padding: const EdgeInsets.only(top: 12),
                     child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context, rootNavigator: true).pop();
-                        widget.onSave(selectedPlan);
-                      },
+                      onPressed:
+                          _isSaving
+                              ? null
+                              : () async {
+                                setState(() => _isSaving = true);
+
+                                final navigator = Navigator.of(
+                                  context,
+                                  rootNavigator: true,
+                                );
+
+                                await widget.onSave(selectedPlan);
+
+                                if (!mounted) return;
+
+                                setState(() => _isSaving = false);
+                                navigator.pop();
+                              },
+
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         shape: RoundedRectangleBorder(
@@ -88,12 +104,22 @@ class _ChangePlanDialogState extends State<ChangePlanDialog> {
                           horizontal: 24,
                         ),
                       ),
-                      child: Text(
-                        "Save",
-                        style: AppTextStyles.bodyLarge.copyWith(
-                          color: Colors.white,
-                        ),
-                      ),
+                      child:
+                          _isSaving
+                              ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                              : Text(
+                                "Save",
+                                style: AppTextStyles.bodyLarge.copyWith(
+                                  color: Colors.white,
+                                ),
+                              ),
                     ),
                   ),
               ],

@@ -202,14 +202,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder:
           (_) => ChangePlanDialog(
             currentPlan: currentPlan,
-            onSave: (selectedPlan) {
-              context.read<ProfileProvider>().changeSubscriptionPlan(
-                selectedPlan,
-              );
+            onSave: (selectedPlan) async {
+              bool success = await context
+                  .read<ProfileProvider>()
+                  .changeSubscriptionPlan(selectedPlan);
 
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Plan changed successfully.")),
-              );
+              if (!mounted) return;
+
+              if (success) {
+                debugPrint("✔ Plan changed to $selectedPlan");
+              } else {
+                debugPrint("❌ Failed to change plan.");
+              }
             },
           ),
     );

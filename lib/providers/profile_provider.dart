@@ -16,6 +16,9 @@ class ProfileProvider extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  bool _isChangingPlan = false;
+  bool get isChangingPlan => _isChangingPlan;
+
   void setUser(UserModel user) {
     _user = user;
     log("User data updated in ProfileProvider: ${user.toJson()}");
@@ -69,8 +72,6 @@ class ProfileProvider extends ChangeNotifier {
               businessDescription ?? _user!.businessDescription,
         );
 
-        //onUpdate(_user!);
-
         notifyListeners();
 
         log("✅ Profile updated successfully!");
@@ -111,6 +112,9 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   Future<bool> changeSubscriptionPlan(String newPlan) async {
+    _isChangingPlan = true;
+    notifyListeners();
+
     try {
       log("📤 Attempting to change subscription to: $newPlan");
 
@@ -121,7 +125,6 @@ class ProfileProvider extends ChangeNotifier {
 
       if (success) {
         await loadAuthenticatedUser();
-        notifyListeners();
         log("✅ Subscription plan updated successfully to '$newPlan'");
         return true;
       } else {
@@ -132,6 +135,9 @@ class ProfileProvider extends ChangeNotifier {
       log("❌ Error changing subscription plan: $e");
       log("🪵 Stacktrace: $stackTrace");
       return false;
+    } finally {
+      _isChangingPlan = false;
+      notifyListeners();
     }
   }
 
