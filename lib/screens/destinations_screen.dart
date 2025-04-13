@@ -72,7 +72,9 @@ class DestinationsScreenState extends State<DestinationsScreen> {
       backgroundColor: AppColors.lightGreen,
       body:
           isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(
+                child: CircularProgressIndicator(color: AppColors.primary),
+              )
               : destinations.isEmpty
               ? const Center(child: Text("No destinations found"))
               : CustomScrollView(
@@ -92,47 +94,60 @@ class DestinationsScreenState extends State<DestinationsScreen> {
                   ),
 
                   if (!showCategory) ...[
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      sliver: SliverGrid(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            final recommended =
-                                destinationProvider.recommendedDestinations;
-                            if (index >= recommended.length) return null;
-
-                            final destination = recommended[index];
-
-                            return DestinationCard(
-                              imageUrl:
-                                  destination["main_img"] ??
-                                  "https://images.unsplash.com/photo-1726064855757-ac8720008fe0?q=80",
-                              name: destination["business_name"] ?? "Unknown",
-                              description:
-                                  destination["description"] ??
-                                  "No description available",
-                              rating:
-                                  (destination["rating"] as num?)?.toDouble() ??
-                                  0.0,
-                              isGuest: isGuest,
-                              district: destination["district"],
-                              userid: destination["user_id"],
-                            );
-                          },
-                          childCount:
-                              destinationProvider
-                                  .recommendedDestinations
-                                  .length,
-                        ),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 20,
-                              mainAxisSpacing: 20,
-                              childAspectRatio: 0.95,
+                    destinationProvider.isLoadingRecommendations
+                        ? const SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 30),
+                            child: Center(
+                              child: CircularProgressIndicator(
+                                color: AppColors.primary,
+                              ),
                             ),
-                      ),
-                    ),
+                          ),
+                        )
+                        : SliverPadding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          sliver: SliverGrid(
+                            delegate: SliverChildBuilderDelegate(
+                              (context, index) {
+                                final recommended =
+                                    destinationProvider.recommendedDestinations;
+                                if (index >= recommended.length) return null;
+
+                                final destination = recommended[index];
+
+                                return DestinationCard(
+                                  imageUrl:
+                                      destination["main_img"] ??
+                                      "https://images.unsplash.com/photo-1726064855757-ac8720008fe0?q=80",
+                                  name:
+                                      destination["business_name"] ?? "Unknown",
+                                  description:
+                                      destination["description"] ??
+                                      "No description available",
+                                  rating:
+                                      (destination["rating"] as num?)
+                                          ?.toDouble() ??
+                                      0.0,
+                                  isGuest: isGuest,
+                                  district: destination["district"],
+                                  userid: destination["user_id"],
+                                );
+                              },
+                              childCount:
+                                  destinationProvider
+                                      .recommendedDestinations
+                                      .length,
+                            ),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 20,
+                                  mainAxisSpacing: 20,
+                                  childAspectRatio: 0.95,
+                                ),
+                          ),
+                        ),
 
                     SliverToBoxAdapter(
                       child: Padding(

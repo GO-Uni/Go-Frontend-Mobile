@@ -234,7 +234,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (_isLoading || user == null) {
       return const Scaffold(
         backgroundColor: AppColors.lightGreen,
-        body: Center(child: CircularProgressIndicator()),
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
       );
     }
 
@@ -284,7 +286,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Consumer<CategoryProvider>(
                       builder: (context, categoryProvider, child) {
                         if (categoryProvider.isLoading) {
-                          return const CircularProgressIndicator();
+                          return const CircularProgressIndicator(
+                            color: AppColors.primary,
+                          );
                         }
 
                         final dropdownItems =
