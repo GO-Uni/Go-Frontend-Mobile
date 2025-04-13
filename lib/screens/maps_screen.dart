@@ -1,5 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/services/routes.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:go_frontend_mobile/providers/destination_provider.dart';
@@ -48,10 +50,26 @@ class _MapsScreenState extends State<MapsScreen> {
               infoWindow: InfoWindow(
                 title: destination["business_name"] ?? "Unknown",
                 snippet: destination["category_name"] ?? "No category info",
+                onTap: () {
+                  log("InfoWindow tapped: ${destination["business_name"]}");
+                  context.go(
+                    ConfigRoutes.detailedDestination,
+                    extra: {
+                      "imageUrl":
+                          destination["main_img"] ??
+                          "https://images.unsplash.com/photo-1726064855757-ac8720008fe0?q=80",
+                      "name": destination["business_name"] ?? "Unknown",
+                      "description":
+                          destination["description"] ??
+                          "No description available",
+                      "rating":
+                          (destination["rating"] as num?)?.toDouble() ?? 0.0,
+                      "district": destination["district"] ?? "",
+                      "userid": destination["user_id"],
+                    },
+                  );
+                },
               ),
-              onTap: () {
-                log("Marker tapped: ${destination["business_name"]}");
-              },
             ),
           );
         }
