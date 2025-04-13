@@ -48,4 +48,40 @@ final class BookingService {
       return false;
     }
   }
+
+  Future<List<Map<String, dynamic>>> getBookingsForBusinessUser(
+    int businessUserId,
+  ) async {
+    try {
+      String? token = await _secureStorage.read(key: 'auth_token');
+
+      if (token == null) {
+        log("No auth token found. User is not authenticated.");
+        return [];
+      }
+
+      final response = await _dioClient.dio.get(
+        ApiRoutes.getBookingsForBusinessUser(businessUserId),
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200 && response.data['status'] == 'success') {
+        final List bookings = response.data['data'];
+        log("📦 Retrieved ${bookings.length} bookings");
+        return bookings.cast<Map<String, dynamic>>();
+      } else {
+        log("⚠️ ${response.data['message']}");
+        return [];
+      }
+    } catch (e) {
+      log("❌ Failed to fetch bookings: $e");
+      return [];
+    }
+  }
 }

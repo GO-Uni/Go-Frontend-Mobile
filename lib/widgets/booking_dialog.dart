@@ -30,15 +30,15 @@ class _BookingDialogState extends State<BookingDialog> {
   void initState() {
     super.initState();
 
-    final provider = context.read<DestinationProvider>();
-    _destination = provider.destinations.firstWhere(
+    final destinationProvider = context.read<DestinationProvider>();
+    _destination = destinationProvider.destinations.firstWhere(
       (dest) => dest['user_id'] == widget.destinationId,
       orElse: () => {},
     );
 
     log("Destination ID: ${widget.destinationId}");
     log("Destination slots: ${_destination['available_booking_slots']}");
-    log("Booked slots: ${_destination['bookings']}");
+    log("Initial booked slots: ${_destination['bookings']}");
 
     if (_destination.isNotEmpty &&
         _destination['available_booking_slots'] != null) {
@@ -47,7 +47,19 @@ class _BookingDialogState extends State<BookingDialog> {
       );
     }
 
-    _updateBookedSlotsForDate(_selectedDate);
+    final bookingProvider = context.read<BookingProvider>();
+
+    Future.microtask(() async {
+      await bookingProvider.fetchBookingsForBusinessUser(widget.destinationId);
+
+      if (!mounted) return;
+
+      setState(() {
+        _destination['bookings'] = bookingProvider.bookings;
+      });
+
+      _updateBookedSlotsForDate(_selectedDate);
+    });
   }
 
   void _updateBookedSlotsForDate(DateTime selectedDate) {
@@ -109,9 +121,7 @@ class _BookingDialogState extends State<BookingDialog> {
             ),
           ),
         ),
-
         const SizedBox(height: 4),
-
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child:
@@ -173,6 +183,11 @@ class _BookingDialogState extends State<BookingDialog> {
         bookingDate: date,
         bookingTime: _selectedTimeSlot!,
       );
+
+      await bookingProvider.fetchBookingsForBusinessUser(widget.destinationId);
+      setState(() {
+        _destination['bookings'] = bookingProvider.bookings;
+      });
 
       if (!mounted) return;
 

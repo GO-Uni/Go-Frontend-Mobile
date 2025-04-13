@@ -7,11 +7,17 @@ class BookingProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  bool _isFetchingBookings = false;
+  bool get isFetchingBookings => _isFetchingBookings;
+
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
   bool _bookingSuccess = false;
   bool get bookingSuccess => _bookingSuccess;
+
+  List<Map<String, dynamic>> _bookings = [];
+  List<Map<String, dynamic>> get bookings => _bookings;
 
   Future<void> bookActivity({
     required int businessUserId,
@@ -37,6 +43,29 @@ class BookingProvider extends ChangeNotifier {
       _errorMessage = "Failed to book activity. Please try again.";
     }
 
+    notifyListeners();
+  }
+
+  Future<void> fetchBookingsForBusinessUser(int businessUserId) async {
+    _isFetchingBookings = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      _bookings = await _bookingService.getBookingsForBusinessUser(
+        businessUserId,
+      );
+    } catch (e) {
+      _errorMessage = "Failed to fetch bookings.";
+      _bookings = [];
+    }
+
+    _isFetchingBookings = false;
+    notifyListeners();
+  }
+
+  void clearBookings() {
+    _bookings = [];
     notifyListeners();
   }
 

@@ -20,6 +20,9 @@ class _MapsScreenState extends State<MapsScreen> {
         onMapCreated: (controller) {
           mapController = controller;
         },
+        onTap: (argument) {
+          //print(argument.latitude);
+        },
         initialCameraPosition: CameraPosition(target: _center, zoom: 11),
         markers: {
           Marker(
