@@ -35,7 +35,9 @@ class _SavedScreenState extends State<SavedScreen> {
       body: Consumer<SavedProvider>(
         builder: (context, savedProvider, _) {
           if (savedProvider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            );
           }
 
           if (savedProvider.error != null) {

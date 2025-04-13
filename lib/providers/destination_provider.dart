@@ -18,19 +18,24 @@ class DestinationProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  bool _isLoadingRecommendations = false;
+  bool get isLoadingRecommendations => _isLoadingRecommendations;
+
   List<Map<String, dynamic>> _recommendedDestinations = [];
   List<Map<String, dynamic>> get recommendedDestinations =>
       _recommendedDestinations;
 
   Future<void> fetchDestinationsByCategory(String category) async {
     _isLoading = true;
+    _destinations = [];
     notifyListeners();
 
     try {
+      log("🕒 Before API call. Current destinations: ${_destinations.length}");
       _destinations = await _destinationService.fetchDestinationsByCategory(
         category,
       );
-      log("✅ Destinations cat loaded length: ${_destinations.length}");
+      log("✅ After API call. Fetched: ${_destinations.length}");
     } catch (e) {
       _destinations = [];
       log("❌ Error fetching destinations: $e");
@@ -57,7 +62,7 @@ class DestinationProvider extends ChangeNotifier {
   }
 
   Future<void> fetchRecommendedDestinations() async {
-    _isLoading = true;
+    _isLoadingRecommendations = true;
     notifyListeners();
 
     try {
@@ -69,7 +74,7 @@ class DestinationProvider extends ChangeNotifier {
       log("❌ Error fetching recommended destinations: $e");
     }
 
-    _isLoading = false;
+    _isLoadingRecommendations = false;
     notifyListeners();
   }
 

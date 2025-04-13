@@ -1,3 +1,4 @@
+import 'package:go_frontend_mobile/screens/edit_location_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:go_frontend_mobile/providers/auth_provider.dart';
 import '../screens/auth/sign_up_options.dart';
@@ -96,6 +97,10 @@ GoRouter createRouter(AuthProvider authProvider) {
             path: ConfigRoutes.editDestination,
             builder: (context, state) => EditBusinessScreen(),
           ),
+          GoRoute(
+            path: ConfigRoutes.editLocation,
+            builder: (context, state) => EditLocationScreen(),
+          ),
         ],
       ),
     ],
@@ -104,14 +109,21 @@ GoRouter createRouter(AuthProvider authProvider) {
       final isLoggedIn = authProvider.isLoggedIn;
       final isGuest = authProvider.isGuest;
       final currentLocation = state.uri.path;
+      final isMan = authProvider.isMan;
 
       if (isLoading) {
         if (currentLocation != '/loading') return '/loading';
         return null;
       }
 
+      if (isMan && !isLoggedIn) {
+        return ConfigRoutes.login;
+      }
+
       if (!isLoading && currentLocation == '/loading') {
-        return (isLoggedIn || isGuest)
+        return (isLoggedIn)
+            ? ConfigRoutes.whereToNext
+            : isGuest
             ? ConfigRoutes.whereToNext
             : ConfigRoutes.signUpOptions;
       }

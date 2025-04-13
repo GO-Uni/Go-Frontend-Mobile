@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/providers/activity_provider.dart';
+import 'package:go_frontend_mobile/providers/booking_provider.dart';
+import 'package:go_frontend_mobile/providers/chatbot_provider.dart';
 import 'package:go_frontend_mobile/providers/destination_provider.dart';
 import 'package:go_frontend_mobile/providers/saved_provider.dart';
 import 'package:provider/provider.dart';
@@ -25,18 +27,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => CategoryProvider()..loadCategories(),
         ),
-        ChangeNotifierProxyProvider<AuthProvider, ProfileProvider>(
-          create: (context) => ProfileProvider(),
-          update: (context, authProvider, profileProvider) {
-            if (authProvider.user != null) {
-              profileProvider?.setUser(authProvider.user!);
-            }
-            return profileProvider!;
-          },
-        ),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => DestinationProvider()),
         ChangeNotifierProvider(create: (context) => ActivityProvider()),
         ChangeNotifierProvider(create: (context) => SavedProvider()),
+        ChangeNotifierProvider(create: (_) => BookingProvider()),
+        ChangeNotifierProvider(create: (_) => ChatbotProvider()),
       ],
       child: Consumer<AuthProvider>(
         builder: (context, authProvider, _) {

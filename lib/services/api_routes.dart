@@ -4,6 +4,8 @@ final class ApiRoutes {
   static const String categories = "/categories";
   static const String updateProfile = "/profile/edit";
   static const String destinations = "/destinations";
+  static const String me = "/me";
+  static const String changeSubscription = "/business/subscription/edit";
 
   static String categoryDestinations(String category) {
     return "/destinations/category/$category";
@@ -13,6 +15,15 @@ final class ApiRoutes {
   static const String saveDestination = "/activity/save";
   static const String unsaveDestination = "/activity/unsave";
   static const String reviewDestination = "/activity/review";
+  static const String bookDestination = "/activity/book";
+
+  static String getBookingsForBusinessUser(int businessUserId) {
+    return '/destinations/bookings/$businessUserId';
+  }
+
+  static String chatbot(int userId) {
+    return "/$userId/chatbot";
+  }
 
   static String getReviewsDestination(int businessUserId) {
     return "/destinations/reviews/$businessUserId";

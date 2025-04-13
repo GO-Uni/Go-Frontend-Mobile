@@ -16,6 +16,9 @@ class ProfileProvider extends ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
+  bool _isChangingPlan = false;
+  bool get isChangingPlan => _isChangingPlan;
+
   void setUser(UserModel user) {
     _user = user;
     log("User data updated in ProfileProvider: ${user.toJson()}");
@@ -23,7 +26,6 @@ class ProfileProvider extends ChangeNotifier {
   }
 
   Future<bool> updateProfile({
-    required Function(UserModel) onUpdate,
     String? name,
     String? businessName,
     int? categoryId,
@@ -33,6 +35,8 @@ class ProfileProvider extends ChangeNotifier {
     String? closingHour,
     int? counterBooking,
     String? businessDescription,
+    double? latitude,
+    double? longitude,
   }) async {
     _isUpdating = true;
     _errorMessage = null;
@@ -49,6 +53,8 @@ class ProfileProvider extends ChangeNotifier {
         if (closingHour != null) "closing_hour": closingHour,
         if (counterBooking != null) "counter_booking": counterBooking,
         if (businessDescription != null) "description": businessDescription,
+        if (latitude != null) "latitude": latitude,
+        if (longitude != null) "longitude": longitude,
       },
     };
 
@@ -70,8 +76,6 @@ class ProfileProvider extends ChangeNotifier {
               businessDescription ?? _user!.businessDescription,
         );
 
-        onUpdate(_user!);
-
         notifyListeners();
 
         log("✅ Profile updated successfully!");
@@ -88,6 +92,55 @@ class ProfileProvider extends ChangeNotifier {
       return false;
     } finally {
       _isUpdating = false;
+      notifyListeners();
+    }
+  }
+
+  Future<bool> loadAuthenticatedUser() async {
+    try {
+      final userJson = await _profileService.getAuthenticatedUser();
+
+      if (userJson != null) {
+        _user = UserModel.fromJson(userJson);
+        notifyListeners();
+        log("✅ Loaded authenticated user into ProfileProvider.");
+        return true;
+      } else {
+        log("⚠️ No user data found.");
+        return false;
+      }
+    } catch (e) {
+      log("❌ Error loading user: $e");
+      return false;
+    }
+  }
+
+  Future<bool> changeSubscriptionPlan(String newPlan) async {
+    _isChangingPlan = true;
+    notifyListeners();
+
+    try {
+      log("📤 Attempting to change subscription to: $newPlan");
+
+      final success = await _profileService.changeSubscription(
+        subscriptionType: newPlan,
+        paymentMethod: "pm_card_visa",
+      );
+
+      if (success) {
+        await loadAuthenticatedUser();
+        log("✅ Subscription plan updated successfully to '$newPlan'");
+        return true;
+      } else {
+        log("❌ Backend failed to update the subscription plan.");
+        return false;
+      }
+    } catch (e, stackTrace) {
+      log("❌ Error changing subscription plan: $e");
+      log("🪵 Stacktrace: $stackTrace");
+      return false;
+    } finally {
+      _isChangingPlan = false;
       notifyListeners();
     }
   }

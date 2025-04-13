@@ -13,13 +13,17 @@ class UserModel {
   final String? closingHour;
   final int? counterBooking;
   final String? subscriptionMethod;
+  final double? subscriptionPrice;
   final String? businessDescription;
   final int? userId;
+  final double? latitude;
+  final double? longitude;
 
   const UserModel({
     required this.name,
     required this.email,
     required this.roleId,
+    required this.userId,
     this.businessName,
     this.ownerName,
     this.businessCategory,
@@ -29,8 +33,10 @@ class UserModel {
     this.closingHour,
     this.counterBooking,
     this.subscriptionMethod,
+    this.subscriptionPrice,
     this.businessDescription,
-    required this.userId,
+    this.latitude,
+    this.longitude,
   });
 
   UserModel copyWith({
@@ -47,6 +53,8 @@ class UserModel {
     int? counterBooking,
     String? subscriptionMethod,
     String? businessDescription,
+    double? latitude,
+    double? longitude,
   }) {
     return UserModel(
       name: name ?? this.name,
@@ -63,18 +71,21 @@ class UserModel {
       counterBooking: counterBooking ?? this.counterBooking,
       subscriptionMethod: subscriptionMethod ?? this.subscriptionMethod,
       businessDescription: businessDescription ?? this.businessDescription,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
     );
   }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     final businessProfile = json['business_profile'] ?? {};
+    final subscription =
+        businessProfile['subscription_details'] ?? json['subscription'] ?? {};
 
     return UserModel(
       name: json['name'] ?? "Unknown",
       email: json['email'] ?? "No Email",
       roleId: json['role_id'] ?? 2,
       userId: json['id'],
-
       businessName: businessProfile['business_name'] as String?,
       ownerName: businessProfile['user_name'] as String?,
       businessCategory: businessProfile['category_name'] as String?,
@@ -87,8 +98,19 @@ class UserModel {
           businessProfile['counter_booking'] != null
               ? int.tryParse(businessProfile['counter_booking'].toString())
               : null,
-
-      subscriptionMethod: json['subscription_method'] as String?,
+      subscriptionMethod: subscription['type'] as String?,
+      subscriptionPrice:
+          subscription['price'] != null
+              ? double.tryParse(subscription['price'].toString())
+              : null,
+      latitude:
+          businessProfile['latitude'] != null
+              ? double.tryParse(businessProfile['latitude'].toString())
+              : null,
+      longitude:
+          businessProfile['longitude'] != null
+              ? double.tryParse(businessProfile['longitude'].toString())
+              : null,
     );
   }
 
@@ -111,6 +133,8 @@ class UserModel {
           "closing_hour": closingHour,
           "counter_booking": counterBooking,
           'business_description': businessDescription,
+          "latitude": latitude,
+          "longitude": longitude,
         },
     };
   }

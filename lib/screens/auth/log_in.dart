@@ -29,6 +29,19 @@ class LoginState extends State<Login> {
   }
 
   void _login() async {
+    final email = _email.text.trim();
+    final password = _password.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please fill in both email and password"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     bool success = await authProvider.loginUser(

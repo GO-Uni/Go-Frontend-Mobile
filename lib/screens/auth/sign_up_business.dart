@@ -39,6 +39,26 @@ class SignUpBusinessState extends State<SignUpBusiness> {
   bool isChecked = false;
 
   void _continue() async {
+    final email = _email.text.trim();
+    final businessName = _businessName.text.trim();
+    final ownerName = _ownerName.text.trim();
+    final password = _password.text;
+    final confirmPassword = _confirmPassword.text;
+
+    if (email.isEmpty ||
+        businessName.isEmpty ||
+        ownerName.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please fill in all fields"),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     if (_password.text != _confirmPassword.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -105,7 +125,7 @@ class SignUpBusinessState extends State<SignUpBusiness> {
                 const SizedBox(height: 18),
 
                 GestureDetector(
-                  onTap: () => context.pop(),
+                  onTap: () => context.go(ConfigRoutes.signUpOptions),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -133,6 +153,7 @@ class SignUpBusinessState extends State<SignUpBusiness> {
                   label: "Business Name",
                   hintText: "Enter your business name",
                   controller: _businessName,
+                  maxLength: 15,
                 ),
                 CustomTextField(
                   label: "Owner Name",

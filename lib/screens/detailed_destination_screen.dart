@@ -236,6 +236,7 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                                     height: 24,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
+                                      color: AppColors.primary,
                                     ),
                                   );
                                 }

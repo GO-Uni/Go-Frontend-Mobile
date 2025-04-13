@@ -35,6 +35,9 @@ class AuthProvider extends ChangeNotifier {
   bool _isGuest = false;
   bool get isGuest => _isGuest;
 
+  bool _isMan = false;
+  bool get isMan => _isMan;
+
   void updateUser(UserModel updatedUser) {
     _user = updatedUser;
     notifyListeners();
@@ -104,6 +107,7 @@ class AuthProvider extends ChangeNotifier {
   }) async {
     _isLoading = true;
     _errorMessage = null;
+    _isMan = true;
     notifyListeners();
 
     final response = await _authService.loginUser(
@@ -184,6 +188,7 @@ class AuthProvider extends ChangeNotifier {
     _isLoading = false;
     _isLoggedIn = false;
     _isGuest = false;
+    _isMan = false;
     notifyListeners();
 
     try {
@@ -201,6 +206,7 @@ class AuthProvider extends ChangeNotifier {
     final roleIdStr = await _secureStorage.read(key: 'role_id');
 
     _isGuest = false;
+    _isMan = false;
 
     if (token != null && userIdStr != null && roleIdStr != null) {
       _userId = int.tryParse(userIdStr);
