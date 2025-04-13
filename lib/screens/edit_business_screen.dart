@@ -194,17 +194,6 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
                           final success = await profileProvider.updateProfile(
                             businessDescription:
                                 _descriptionController.text.trim(),
-                            onUpdate: (updatedUser) {
-                              if (!mounted) return;
-                              setState(() {
-                                description =
-                                    updatedUser.businessDescription ?? "";
-                              });
-                              Provider.of<AuthProvider>(
-                                context,
-                                listen: false,
-                              ).updateUser(updatedUser);
-                            },
                           );
 
                           if (!mounted) return;
