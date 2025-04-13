@@ -194,19 +194,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = context.read<ProfileProvider>().user;
     if (user == null || user.subscriptionMethod == null) return;
 
+    final currentPlan = user.subscriptionMethod!.toLowerCase();
+
     showDialog(
       context: context,
       barrierColor: Colors.black.withAlpha((0.2 * 255).toInt()),
       builder:
           (_) => ChangePlanDialog(
-            currentPlan: user.subscriptionMethod!.toLowerCase(),
+            currentPlan: currentPlan,
             onSave: (selectedPlan) {
-              // Handle update logic here
+              context.read<ProfileProvider>().changeSubscriptionPlan(
+                selectedPlan,
+              );
+
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("Subscription updated to $selectedPlan"),
-                  backgroundColor: Colors.green,
-                ),
+                const SnackBar(content: Text("Plan changed successfully.")),
               );
             },
           ),

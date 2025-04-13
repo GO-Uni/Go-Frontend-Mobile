@@ -78,4 +78,41 @@ class ProfileService {
       return null;
     }
   }
+
+  Future<bool> changeSubscription({
+    required String subscriptionType,
+    required String paymentMethod,
+  }) async {
+    try {
+      final token = await _secureStorage.read(key: 'auth_token');
+      if (token == null) {
+        log("❌ No auth token");
+        return false;
+      }
+
+      final response = await _dioClient.dio.put(
+        ApiRoutes.changeSubscription,
+        data: {
+          "subscription_type": subscriptionType,
+          "payment_method": paymentMethod,
+        },
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      log("✅ Response Status: ${response.statusCode}");
+      log("✅ Response Data: ${response.data}");
+
+      return response.statusCode == 200;
+    } on DioException catch (e) {
+      log("❌ Error: ${e.response}");
+      log("❌ Message: ${e.message}");
+      return false;
+    }
+  }
 }

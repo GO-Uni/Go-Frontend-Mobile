@@ -5,6 +5,7 @@ final class ApiRoutes {
   static const String updateProfile = "/profile/edit";
   static const String destinations = "/destinations";
   static const String me = "/me";
+  static const String changeSubscription = "/business/subscription/edit";
 
   static String categoryDestinations(String category) {
     return "/destinations/category/$category";

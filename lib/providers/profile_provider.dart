@@ -110,6 +110,31 @@ class ProfileProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> changeSubscriptionPlan(String newPlan) async {
+    try {
+      log("📤 Attempting to change subscription to: $newPlan");
+
+      final success = await _profileService.changeSubscription(
+        subscriptionType: newPlan,
+        paymentMethod: "pm_card_visa",
+      );
+
+      if (success) {
+        await loadAuthenticatedUser();
+        notifyListeners();
+        log("✅ Subscription plan updated successfully to '$newPlan'");
+        return true;
+      } else {
+        log("❌ Backend failed to update the subscription plan.");
+        return false;
+      }
+    } catch (e, stackTrace) {
+      log("❌ Error changing subscription plan: $e");
+      log("🪵 Stacktrace: $stackTrace");
+      return false;
+    }
+  }
+
   void clearProfile() {
     _user = null;
     notifyListeners();
