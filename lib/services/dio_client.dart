@@ -4,7 +4,7 @@ import 'dart:developer';
 class DioClient {
   final Dio dio = Dio(
     BaseOptions(
-      baseUrl: "http://16.171.249.2:8000/api",
+      baseUrl: "http://11.11.11.16:8000/api",
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
       headers: {
