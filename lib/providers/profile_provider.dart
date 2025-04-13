@@ -35,6 +35,8 @@ class ProfileProvider extends ChangeNotifier {
     String? closingHour,
     int? counterBooking,
     String? businessDescription,
+    double? latitude,
+    double? longitude,
   }) async {
     _isUpdating = true;
     _errorMessage = null;
@@ -51,6 +53,8 @@ class ProfileProvider extends ChangeNotifier {
         if (closingHour != null) "closing_hour": closingHour,
         if (counterBooking != null) "counter_booking": counterBooking,
         if (businessDescription != null) "description": businessDescription,
+        if (latitude != null) "latitude": latitude,
+        if (longitude != null) "longitude": longitude,
       },
     };
 

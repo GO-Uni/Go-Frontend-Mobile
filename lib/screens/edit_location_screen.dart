@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/profile_provider.dart';
 import 'package:go_frontend_mobile/theme/colors.dart';
 import 'package:go_frontend_mobile/theme/text_styles.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
 import '../widgets/custom_button.dart';
 
 class EditLocationScreen extends StatefulWidget {
@@ -21,14 +25,36 @@ class _EditLocationScreenState extends State<EditLocationScreen> {
     });
   }
 
-  void _confirmSelection() {
-    if (_selectedLocation != null) {
-      final lat = _selectedLocation!.latitude;
-      final lng = _selectedLocation!.longitude;
-      debugPrint("📍 Selected Location -> Latitude: $lat, Longitude: $lng");
+  void _confirmSelection() async {
+    final profileProvider = Provider.of<ProfileProvider>(
+      context,
+      listen: false,
+    );
+
+    final user = profileProvider.user;
+
+    if (user == null || _selectedLocation == null) {
+      log("User or selected location is null. Exiting update.");
+      return;
+    }
+
+    final lat = _selectedLocation!.latitude;
+    final lng = _selectedLocation!.longitude;
+
+    bool success = await profileProvider.updateProfile(
+      latitude: lat,
+      longitude: lng,
+    );
+
+    if (success) {
+      log("✅ Profile updated successfully!");
     } else {
+      if (!mounted) return;
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select a location.")),
+        const SnackBar(
+          content: Text("Failed to update profile. Please try again."),
+        ),
       );
     }
   }
