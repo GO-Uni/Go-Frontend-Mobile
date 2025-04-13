@@ -13,6 +13,7 @@ class UserModel {
   final String? closingHour;
   final int? counterBooking;
   final String? subscriptionMethod;
+  final double? subscriptionPrice;
   final String? businessDescription;
   final int? userId;
 
@@ -20,6 +21,7 @@ class UserModel {
     required this.name,
     required this.email,
     required this.roleId,
+    required this.userId,
     this.businessName,
     this.ownerName,
     this.businessCategory,
@@ -29,8 +31,8 @@ class UserModel {
     this.closingHour,
     this.counterBooking,
     this.subscriptionMethod,
+    this.subscriptionPrice,
     this.businessDescription,
-    required this.userId,
   });
 
   UserModel copyWith({
@@ -68,13 +70,14 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     final businessProfile = json['business_profile'] ?? {};
+    final subscription =
+        businessProfile['subscription_details'] ?? json['subscription'] ?? {};
 
     return UserModel(
       name: json['name'] ?? "Unknown",
       email: json['email'] ?? "No Email",
       roleId: json['role_id'] ?? 2,
       userId: json['id'],
-
       businessName: businessProfile['business_name'] as String?,
       ownerName: businessProfile['user_name'] as String?,
       businessCategory: businessProfile['category_name'] as String?,
@@ -87,8 +90,11 @@ class UserModel {
           businessProfile['counter_booking'] != null
               ? int.tryParse(businessProfile['counter_booking'].toString())
               : null,
-
-      subscriptionMethod: json['subscription_method'] as String?,
+      subscriptionMethod: subscription['type'] as String?,
+      subscriptionPrice:
+          subscription['price'] != null
+              ? double.tryParse(subscription['price'].toString())
+              : null,
     );
   }
 
