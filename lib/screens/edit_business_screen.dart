@@ -3,7 +3,6 @@ import 'package:go_frontend_mobile/providers/profile_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:go_frontend_mobile/theme/colors.dart';
 import 'package:go_frontend_mobile/theme/text_styles.dart';
-import 'package:go_frontend_mobile/providers/auth_provider.dart';
 
 class EditBusinessScreen extends StatefulWidget {
   const EditBusinessScreen({super.key});
@@ -27,7 +26,7 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final user = Provider.of<AuthProvider>(context, listen: false).user;
+      final user = Provider.of<ProfileProvider>(context, listen: false).user;
 
       setState(() {
         images = [
