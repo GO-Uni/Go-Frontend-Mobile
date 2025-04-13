@@ -16,6 +16,8 @@ class UserModel {
   final double? subscriptionPrice;
   final String? businessDescription;
   final int? userId;
+  final double? latitude;
+  final double? longitude;
 
   const UserModel({
     required this.name,
@@ -33,6 +35,8 @@ class UserModel {
     this.subscriptionMethod,
     this.subscriptionPrice,
     this.businessDescription,
+    this.latitude,
+    this.longitude,
   });
 
   UserModel copyWith({
@@ -49,6 +53,8 @@ class UserModel {
     int? counterBooking,
     String? subscriptionMethod,
     String? businessDescription,
+    double? latitude,
+    double? longitude,
   }) {
     return UserModel(
       name: name ?? this.name,
@@ -65,6 +71,8 @@ class UserModel {
       counterBooking: counterBooking ?? this.counterBooking,
       subscriptionMethod: subscriptionMethod ?? this.subscriptionMethod,
       businessDescription: businessDescription ?? this.businessDescription,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
     );
   }
 
@@ -95,6 +103,14 @@ class UserModel {
           subscription['price'] != null
               ? double.tryParse(subscription['price'].toString())
               : null,
+      latitude:
+          businessProfile['latitude'] != null
+              ? double.tryParse(businessProfile['latitude'].toString())
+              : null,
+      longitude:
+          businessProfile['longitude'] != null
+              ? double.tryParse(businessProfile['longitude'].toString())
+              : null,
     );
   }
 
@@ -117,6 +133,8 @@ class UserModel {
           "closing_hour": closingHour,
           "counter_booking": counterBooking,
           'business_description': businessDescription,
+          "latitude": latitude,
+          "longitude": longitude,
         },
     };
   }

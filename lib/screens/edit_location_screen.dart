@@ -17,7 +17,29 @@ class EditLocationScreen extends StatefulWidget {
 
 class _EditLocationScreenState extends State<EditLocationScreen> {
   LatLng? _selectedLocation;
-  final LatLng _initialCenter = const LatLng(33.8547, 35.8623);
+  LatLng _initialCenter = const LatLng(33.8547, 35.8623); // default fallback
+
+  @override
+  void initState() {
+    super.initState();
+
+    final profileProvider = Provider.of<ProfileProvider>(
+      context,
+      listen: false,
+    );
+
+    final user = profileProvider.user;
+
+    if (user != null && user.latitude != null && user.longitude != null) {
+      final lat = double.tryParse(user.latitude.toString());
+      final lng = double.tryParse(user.longitude.toString());
+
+      if (lat != null && lng != null) {
+        _initialCenter = LatLng(lat, lng);
+        _selectedLocation = _initialCenter;
+      }
+    }
+  }
 
   void _onMapTap(LatLng position) {
     setState(() {
@@ -46,12 +68,22 @@ class _EditLocationScreenState extends State<EditLocationScreen> {
       longitude: lng,
     );
 
+    if (!mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+
     if (success) {
       log("✅ Profile updated successfully!");
-    } else {
-      if (!mounted) return;
+      messenger.showSnackBar(
+        const SnackBar(content: Text("Profile updated successfully.")),
+      );
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      if (!mounted) return;
+      Navigator.of(context).pop();
+    } else {
+      messenger.showSnackBar(
         const SnackBar(
           content: Text("Failed to update profile. Please try again."),
         ),
