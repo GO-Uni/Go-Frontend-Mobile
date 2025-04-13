@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_frontend_mobile/providers/auth_provider.dart';
+import 'package:go_frontend_mobile/providers/chatbot_provider.dart';
 import 'package:go_frontend_mobile/theme/colors.dart';
 import 'package:go_frontend_mobile/theme/text_styles.dart';
 import 'package:go_frontend_mobile/widgets/discover_dialog.dart';
@@ -14,12 +15,10 @@ class ChatbotScreen extends StatefulWidget {
 }
 
 class _ChatbotScreenState extends State<ChatbotScreen> {
-  final List<Map<String, String>> _messages = [
-    {"sender": "bot", "message": "Hey! How can I help you?"},
-    {"sender": "user", "message": "Give me historical places..."},
-  ];
-
+  final TextEditingController _textController = TextEditingController();
+  final List<Map<String, String>> _messages = [];
   bool _dialogShown = false;
+  bool _isSending = false;
 
   @override
   void didChangeDependencies() {
@@ -37,6 +36,47 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           );
         }
       });
+    }
+  }
+
+  void _sendMessage() async {
+    final userMessage = _textController.text.trim();
+    if (userMessage.isEmpty || _isSending) return;
+
+    setState(() {
+      _isSending = true;
+      _messages.add({"sender": "user", "message": userMessage});
+      _textController.clear();
+
+      // 👇 Add a fake typing message from bot
+      _messages.add({"sender": "bot", "message": "typing..."});
+    });
+
+    try {
+      await context.read<ChatbotProvider>().loadChatbotMessage(userMessage);
+
+      if (mounted) {
+        setState(() {
+          _messages.removeLast();
+
+          _messages.add({
+            "sender": "bot",
+            "message": context.read<ChatbotProvider>().message!,
+          });
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _messages.removeLast();
+        _messages.add({
+          "sender": "bot",
+          "message": "⚠️ Failed to get response.",
+        });
+      });
+    } finally {
+      if (mounted) {
+        setState(() => _isSending = false);
+      }
     }
   }
 
@@ -70,6 +110,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: TextField(
+                      controller: _textController,
+                      onSubmitted: (_) => _sendMessage(),
                       decoration: InputDecoration(
                         hintText: "Type here...",
                         border: InputBorder.none,
@@ -86,7 +128,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: IconButton(
-                      onPressed: () {},
+                      onPressed: _sendMessage,
                       icon: const Icon(
                         Icons.send,
                         color: Colors.white,

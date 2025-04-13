@@ -17,6 +17,10 @@ final class ApiRoutes {
   static const String reviewDestination = "/activity/review";
   static const String bookDestination = "/activity/book";
 
+  static String chatbot(int userId) {
+    return "/$userId/chatbot";
+  }
+
   static String getReviewsDestination(int businessUserId) {
     return "/destinations/reviews/$businessUserId";
   }
