@@ -105,7 +105,7 @@ class SignUpBusinessState extends State<SignUpBusiness> {
                 const SizedBox(height: 18),
 
                 GestureDetector(
-                  onTap: () => context.pop(),
+                  onTap: () => context.go(ConfigRoutes.signUpOptions),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

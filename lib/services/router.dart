@@ -104,14 +104,21 @@ GoRouter createRouter(AuthProvider authProvider) {
       final isLoggedIn = authProvider.isLoggedIn;
       final isGuest = authProvider.isGuest;
       final currentLocation = state.uri.path;
+      final isMan = authProvider.isMan;
 
       if (isLoading) {
         if (currentLocation != '/loading') return '/loading';
         return null;
       }
 
+      if (isMan && !isLoggedIn) {
+        return ConfigRoutes.login;
+      }
+
       if (!isLoading && currentLocation == '/loading') {
-        return (isLoggedIn || isGuest)
+        return (isLoggedIn)
+            ? ConfigRoutes.whereToNext
+            : isGuest
             ? ConfigRoutes.whereToNext
             : ConfigRoutes.signUpOptions;
       }
