@@ -133,6 +133,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
                     child: TextField(
                       controller: _textController,
                       onSubmitted: (_) => _sendMessage(),
+                      minLines: 2,
+                      maxLines: null,
+                      keyboardType: TextInputType.multiline,
                       decoration: InputDecoration(
                         hintText: "Type here...",
                         border: InputBorder.none,
