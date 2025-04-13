@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/widgets/change_plan_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
@@ -189,7 +190,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
     context.go(ConfigRoutes.signUpOptions);
   }
 
-  void _showChangePlanDialog() {}
+  void _showChangePlanDialog() {
+    final user = context.read<ProfileProvider>().user;
+    if (user == null || user.subscriptionMethod == null) return;
+
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withAlpha((0.2 * 255).toInt()),
+      builder:
+          (_) => ChangePlanDialog(
+            currentPlan: user.subscriptionMethod!.toLowerCase(),
+            onSave: (selectedPlan) {
+              // Handle update logic here
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Subscription updated to $selectedPlan"),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            },
+          ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
