@@ -38,9 +38,6 @@ class AuthProvider extends ChangeNotifier {
   bool _isMan = false;
   bool get isMan => _isMan;
 
-  bool _isFirstAtmpt = true;
-  bool get isFirstAtmpt => _isFirstAtmpt;
-
   void updateUser(UserModel updatedUser) {
     _user = updatedUser;
     notifyListeners();
@@ -57,7 +54,6 @@ class AuthProvider extends ChangeNotifier {
   }) async {
     _isLoading = true;
     _errorMessage = null;
-    _isFirstAtmpt = false;
     notifyListeners();
 
     final response = await _authService.registerUser(
@@ -112,7 +108,6 @@ class AuthProvider extends ChangeNotifier {
     _isLoading = true;
     _errorMessage = null;
     _isMan = true;
-    _isFirstAtmpt = false;
     notifyListeners();
 
     final response = await _authService.loginUser(
@@ -193,7 +188,7 @@ class AuthProvider extends ChangeNotifier {
     _isLoading = false;
     _isLoggedIn = false;
     _isGuest = false;
-    _isFirstAtmpt = true;
+    _isMan = false;
     notifyListeners();
 
     try {
@@ -212,7 +207,6 @@ class AuthProvider extends ChangeNotifier {
 
     _isGuest = false;
     _isMan = false;
-    _isFirstAtmpt = false;
 
     if (token != null && userIdStr != null && roleIdStr != null) {
       _userId = int.tryParse(userIdStr);
