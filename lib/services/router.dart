@@ -1,3 +1,4 @@
+import 'package:go_frontend_mobile/screens/edit_location_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:go_frontend_mobile/providers/auth_provider.dart';
 import '../screens/auth/sign_up_options.dart';
@@ -95,6 +96,10 @@ GoRouter createRouter(AuthProvider authProvider) {
           GoRoute(
             path: ConfigRoutes.editDestination,
             builder: (context, state) => EditBusinessScreen(),
+          ),
+          GoRoute(
+            path: ConfigRoutes.editLocation,
+            builder: (context, state) => EditLocationScreen(),
           ),
         ],
       ),

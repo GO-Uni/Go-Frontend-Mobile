@@ -65,7 +65,9 @@ class ProfileHeader extends StatelessWidget {
                       ),
                     ),
                     TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.push(ConfigRoutes.editLocation);
+                      },
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.zero,
                         minimumSize: Size.zero,
