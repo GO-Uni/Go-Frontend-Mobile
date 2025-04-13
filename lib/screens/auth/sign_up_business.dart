@@ -133,6 +133,7 @@ class SignUpBusinessState extends State<SignUpBusiness> {
                   label: "Business Name",
                   hintText: "Enter your business name",
                   controller: _businessName,
+                  maxLength: 15,
                 ),
                 CustomTextField(
                   label: "Owner Name",

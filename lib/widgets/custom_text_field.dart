@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 import '../theme/text_styles.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextField extends StatelessWidget {
   final String label;
@@ -13,6 +14,7 @@ class CustomTextField extends StatelessWidget {
   final bool readOnly;
   final VoidCallback? onChangePlan;
   final TextEditingController? controller;
+  final int? maxLength;
 
   const CustomTextField({
     super.key,
@@ -26,6 +28,7 @@ class CustomTextField extends StatelessWidget {
     this.readOnly = false,
     this.onChangePlan,
     this.controller,
+    this.maxLength,
   });
 
   @override
@@ -134,6 +137,10 @@ class CustomTextField extends StatelessWidget {
                   obscureText: isPassword,
                   style: AppTextStyles.bodyRegular,
                   readOnly: readOnly,
+                  inputFormatters:
+                      maxLength != null
+                          ? [LengthLimitingTextInputFormatter(maxLength)]
+                          : null,
                   decoration: InputDecoration(
                     hintText: hintText,
                     hintStyle: const TextStyle(
