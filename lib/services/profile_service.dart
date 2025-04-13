@@ -45,4 +45,37 @@ class ProfileService {
       return false;
     }
   }
+
+  Future<Map<String, dynamic>?> getAuthenticatedUser() async {
+    try {
+      String? token = await _secureStorage.read(key: 'auth_token');
+
+      if (token == null) {
+        log("⚠️ No auth token found. Cannot fetch user data.");
+        return null;
+      }
+
+      final response = await _dioClient.dio.get(
+        ApiRoutes.me,
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final user = response.data['data']?['user'];
+        log("✅ Authenticated user: $user");
+        return user;
+      } else {
+        log("⚠️ Failed to fetch authenticated user: ${response.data}");
+        return null;
+      }
+    } on DioException catch (e) {
+      log("❌ Error fetching user: ${e.response?.data['message'] ?? e.message}");
+      return null;
+    }
+  }
 }

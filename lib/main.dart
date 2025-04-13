@@ -26,15 +26,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => CategoryProvider()..loadCategories(),
         ),
-        ChangeNotifierProxyProvider<AuthProvider, ProfileProvider>(
-          create: (context) => ProfileProvider(),
-          update: (context, authProvider, profileProvider) {
-            if (authProvider.user != null) {
-              profileProvider?.setUser(authProvider.user!);
-            }
-            return profileProvider!;
-          },
-        ),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => DestinationProvider()),
         ChangeNotifierProvider(create: (context) => ActivityProvider()),
         ChangeNotifierProvider(create: (context) => SavedProvider()),

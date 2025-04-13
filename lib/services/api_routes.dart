@@ -4,6 +4,7 @@ final class ApiRoutes {
   static const String categories = "/categories";
   static const String updateProfile = "/profile/edit";
   static const String destinations = "/destinations";
+  static const String me = "/me";
 
   static String categoryDestinations(String category) {
     return "/destinations/category/$category";

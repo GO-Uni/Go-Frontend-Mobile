@@ -70,7 +70,7 @@ class ProfileProvider extends ChangeNotifier {
               businessDescription ?? _user!.businessDescription,
         );
 
-        onUpdate(_user!);
+        //onUpdate(_user!);
 
         notifyListeners();
 
@@ -89,6 +89,25 @@ class ProfileProvider extends ChangeNotifier {
     } finally {
       _isUpdating = false;
       notifyListeners();
+    }
+  }
+
+  Future<bool> loadAuthenticatedUser() async {
+    try {
+      final userJson = await _profileService.getAuthenticatedUser();
+
+      if (userJson != null) {
+        _user = UserModel.fromJson(userJson);
+        notifyListeners();
+        log("✅ Loaded authenticated user into ProfileProvider.");
+        return true;
+      } else {
+        log("⚠️ No user data found.");
+        return false;
+      }
+    } catch (e) {
+      log("❌ Error loading user: $e");
+      return false;
     }
   }
 
