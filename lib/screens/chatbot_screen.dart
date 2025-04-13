@@ -16,7 +16,9 @@ class ChatbotScreen extends StatefulWidget {
 
 class _ChatbotScreenState extends State<ChatbotScreen> {
   final TextEditingController _textController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   final List<Map<String, String>> _messages = [];
+
   bool _dialogShown = false;
   bool _isSending = false;
 
@@ -39,6 +41,18 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     }
   }
 
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
   void _sendMessage() async {
     final userMessage = _textController.text.trim();
     if (userMessage.isEmpty || _isSending) return;
@@ -47,10 +61,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       _isSending = true;
       _messages.add({"sender": "user", "message": userMessage});
       _textController.clear();
-
-      // 👇 Add a fake typing message from bot
       _messages.add({"sender": "bot", "message": "typing..."});
     });
+    _scrollToBottom();
 
     try {
       await context.read<ChatbotProvider>().loadChatbotMessage(userMessage);
@@ -58,7 +71,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       if (mounted) {
         setState(() {
           _messages.removeLast();
-
           _messages.add({
             "sender": "bot",
             "message": context.read<ChatbotProvider>().message!,
@@ -76,8 +88,16 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     } finally {
       if (mounted) {
         setState(() => _isSending = false);
+        _scrollToBottom();
       }
     }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _textController.dispose();
+    super.dispose();
   }
 
   @override
@@ -88,6 +108,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         children: [
           Expanded(
             child: ListView.builder(
+              controller: _scrollController,
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               itemCount: _messages.length,
               itemBuilder: (context, index) {
@@ -149,6 +170,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   }
 
   Widget _buildMessageBubble(String message, bool isUser) {
+    final isTyping = message.toLowerCase() == "typing...";
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -177,8 +200,11 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
             ),
             constraints: const BoxConstraints(maxWidth: 250),
             child: Text(
-              message,
-              style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
+              isTyping ? "Chatbot is typing..." : message,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: isTyping ? Colors.white70 : Colors.white,
+                fontStyle: isTyping ? FontStyle.italic : FontStyle.normal,
+              ),
             ),
           ),
           if (isUser)
