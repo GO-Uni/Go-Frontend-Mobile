@@ -18,6 +18,9 @@ class DestinationProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
+  bool _isLoadingRecommendations = false;
+  bool get isLoadingRecommendations => _isLoadingRecommendations;
+
   List<Map<String, dynamic>> _recommendedDestinations = [];
   List<Map<String, dynamic>> get recommendedDestinations =>
       _recommendedDestinations;
@@ -59,7 +62,7 @@ class DestinationProvider extends ChangeNotifier {
   }
 
   Future<void> fetchRecommendedDestinations() async {
-    _isLoading = true;
+    _isLoadingRecommendations = true;
     notifyListeners();
 
     try {
@@ -71,7 +74,7 @@ class DestinationProvider extends ChangeNotifier {
       log("❌ Error fetching recommended destinations: $e");
     }
 
-    _isLoading = false;
+    _isLoadingRecommendations = false;
     notifyListeners();
   }
 
