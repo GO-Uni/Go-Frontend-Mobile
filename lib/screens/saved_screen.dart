@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/providers/auth_provider.dart';
+import 'package:go_frontend_mobile/providers/booking_provider.dart';
 import 'package:provider/provider.dart';
 import '../providers/saved_provider.dart';
 import '../theme/colors.dart';
@@ -18,10 +19,15 @@ class _SavedScreenState extends State<SavedScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final contextRead = context;
       Provider.of<SavedProvider>(
-        context,
+        contextRead,
         listen: false,
       ).fetchSavedDestinations();
+      Provider.of<BookingProvider>(
+        contextRead,
+        listen: false,
+      ).fetchBookingsForUser();
     });
   }
 
@@ -32,9 +38,9 @@ class _SavedScreenState extends State<SavedScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
-      body: Consumer<SavedProvider>(
-        builder: (context, savedProvider, _) {
-          if (savedProvider.isLoading) {
+      body: Consumer2<SavedProvider, BookingProvider>(
+        builder: (context, savedProvider, bookingProvider, _) {
+          if (savedProvider.isLoading || bookingProvider.isFetchingBookings) {
             return const Center(
               child: CircularProgressIndicator(color: AppColors.primary),
             );
@@ -50,6 +56,11 @@ class _SavedScreenState extends State<SavedScreen> {
           }
 
           final savedDestinations = savedProvider.savedDestinations;
+          final bookedBusinessNames =
+              bookingProvider.bookings
+                  .map((booking) => booking['business_name']?.toString())
+                  .where((name) => name != null)
+                  .toSet();
 
           if (savedDestinations.isEmpty) {
             return const Center(child: Text("No saved destinations found."));
@@ -60,6 +71,9 @@ class _SavedScreenState extends State<SavedScreen> {
             itemCount: savedDestinations.length,
             itemBuilder: (context, index) {
               final destination = savedDestinations[index];
+              final isBooked = bookedBusinessNames.contains(
+                destination['business_name']?.toString(),
+              );
 
               return Padding(
                 padding: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
@@ -70,7 +84,7 @@ class _SavedScreenState extends State<SavedScreen> {
                   name: destination["business_name"] ?? "Unknown",
                   description: destination["description"] ?? "No description",
                   rating: (destination["rating"] as num?)?.toDouble() ?? 0.0,
-                  isBooked: false,
+                  isBooked: isBooked,
                   userid: destination['user_id'],
                   isGuest: isGuest,
                 ),
