@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/providers/profile_provider.dart';
 import 'package:go_frontend_mobile/theme/colors.dart';
 import 'package:go_frontend_mobile/theme/text_styles.dart';
+import 'package:go_frontend_mobile/widgets/snackbar_helper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import '../widgets/custom_button.dart';
@@ -70,59 +71,23 @@ class _EditLocationScreenState extends State<EditLocationScreen> {
 
     if (!mounted) return;
 
-    final messenger = ScaffoldMessenger.of(context);
-
     if (success) {
-      messenger.showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: AppColors.primary.withAlpha((0.95 * 255).toInt()),
-          margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          content: Row(
-            children: const [
-              Icon(Icons.check_circle_outline, color: Colors.white),
-              SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  "Profile updated successfully.",
-                  style: TextStyle(color: Colors.white, fontSize: 14),
-                ),
-              ),
-            ],
-          ),
-          duration: const Duration(seconds: 3),
-        ),
+      showCustomSnackBar(
+        context: context,
+        message: "Location updated successfully.",
+        icon: Icons.check_circle_outline,
+        backgroundColor: AppColors.primary,
       );
 
       await Future.delayed(const Duration(milliseconds: 500));
       if (!mounted) return;
       Navigator.of(context).pop();
     } else {
-      messenger.showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.red.withAlpha((0.95 * 255).toInt()),
-          margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          content: Row(
-            children: const [
-              Icon(Icons.error_outline, color: Colors.white),
-              SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  "Failed to update profile. Please try again.",
-                  style: TextStyle(color: Colors.white, fontSize: 14),
-                ),
-              ),
-            ],
-          ),
-          duration: const Duration(seconds: 3),
-        ),
+      showCustomSnackBar(
+        context: context,
+        message: "Failed to update location. Please try again.",
+        icon: Icons.error_outline,
+        backgroundColor: Colors.red,
       );
     }
   }
