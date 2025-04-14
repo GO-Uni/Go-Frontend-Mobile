@@ -84,4 +84,29 @@ final class BookingService {
       return [];
     }
   }
+
+  Future<List<Map<String, dynamic>>> getBookings() async {
+    try {
+      final userIdStr = await _secureStorage.read(key: 'user_id');
+      final userId = int.tryParse(userIdStr ?? '');
+
+      if (userId == null) {
+        throw Exception("User ID not found in storage.");
+      }
+
+      Response res = await _dioClient.dio.get(ApiRoutes.getBookings(userId));
+
+      if (res.statusCode == 200 && res.data['status'] == 'success') {
+        final List bookings = res.data['data'];
+        log("📦 Retrieved ${bookings.length} bookings for user");
+        return bookings.cast<Map<String, dynamic>>();
+      } else {
+        log("⚠️ ${res.data['message'] ?? 'Unknown error'}");
+        return [];
+      }
+    } catch (e) {
+      log("❌ Failed to fetch bookings: $e");
+      return [];
+    }
+  }
 }
