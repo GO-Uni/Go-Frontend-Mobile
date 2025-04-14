@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/providers/saved_provider.dart';
+import 'package:go_frontend_mobile/widgets/snackbar_helper.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../theme/text_styles.dart';
@@ -332,20 +333,22 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
 
                                             if (!currentContext.mounted) return;
 
-                                            ScaffoldMessenger.of(
-                                              currentContext,
-                                            ).showSnackBar(
-                                              SnackBar(
-                                                content: Text(
+                                            showCustomSnackBar(
+                                              context: currentContext,
+                                              message:
                                                   success
                                                       ? "Thanks! You rated this $rating stars."
                                                       : activityProvider
                                                               .errorMessage ??
                                                           "Rating failed.",
-                                                ),
-                                                backgroundColor:
-                                                    success ? null : Colors.red,
-                                              ),
+                                              icon:
+                                                  success
+                                                      ? Icons.star_rate
+                                                      : Icons.error_outline,
+                                              backgroundColor:
+                                                  success
+                                                      ? Colors.green
+                                                      : Colors.red,
                                             );
                                           },
                                   child: Icon(

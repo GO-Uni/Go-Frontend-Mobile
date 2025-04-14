@@ -38,9 +38,9 @@ class _BookingDialogState extends State<BookingDialog> {
       orElse: () => {},
     );
 
-    log("Destination ID: ${widget.destinationId}");
-    log("Destination slots: ${_destination['available_booking_slots']}");
-    log("Initial booked slots: ${_destination['bookings']}");
+    //log("Destination ID: ${widget.destinationId}");
+    //log("Destination slots: ${_destination['available_booking_slots']}");
+    //log("Initial booked slots: ${_destination['bookings']}");
 
     if (_destination.isNotEmpty &&
         _destination['available_booking_slots'] != null) {
