@@ -65,12 +65,14 @@ class _SavedScreenState extends State<SavedScreen> {
           }
 
           if (savedProvider.error != null) {
-            return Center(
-              child: Text(
-                savedProvider.error!,
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
+            return isGuest
+                ? const SizedBox()
+                : Center(
+                  child: Text(
+                    savedProvider.error!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                );
           }
 
           final savedDestinations = savedProvider.savedDestinations;
