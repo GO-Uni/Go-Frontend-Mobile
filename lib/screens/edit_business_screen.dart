@@ -108,13 +108,16 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Image.network(
-                  selectedImage.isNotEmpty
-                      ? selectedImage
-                      : "https://images.pexels.com/photos/2990603/pexels-photo-2990603.jpeg?auto=compress&cs=tinysrgb&w=600",
-                  width: double.infinity,
-                  height: 250,
-                  fit: BoxFit.cover,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.network(
+                    selectedImage.isNotEmpty
+                        ? selectedImage
+                        : "https://images.pexels.com/photos/2990603/pexels-photo-2990603.jpeg?auto=compress&cs=tinysrgb&w=600",
+                    width: double.infinity,
+                    height: 250,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               // Divider
