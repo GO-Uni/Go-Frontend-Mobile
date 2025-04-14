@@ -60,6 +60,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<BookingProvider>(context);
+    final isGuest = context.watch<AuthProvider>().isGuest;
 
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
@@ -69,7 +70,9 @@ class _BookingsScreenState extends State<BookingsScreen> {
                 child: CircularProgressIndicator(color: AppColors.primary),
               )
               : provider.bookings.isEmpty
-              ? const Center(child: Text("No bookings yet"))
+              ? (isGuest
+                  ? const SizedBox()
+                  : const Center(child: Text("No bookings yet")))
               : ListView.builder(
                 shrinkWrap: true,
                 padding: const EdgeInsets.all(12),

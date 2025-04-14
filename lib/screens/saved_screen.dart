@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/providers/auth_provider.dart';
 import 'package:go_frontend_mobile/providers/booking_provider.dart';
+import 'package:go_frontend_mobile/providers/saved_provider.dart';
+import 'package:go_frontend_mobile/theme/colors.dart';
+import 'package:go_frontend_mobile/widgets/destination_card.dart';
+import 'package:go_frontend_mobile/widgets/discover_dialog.dart';
 import 'package:provider/provider.dart';
-import '../providers/saved_provider.dart';
-import '../theme/colors.dart';
-import '../widgets/destination_card.dart';
 
 class SavedScreen extends StatefulWidget {
   const SavedScreen({super.key});
@@ -14,6 +15,8 @@ class SavedScreen extends StatefulWidget {
 }
 
 class _SavedScreenState extends State<SavedScreen> {
+  bool _dialogShown = false;
+
   @override
   void initState() {
     super.initState();
@@ -32,9 +35,24 @@ class _SavedScreenState extends State<SavedScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final isGuest = context.read<AuthProvider>().isGuest;
+
+    if (isGuest && !_dialogShown) {
+      _dialogShown = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          showDialog(context: context, builder: (_) => const DiscoverDialog());
+        }
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final isGuest = authProvider.isGuest;
+    final isGuest = context.watch<AuthProvider>().isGuest;
 
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
@@ -63,7 +81,9 @@ class _SavedScreenState extends State<SavedScreen> {
                   .toSet();
 
           if (savedDestinations.isEmpty) {
-            return const Center(child: Text("No saved destinations found."));
+            return isGuest
+                ? const SizedBox()
+                : const Center(child: Text("No saved destinations found."));
           }
 
           return ListView.builder(
