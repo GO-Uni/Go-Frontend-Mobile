@@ -73,19 +73,55 @@ class _EditLocationScreenState extends State<EditLocationScreen> {
     final messenger = ScaffoldMessenger.of(context);
 
     if (success) {
-      log("✅ Profile updated successfully!");
       messenger.showSnackBar(
-        const SnackBar(content: Text("Profile updated successfully.")),
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: AppColors.primary.withAlpha((0.95 * 255).toInt()),
+          margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          content: Row(
+            children: const [
+              Icon(Icons.check_circle_outline, color: Colors.white),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  "Profile updated successfully.",
+                  style: TextStyle(color: Colors.white, fontSize: 14),
+                ),
+              ),
+            ],
+          ),
+          duration: const Duration(seconds: 3),
+        ),
       );
 
       await Future.delayed(const Duration(milliseconds: 500));
-
       if (!mounted) return;
       Navigator.of(context).pop();
     } else {
       messenger.showSnackBar(
-        const SnackBar(
-          content: Text("Failed to update profile. Please try again."),
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.red.withAlpha((0.95 * 255).toInt()),
+          margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          content: Row(
+            children: const [
+              Icon(Icons.error_outline, color: Colors.white),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  "Failed to update profile. Please try again.",
+                  style: TextStyle(color: Colors.white, fontSize: 14),
+                ),
+              ),
+            ],
+          ),
+          duration: const Duration(seconds: 3),
         ),
       );
     }
@@ -177,7 +213,7 @@ class _EditLocationScreenState extends State<EditLocationScreen> {
                   const SizedBox(height: 13),
                   CustomButton(
                     text: "Confirm your location",
-                    width: 350,
+                    width: 250,
                     onPressed: _confirmSelection,
                   ),
                 ],
