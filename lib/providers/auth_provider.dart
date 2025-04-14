@@ -235,4 +235,9 @@ class AuthProvider extends ChangeNotifier {
     _isGuest = value;
     notifyListeners();
   }
+
+  void clearError() {
+    _errorMessage = null;
+    notifyListeners();
+  }
 }
