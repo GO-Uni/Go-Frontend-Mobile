@@ -33,12 +33,24 @@ class LoginState extends State<Login> {
     final email = _email.text.trim();
     final password = _password.text.trim();
 
+    final emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
+
     if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please fill in both email and password"),
-          backgroundColor: Colors.red,
-        ),
+      showCustomSnackBar(
+        context: context,
+        message: "Please fill in both email and password",
+        icon: Icons.warning_amber_rounded,
+        backgroundColor: Colors.red,
+      );
+      return;
+    }
+
+    if (!emailRegex.hasMatch(email)) {
+      showCustomSnackBar(
+        context: context,
+        message: "Please enter a valid email address",
+        icon: Icons.mail_outline,
+        backgroundColor: Colors.red,
       );
       return;
     }
