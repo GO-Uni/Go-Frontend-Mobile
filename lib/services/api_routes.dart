@@ -21,6 +21,10 @@ final class ApiRoutes {
     return '/destinations/bookings/$businessUserId';
   }
 
+  static String getBookings(int userId) {
+    return '/user/$userId/bookings/';
+  }
+
   static String chatbot(int userId) {
     return "/$userId/chatbot";
   }

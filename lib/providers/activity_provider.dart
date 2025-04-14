@@ -158,4 +158,13 @@ class ActivityProvider with ChangeNotifier {
     _isLoading = false;
     notifyListeners();
   }
+
+  void clearActivity() {
+    _isLoading = false;
+    _hasRated = false;
+    _errorMessage = null;
+    _savedDestinationIds.clear();
+    _reviewsByUserId.clear();
+    notifyListeners();
+  }
 }

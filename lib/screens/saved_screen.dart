@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/providers/auth_provider.dart';
+import 'package:go_frontend_mobile/providers/booking_provider.dart';
+import 'package:go_frontend_mobile/providers/saved_provider.dart';
+import 'package:go_frontend_mobile/theme/colors.dart';
+import 'package:go_frontend_mobile/widgets/destination_card.dart';
+import 'package:go_frontend_mobile/widgets/discover_dialog.dart';
 import 'package:provider/provider.dart';
-import '../providers/saved_provider.dart';
-import '../theme/colors.dart';
-import '../widgets/destination_card.dart';
 
 class SavedScreen extends StatefulWidget {
   const SavedScreen({super.key});
@@ -13,46 +15,77 @@ class SavedScreen extends StatefulWidget {
 }
 
 class _SavedScreenState extends State<SavedScreen> {
+  bool _dialogShown = false;
+
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final contextRead = context;
       Provider.of<SavedProvider>(
-        context,
+        contextRead,
         listen: false,
       ).fetchSavedDestinations();
+      Provider.of<BookingProvider>(
+        contextRead,
+        listen: false,
+      ).fetchBookingsForUser();
     });
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final isGuest = context.read<AuthProvider>().isGuest;
+
+    if (isGuest && !_dialogShown) {
+      _dialogShown = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          showDialog(context: context, builder: (_) => const DiscoverDialog());
+        }
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final isGuest = authProvider.isGuest;
+    final isGuest = context.watch<AuthProvider>().isGuest;
 
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
-      body: Consumer<SavedProvider>(
-        builder: (context, savedProvider, _) {
-          if (savedProvider.isLoading) {
+      body: Consumer2<SavedProvider, BookingProvider>(
+        builder: (context, savedProvider, bookingProvider, _) {
+          if (savedProvider.isLoading || bookingProvider.isFetchingBookings) {
             return const Center(
               child: CircularProgressIndicator(color: AppColors.primary),
             );
           }
 
           if (savedProvider.error != null) {
-            return Center(
-              child: Text(
-                savedProvider.error!,
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
+            return isGuest
+                ? const SizedBox()
+                : Center(
+                  child: Text(
+                    savedProvider.error!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                );
           }
 
           final savedDestinations = savedProvider.savedDestinations;
+          final bookedBusinessNames =
+              bookingProvider.bookings
+                  .map((booking) => booking['business_name']?.toString())
+                  .where((name) => name != null)
+                  .toSet();
 
           if (savedDestinations.isEmpty) {
-            return const Center(child: Text("No saved destinations found."));
+            return isGuest
+                ? const SizedBox()
+                : const Center(child: Text("No saved destinations found."));
           }
 
           return ListView.builder(
@@ -60,6 +93,9 @@ class _SavedScreenState extends State<SavedScreen> {
             itemCount: savedDestinations.length,
             itemBuilder: (context, index) {
               final destination = savedDestinations[index];
+              final isBooked = bookedBusinessNames.contains(
+                destination['business_name']?.toString(),
+              );
 
               return Padding(
                 padding: const EdgeInsets.only(left: 12, right: 12, bottom: 12),
@@ -70,7 +106,7 @@ class _SavedScreenState extends State<SavedScreen> {
                   name: destination["business_name"] ?? "Unknown",
                   description: destination["description"] ?? "No description",
                   rating: (destination["rating"] as num?)?.toDouble() ?? 0.0,
-                  isBooked: false,
+                  isBooked: isBooked,
                   userid: destination['user_id'],
                   isGuest: isGuest,
                 ),

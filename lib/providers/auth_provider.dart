@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/activity_provider.dart';
+import 'package:go_frontend_mobile/providers/booking_provider.dart';
 import 'package:go_frontend_mobile/providers/destination_provider.dart';
 import 'package:go_frontend_mobile/providers/profile_provider.dart';
 import 'package:go_frontend_mobile/providers/saved_provider.dart';
@@ -176,6 +178,8 @@ class AuthProvider extends ChangeNotifier {
     final savedProvider = context.read<SavedProvider>();
     final profileProvider = context.read<ProfileProvider>();
     final destinationProvider = context.read<DestinationProvider>();
+    final bookingProvider = context.read<BookingProvider>();
+    final activityProvider = context.read<ActivityProvider>();
 
     await _secureStorage.delete(key: 'auth_token');
     await _secureStorage.delete(key: 'role_id');
@@ -192,6 +196,8 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      activityProvider.clearActivity();
+      bookingProvider.clearBookings();
       savedProvider.clearSavedDestinations();
       profileProvider.clearProfile();
       destinationProvider.clearDestinations();
@@ -233,6 +239,11 @@ class AuthProvider extends ChangeNotifier {
 
   void setIsGuest(bool value) {
     _isGuest = value;
+    notifyListeners();
+  }
+
+  void clearError() {
+    _errorMessage = null;
     notifyListeners();
   }
 }

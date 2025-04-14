@@ -64,6 +64,22 @@ class BookingProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> fetchBookingsForUser() async {
+    _isFetchingBookings = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      _bookings = await _bookingService.getBookings();
+    } catch (e) {
+      _errorMessage = "Failed to fetch bookings.";
+      _bookings = [];
+    }
+
+    _isFetchingBookings = false;
+    notifyListeners();
+  }
+
   void clearBookings() {
     _bookings = [];
     notifyListeners();
