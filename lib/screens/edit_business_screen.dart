@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/providers/profile_provider.dart';
+import 'package:go_frontend_mobile/widgets/image_selector.dart';
+import 'package:go_frontend_mobile/widgets/snackbar_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:go_frontend_mobile/theme/colors.dart';
 import 'package:go_frontend_mobile/theme/text_styles.dart';
@@ -47,6 +49,29 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
     });
   }
 
+  void _handleProfileUpdateResult(bool success, String? errorMessage) {
+    if (success) {
+      showCustomSnackBar(
+        context: context,
+        message: "Description updated successfully!",
+        icon: Icons.check_circle_outline,
+        backgroundColor: AppColors.primary,
+      );
+    } else {
+      showCustomSnackBar(
+        context: context,
+        message: errorMessage ?? "Update failed",
+        icon: Icons.error_outline,
+        backgroundColor: Colors.red,
+      );
+    }
+
+    setState(() {
+      isEditing = false;
+      description = _descriptionController.text;
+    });
+  }
+
   @override
   void dispose() {
     _descriptionController.dispose();
@@ -55,8 +80,6 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final messenger = ScaffoldMessenger.of(context);
-
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
       body: SafeArea(
@@ -141,92 +164,46 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(
-                      height: 60,
-                      width: MediaQuery.of(context).size.width * 0.7,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: images.length,
-                        itemBuilder: (context, index) {
-                          bool isSelected = selectedImage == images[index];
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selectedImage = images[index];
-                              });
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: Image.network(
-                                      images[index],
-                                      width: 60,
-                                      height: 60,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  if (isSelected)
-                                    Container(
-                                      width: 60,
-                                      height: 60,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.withAlpha(100),
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                    ImageSelectorWidget(
+                      images: images,
+                      selectedImage: selectedImage,
+                      onImageSelected: (img) {
+                        setState(() {
+                          selectedImage = img;
+                        });
+                      },
+                      onImageAdded: (img) {
+                        setState(() {
+                          images.add(img);
+                          selectedImage = img;
+                        });
+                      },
                     ),
+
                     IconButton(
                       icon: Icon(isEditing ? Icons.check : Icons.edit),
                       onPressed: () async {
-                        if (isEditing) {
-                          final profileProvider = Provider.of<ProfileProvider>(
-                            context,
-                            listen: false,
-                          );
-
-                          final success = await profileProvider.updateProfile(
-                            businessDescription:
-                                _descriptionController.text.trim(),
-                          );
-
-                          if (!mounted) return;
-
-                          if (success) {
-                            messenger.showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Description updated successfully!',
-                                ),
-                              ),
-                            );
-                          } else {
-                            messenger.showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  profileProvider.errorMessage ??
-                                      'Update failed',
-                                ),
-                              ),
-                            );
-                          }
+                        if (!isEditing) {
+                          setState(() => isEditing = true);
+                          return;
                         }
 
+                        final profileProvider = Provider.of<ProfileProvider>(
+                          context,
+                          listen: false,
+                        );
+
+                        final success = await profileProvider.updateProfile(
+                          businessDescription:
+                              _descriptionController.text.trim(),
+                        );
+
                         if (!mounted) return;
-                        setState(() {
-                          isEditing = !isEditing;
-                          if (!isEditing) {
-                            description = _descriptionController.text;
-                          }
-                        });
+
+                        _handleProfileUpdateResult(
+                          success,
+                          profileProvider.errorMessage,
+                        );
                       },
                     ),
                   ],
