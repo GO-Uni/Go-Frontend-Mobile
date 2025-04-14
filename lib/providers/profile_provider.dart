@@ -37,6 +37,7 @@ class ProfileProvider extends ChangeNotifier {
     String? businessDescription,
     double? latitude,
     double? longitude,
+    String? profileImg,
   }) async {
     _isUpdating = true;
     _errorMessage = null;
@@ -55,6 +56,7 @@ class ProfileProvider extends ChangeNotifier {
         if (businessDescription != null) "description": businessDescription,
         if (latitude != null) "latitude": latitude,
         if (longitude != null) "longitude": longitude,
+        if (profileImg != null) "profile_img": profileImg,
       },
     };
 
@@ -74,6 +76,7 @@ class ProfileProvider extends ChangeNotifier {
           counterBooking: counterBooking ?? _user!.counterBooking,
           businessDescription:
               businessDescription ?? _user!.businessDescription,
+          profileImg: profileImg ?? _user!.profileImg,
         );
 
         notifyListeners();
