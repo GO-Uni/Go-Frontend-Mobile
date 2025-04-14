@@ -248,7 +248,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 15, left: 15),
-              child: ProfileHeader(user: user),
+              child: ProfileHeader(),
             ),
             const SizedBox(height: 5),
             Padding(
