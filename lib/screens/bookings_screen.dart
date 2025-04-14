@@ -1,6 +1,6 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/auth_provider.dart';
 import 'package:go_frontend_mobile/providers/destination_provider.dart';
 import 'package:go_frontend_mobile/services/routes.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../providers/booking_provider.dart';
 import '../theme/colors.dart';
 import '../widgets/booked_card.dart';
+import '../widgets/discover_dialog.dart';
 
 class BookingsScreen extends StatefulWidget {
   const BookingsScreen({super.key});
@@ -18,6 +19,8 @@ class BookingsScreen extends StatefulWidget {
 }
 
 class _BookingsScreenState extends State<BookingsScreen> {
+  bool _dialogShown = false;
+
   @override
   void initState() {
     super.initState();
@@ -31,11 +34,26 @@ class _BookingsScreenState extends State<BookingsScreen> {
     });
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final isGuest = context.read<AuthProvider>().isGuest;
+    if (isGuest && !_dialogShown) {
+      _dialogShown = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          showDialog(context: context, builder: (_) => const DiscoverDialog());
+        }
+      });
+    }
+  }
+
   String formatTimeRange(String isoTime) {
     final dateTime = DateTime.parse(isoTime).toLocal();
     final timeFormat = DateFormat('hh:mm a');
     final startTime = timeFormat.format(dateTime);
-    final endTime = timeFormat.format(dateTime.add(Duration(hours: 1)));
+    final endTime = timeFormat.format(dateTime.add(const Duration(hours: 1)));
     return '$startTime - $endTime';
   }
 
@@ -68,7 +86,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
                     onTap: () async {
                       log("Tapped on $name at $timeRange");
 
-                      // Capture context-dependent objects now.
                       final goRouter = GoRouter.of(context);
                       final scaffoldMessenger = ScaffoldMessenger.of(context);
                       final destinationProvider =
@@ -80,9 +97,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                       try {
                         await destinationProvider.fetchDestinationsByName(name);
 
-                        if (!mounted) {
-                          return;
-                        }
+                        if (!mounted) return;
 
                         final List destinations =
                             destinationProvider.searchDestinations;
@@ -108,9 +123,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                           );
                         }
                       } catch (e) {
-                        if (!mounted) {
-                          return;
-                        }
+                        if (!mounted) return;
                         scaffoldMessenger.showSnackBar(
                           const SnackBar(content: Text("Something went wrong")),
                         );
