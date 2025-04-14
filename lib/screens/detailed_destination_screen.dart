@@ -299,6 +299,7 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                         Consumer<ActivityProvider>(
                           builder: (context, activityProvider, _) {
                             final isRated = activityProvider.hasRated;
+                            final userRate = activityProvider.userRating;
 
                             return Row(
                               children: List.generate(5, (index) {
@@ -348,11 +349,17 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                                             );
                                           },
                                   child: Icon(
-                                    index < (selectedRating ?? 0)
+                                    index <
+                                            (isRated
+                                                ? userRate
+                                                : (selectedRating ?? 0))
                                         ? Icons.star
                                         : Icons.star_border,
                                     color:
-                                        index < (selectedRating ?? 0)
+                                        index <
+                                                (isRated
+                                                    ? userRate
+                                                    : (selectedRating ?? 0))
                                             ? Colors.amber
                                             : AppColors.lightGray,
                                     size: 28,
