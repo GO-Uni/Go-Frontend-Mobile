@@ -31,9 +31,18 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final user = Provider.of<ProfileProvider>(context, listen: false).user;
+      final profileProvider = Provider.of<ProfileProvider>(
+        context,
+        listen: false,
+      );
+      final user = profileProvider.user;
+
+      if (user == null || user.userId == null) return;
+
+      userId = user.userId!;
+
       final imgProvider = Provider.of<ImgProvider>(context, listen: false);
-      await imgProvider.fetchImages();
+      await imgProvider.fetchImages(userId!);
 
       setState(() {
         final imgs = imgProvider.images;
@@ -44,12 +53,11 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
                     "https://goapp-assets.s3.eu-north-1.amazonaws.com/${imgs.first['path_name']}"
                 : '';
 
-        userId = user?.userId;
-        destinationName = user?.businessName ?? "Business Name";
-        district = user?.district ?? "Business District";
+        destinationName = user.businessName ?? "Business Name";
+        district = user.district ?? "Business District";
         description =
-            user?.businessDescription?.isNotEmpty == true
-                ? user!.businessDescription!
+            user.businessDescription?.isNotEmpty == true
+                ? user.businessDescription!
                 : "No description available.";
         _descriptionController.text = description;
       });
@@ -204,6 +212,7 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
                                 onImageAdded: (imgPath) async {
                                   final success = await imgProvider.uploadImage(
                                     File(imgPath),
+                                    userId!,
                                   );
 
                                   if (success) {
@@ -211,7 +220,7 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
                                     await Future.delayed(
                                       const Duration(seconds: 4),
                                     );
-                                    await imgProvider.fetchImages();
+                                    await imgProvider.fetchImages(userId!);
                                     setState(() => _isLoadingImage = false);
 
                                     if (imgProvider.images.isNotEmpty) {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/img_provider.dart';
 import 'package:go_frontend_mobile/providers/saved_provider.dart';
+import 'package:go_frontend_mobile/widgets/image_selector.dart';
 import 'package:go_frontend_mobile/widgets/snackbar_helper.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -19,35 +21,63 @@ class DetailedDestinationScreen extends StatefulWidget {
 }
 
 class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
-  late String selectedImage;
-  late List<String> images;
+  String selectedImage =
+      "https://images.pexels.com/photos/2990603/pexels-photo-2990603.jpeg?auto=compress&cs=tinysrgb&w=600";
+  List<String> images = [];
   Map<String, dynamic> destination = {};
   int? selectedRating;
+  bool _isInitialized = false;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void initState() {
+    super.initState();
 
-    final extra = GoRouterState.of(context).extra;
-    destination = (extra is Map<String, dynamic>) ? extra : {};
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final extra = GoRouterState.of(context).extra;
+      destination = (extra is Map<String, dynamic>) ? extra : {};
+      final businessUserId = destination["userid"];
 
-    images =
-        destination["images"]?.cast<String>() ??
-        [
-          destination["imageUrl"] ??
-              "https://images.pexels.com/photos/2990603/pexels-photo-2990603.jpeg?auto=compress&cs=tinysrgb&w=600",
-        ];
+      final defaultImages =
+          (destination["images"] as List?)?.map((e) => e.toString()).toList() ??
+          [destination["imageUrl"]?.toString() ?? selectedImage];
 
-    selectedImage = images.first;
+      images = defaultImages;
+      selectedImage = images.first;
 
-    final businessUserId = destination["userid"];
-    if (businessUserId != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final provider = Provider.of<ActivityProvider>(context, listen: false);
-        provider.getReviewsDestination(businessUserId);
-        provider.checkIfUserRated(businessUserId);
-      });
-    }
+      if (businessUserId != null) {
+        final imgProvider = Provider.of<ImgProvider>(context, listen: false);
+        await imgProvider.fetchImages(businessUserId);
+
+        final fetchedImages =
+            imgProvider.images
+                .map(
+                  (img) =>
+                      img['url'] ??
+                      "https://goapp-assets.s3.eu-north-1.amazonaws.com/${img['path_name']}",
+                )
+                .toList()
+                .cast<String>();
+
+        if (!mounted) return;
+
+        setState(() {
+          images = fetchedImages.isNotEmpty ? fetchedImages : defaultImages;
+          selectedImage = images.first;
+          _isInitialized = true;
+        });
+
+        final activityProvider = Provider.of<ActivityProvider>(
+          context,
+          listen: false,
+        );
+        activityProvider.getReviewsDestination(businessUserId);
+        activityProvider.checkIfUserRated(businessUserId);
+      } else {
+        setState(() {
+          _isInitialized = true;
+        });
+      }
+    });
   }
 
   void _showReviewDialog() {
@@ -67,6 +97,10 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
   @override
   Widget build(BuildContext context) {
     final businessUserId = destination["userid"] ?? 0;
+
+    if (!_isInitialized) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
@@ -153,53 +187,14 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         // Thumbnails
-                        SizedBox(
-                          height: 60,
-                          width: MediaQuery.of(context).size.width * 0.7,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: images.length,
-                            itemBuilder: (context, index) {
-                              bool isSelected = selectedImage == images[index];
-
-                              return GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    selectedImage = images[index];
-                                  });
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(right: 10),
-                                  child: Stack(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(16),
-                                        child: Image.network(
-                                          images[index],
-                                          width: 60,
-                                          height: 60,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      if (isSelected)
-                                        Container(
-                                          width: 60,
-                                          height: 60,
-                                          decoration: BoxDecoration(
-                                            color: Colors.grey.withValues(
-                                              alpha: 0.5,
-                                            ),
-                                            borderRadius: BorderRadius.circular(
-                                              16,
-                                            ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
+                        ImageSelectorWidget(
+                          images: images,
+                          selectedImage: selectedImage,
+                          onImageSelected: (img) {
+                            setState(() {
+                              selectedImage = img;
+                            });
+                          },
                         ),
 
                         Row(

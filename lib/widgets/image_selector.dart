@@ -6,24 +6,24 @@ class ImageSelectorWidget extends StatelessWidget {
   final List<String> images;
   final String selectedImage;
   final Function(String) onImageSelected;
-  final Function(String) onImageAdded;
-  final Function(String) onImageRemoved;
+  final Function(String)? onImageAdded;
+  final Function(String)? onImageRemoved;
 
   const ImageSelectorWidget({
     super.key,
     required this.images,
     required this.selectedImage,
     required this.onImageSelected,
-    required this.onImageAdded,
-    required this.onImageRemoved,
+    this.onImageAdded,
+    this.onImageRemoved,
   });
 
   Future<void> _pickImage(BuildContext context) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    if (pickedFile != null) {
-      onImageAdded(pickedFile.path);
+    if (pickedFile != null && onImageAdded != null) {
+      onImageAdded!(pickedFile.path);
     }
   }
 
@@ -34,9 +34,9 @@ class ImageSelectorWidget extends StatelessWidget {
       width: MediaQuery.of(context).size.width * 0.7,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: images.length + 1,
+        itemCount: images.length + (onImageAdded != null ? 1 : 0),
         itemBuilder: (context, index) {
-          if (index == images.length) {
+          if (onImageAdded != null && index == images.length) {
             return GestureDetector(
               onTap: () => _pickImage(context),
               child: Container(
@@ -79,22 +79,23 @@ class ImageSelectorWidget extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                  Positioned(
-                    top: 3,
-                    right: 3,
-                    child: GestureDetector(
-                      onTap: () => onImageRemoved(image),
-                      child: const CircleAvatar(
-                        backgroundColor: Colors.red,
-                        radius: 10,
-                        child: Icon(
-                          Icons.remove,
-                          size: 12,
-                          color: Colors.white,
+                  if (onImageRemoved != null)
+                    Positioned(
+                      top: 3,
+                      right: 3,
+                      child: GestureDetector(
+                        onTap: () => onImageRemoved!(image),
+                        child: const CircleAvatar(
+                          backgroundColor: Colors.red,
+                          radius: 10,
+                          child: Icon(
+                            Icons.remove,
+                            size: 12,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
-                  ),
                 ],
               ),
             ),

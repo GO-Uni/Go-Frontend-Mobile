@@ -12,18 +12,16 @@ class ImagesService {
 
   ImagesService(this._dioClient);
 
-  Future<List<Map<String, dynamic>>> fetchImgs() async {
+  Future<List<Map<String, dynamic>>> fetchImgs(int businessUserId) async {
     try {
       final token = await _secureStorage.read(key: 'auth_token');
-      final userIdStr = await _secureStorage.read(key: 'user_id');
-      final userId = int.tryParse(userIdStr ?? '');
 
-      if (token == null || userId == null) {
+      if (token == null) {
         throw Exception("Authentication required.");
       }
 
       Response res = await _dioClient.dio.get(
-        ApiRoutes.getImg(userId),
+        ApiRoutes.getImg(businessUserId),
         options: Options(
           headers: {
             "Authorization": "Bearer $token",

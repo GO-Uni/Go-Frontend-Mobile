@@ -122,7 +122,7 @@ class DestinationsScreenState extends State<DestinationsScreen> {
                                   return DestinationCard(
                                     imageUrl:
                                         destination["main_img"] ??
-                                        "https://images.unsplash.com/photo-1726064855757-ac8720008fe0?q=80",
+                                        "https://cdn.spruceindustries.com/images/no_image_available.png",
                                     name:
                                         destination["business_name"] ??
                                         "Unknown",
@@ -176,7 +176,7 @@ class DestinationsScreenState extends State<DestinationsScreen> {
                         return DestinationCard(
                           imageUrl:
                               destination["main_img"] ??
-                              "https://images.unsplash.com/photo-1726064855757-ac8720008fe0?q=80",
+                              "https://cdn.spruceindustries.com/images/no_image_available.png",
                           name: destination["business_name"] ?? "Unknown",
                           description:
                               destination["description"] ??

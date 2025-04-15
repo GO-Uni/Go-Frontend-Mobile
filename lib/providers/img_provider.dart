@@ -12,24 +12,24 @@ class ImgProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  Future<void> fetchImages() async {
+  Future<void> fetchImages(int businessUserId) async {
     _isLoading = true;
     notifyListeners();
 
-    final fetched = await _imgService.fetchImgs();
+    final fetched = await _imgService.fetchImgs(businessUserId);
     _images = fetched;
 
     _isLoading = false;
     notifyListeners();
   }
 
-  Future<bool> uploadImage(File file) async {
+  Future<bool> uploadImage(File file, int businessUserId) async {
     _isLoading = true;
     notifyListeners();
 
     final success = await _imgService.storeImg(file);
     if (success) {
-      await fetchImages();
+      await fetchImages(businessUserId);
     }
 
     _isLoading = false;
