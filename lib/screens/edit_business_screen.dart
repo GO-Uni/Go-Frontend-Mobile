@@ -136,7 +136,7 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
                   child: Image.network(
                     selectedImage.isNotEmpty
                         ? selectedImage
-                        : "https://images.pexels.com/photos/2990603/pexels-photo-2990603.jpeg?auto=compress&cs=tinysrgb&w=600",
+                        : "https://media.gettyimages.com/id/1473848096/vector/idyllic-landscape-with-footpath.jpg?s=612x612&w=gi&k=20&c=spGDcvw4FtlnWj3dqwgRgRKS_DMWOkBxXbHHtRYzTa8=",
                     width: double.infinity,
                     height: 250,
                     fit: BoxFit.cover,
