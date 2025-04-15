@@ -40,7 +40,7 @@ class SignUpBusinessState extends State<SignUpBusiness> {
   bool isChecked = false;
 
   void _continue() async {
-    final email = _email.text.trim();
+    final email = _email.text.trim().toLowerCase();
     final businessName = _businessName.text.trim();
     final ownerName = _ownerName.text.trim();
     final password = _password.text;

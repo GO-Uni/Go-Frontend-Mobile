@@ -1,23 +1,50 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/providers/profile_provider.dart';
 import 'package:go_frontend_mobile/services/routes.dart';
+import 'package:go_frontend_mobile/widgets/snackbar_helper.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../theme/colors.dart';
 import '../theme/text_styles.dart';
 
-class ProfileHeader extends StatelessWidget {
+class ProfileHeader extends StatefulWidget {
   const ProfileHeader({super.key});
 
-  Future<void> _pickImage(BuildContext context) async {
+  @override
+  State<ProfileHeader> createState() => _ProfileHeaderState();
+}
+
+class _ProfileHeaderState extends State<ProfileHeader> {
+  Future<void> _pickImage() async {
+    final profileProvider = Provider.of<ProfileProvider>(
+      context,
+      listen: false,
+    );
+
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      log('img updated');
+      final success = await profileProvider.uploadProfileImage(pickedFile.path);
+
+      if (!mounted) return;
+
+      if (success) {
+        await Future.delayed(const Duration(seconds: 4));
+      }
+
+      if (!mounted) return;
+
+      showCustomSnackBar(
+        context: context,
+        message:
+            success
+                ? "Profile image updated successfully!"
+                : "Failed to update profile image.",
+        icon: success ? Icons.check_circle_outline : Icons.error_outline,
+        backgroundColor: success ? AppColors.primary : Colors.red,
+      );
     }
   }
 
@@ -60,7 +87,7 @@ class ProfileHeader extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TextButton(
-                        onPressed: () => _pickImage(context),
+                        onPressed: _pickImage,
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
                           minimumSize: Size.zero,

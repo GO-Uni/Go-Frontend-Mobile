@@ -17,6 +17,10 @@ final class ApiRoutes {
   static const String reviewDestination = "/activity/review";
   static const String bookDestination = "/activity/book";
 
+  static const String uploadBusinessMainImage =
+      "/profile/upload-business-main-image";
+  static const String uploadProfileImage = "/profile/upload-profile-image";
+
   static String getBookingsForBusinessUser(int businessUserId) {
     return '/destinations/bookings/$businessUserId';
   }

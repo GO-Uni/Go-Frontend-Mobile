@@ -115,4 +115,34 @@ class ProfileService {
       return false;
     }
   }
+
+  Future<String?> uploadProfileImage(
+    FormData formData, {
+    required bool isBusiness,
+  }) async {
+    try {
+      String? token = await _secureStorage.read(key: 'auth_token');
+      if (token == null) return null;
+
+      final response = await _dioClient.dio.post(
+        isBusiness
+            ? ApiRoutes.uploadBusinessMainImage
+            : ApiRoutes.uploadProfileImage,
+        data: formData,
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+            "Content-Type": "multipart/form-data",
+          },
+        ),
+      );
+
+      final data = response.data["data"];
+      return isBusiness ? data["main_img"] : data["profile_img"];
+    } catch (e) {
+      log("❌ Upload profile image failed: $e");
+      return null;
+    }
+  }
 }

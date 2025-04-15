@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/models/user_model.dart';
 import 'package:go_frontend_mobile/services/dio_client.dart';
@@ -145,6 +146,40 @@ class ProfileProvider extends ChangeNotifier {
     } finally {
       _isChangingPlan = false;
       notifyListeners();
+    }
+  }
+
+  Future<bool> uploadProfileImage(String imagePath) async {
+    final user = _user;
+    if (user == null) return false;
+
+    try {
+      final formData = FormData.fromMap({
+        user.roleId == 3
+            ? "main_img"
+            : "profile_img": await MultipartFile.fromFile(imagePath),
+      });
+
+      final uploadedPath = await _profileService.uploadProfileImage(
+        formData,
+        isBusiness: user.roleId == 3,
+      );
+
+      if (uploadedPath != null) {
+        await Future.delayed(const Duration(seconds: 4));
+
+        _user = _user?.copyWith(profileImg: uploadedPath);
+        notifyListeners();
+
+        log("✅ Profile image updated in provider");
+        return true;
+      } else {
+        log("❌ Failed to upload profile image");
+        return false;
+      }
+    } catch (e) {
+      log("❌ Exception in uploadProfileImage: $e");
+      return false;
     }
   }
 
