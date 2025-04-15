@@ -161,7 +161,7 @@ class ProfileProvider extends ChangeNotifier {
       final uploadedUrl = await _profileService.uploadProfileImage(formData);
 
       if (uploadedUrl != null) {
-        await Future.delayed(const Duration(seconds: 2));
+        await Future.delayed(const Duration(seconds: 4));
 
         _user = _user?.copyWith(profileImg: uploadedUrl);
         notifyListeners();
