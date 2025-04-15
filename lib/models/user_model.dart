@@ -18,6 +18,7 @@ class UserModel {
   final int? userId;
   final double? latitude;
   final double? longitude;
+  final String? profileImg;
 
   const UserModel({
     required this.name,
@@ -37,6 +38,7 @@ class UserModel {
     this.businessDescription,
     this.latitude,
     this.longitude,
+    this.profileImg,
   });
 
   UserModel copyWith({
@@ -55,6 +57,7 @@ class UserModel {
     String? businessDescription,
     double? latitude,
     double? longitude,
+    String? profileImg,
   }) {
     return UserModel(
       name: name ?? this.name,
@@ -73,6 +76,7 @@ class UserModel {
       businessDescription: businessDescription ?? this.businessDescription,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
+      profileImg: profileImg ?? this.profileImg,
     );
   }
 
@@ -111,6 +115,7 @@ class UserModel {
           businessProfile['longitude'] != null
               ? double.tryParse(businessProfile['longitude'].toString())
               : null,
+      profileImg: json['profile_img'] as String?,
     );
   }
 
@@ -121,6 +126,7 @@ class UserModel {
       "role_id": roleId,
       "subscription_method": subscriptionMethod,
       "userId": userId,
+      "profile_img": profileImg,
 
       if (roleId == 3)
         "business_profile": {

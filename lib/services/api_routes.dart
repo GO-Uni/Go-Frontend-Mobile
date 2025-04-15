@@ -17,6 +17,8 @@ final class ApiRoutes {
   static const String reviewDestination = "/activity/review";
   static const String bookDestination = "/activity/book";
 
+  static const String uploadProfileImage = "/profile/upload-profile-image";
+
   static String getBookingsForBusinessUser(int businessUserId) {
     return '/destinations/bookings/$businessUserId';
   }
@@ -47,5 +49,17 @@ final class ApiRoutes {
 
   static String getDestinationsByName(String name) {
     return '/destinations/name/$name';
+  }
+
+  static String storeImg(int userId) {
+    return '/users/$userId/images';
+  }
+
+  static String deleteImg(int userId) {
+    return '/users/$userId/delete/images';
+  }
+
+  static String getImg(int userId) {
+    return '/users/$userId/get/images';
   }
 }

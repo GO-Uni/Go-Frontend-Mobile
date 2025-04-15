@@ -3,6 +3,7 @@ import 'package:go_frontend_mobile/providers/activity_provider.dart';
 import 'package:go_frontend_mobile/providers/booking_provider.dart';
 import 'package:go_frontend_mobile/providers/chatbot_provider.dart';
 import 'package:go_frontend_mobile/providers/destination_provider.dart';
+import 'package:go_frontend_mobile/providers/img_provider.dart';
 import 'package:go_frontend_mobile/providers/saved_provider.dart';
 import 'package:provider/provider.dart';
 import 'services/router.dart';
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (context) => SavedProvider()),
         ChangeNotifierProvider(create: (_) => BookingProvider()),
         ChangeNotifierProvider(create: (_) => ChatbotProvider()),
+        ChangeNotifierProvider(create: (_) => ImgProvider()),
       ],
       child: Consumer<AuthProvider>(
         builder: (context, authProvider, _) {

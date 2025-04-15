@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/providers/category_provider.dart';
 import 'package:go_frontend_mobile/services/routes.dart';
 import 'package:go_frontend_mobile/widgets/custom_dropdown_field.dart';
+import 'package:go_frontend_mobile/widgets/snackbar_helper.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
@@ -39,42 +40,54 @@ class SignUpBusinessState extends State<SignUpBusiness> {
   bool isChecked = false;
 
   void _continue() async {
-    final email = _email.text.trim();
+    final email = _email.text.trim().toLowerCase();
     final businessName = _businessName.text.trim();
     final ownerName = _ownerName.text.trim();
     final password = _password.text;
     final confirmPassword = _confirmPassword.text;
+
+    final emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
 
     if (email.isEmpty ||
         businessName.isEmpty ||
         ownerName.isEmpty ||
         password.isEmpty ||
         confirmPassword.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please fill in all fields"),
-          backgroundColor: Colors.red,
-        ),
+      showCustomSnackBar(
+        context: context,
+        message: "Please fill in all fields",
+        icon: Icons.warning_amber_rounded,
+        backgroundColor: Colors.red,
+      );
+      return;
+    }
+
+    if (!emailRegex.hasMatch(email)) {
+      showCustomSnackBar(
+        context: context,
+        message: "Please enter a valid email address",
+        icon: Icons.mail_outline,
+        backgroundColor: Colors.red,
       );
       return;
     }
 
     if (_password.text != _confirmPassword.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Passwords do not match'),
-          backgroundColor: Colors.red,
-        ),
+      showCustomSnackBar(
+        context: context,
+        message: "Passwords do not match",
+        icon: Icons.lock_outline,
+        backgroundColor: Colors.red,
       );
       return;
     }
 
     if (_selectedCategory == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please select a business category."),
-          backgroundColor: Colors.red,
-        ),
+      showCustomSnackBar(
+        context: context,
+        message: "Please select a business category.",
+        icon: Icons.category_outlined,
+        backgroundColor: Colors.red,
       );
       return;
     }

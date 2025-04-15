@@ -19,6 +19,9 @@ class ActivityProvider with ChangeNotifier {
   bool _hasRated = false;
   bool get hasRated => _hasRated;
 
+  int _userRating = 0;
+  int get userRating => _userRating;
+
   Future<bool> rateDestination({
     required int businessUserId,
     required double rating,
@@ -153,8 +156,15 @@ class ActivityProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    _hasRated = await _activityService.checkIfUserRated(businessUserId);
+    final result = await _activityService.checkIfUserRated(businessUserId);
 
+    if (result != null) {
+      _hasRated = result.rated;
+      _userRating = result.rating;
+    } else {
+      _hasRated = false;
+      _userRating = 0;
+    }
     _isLoading = false;
     notifyListeners();
   }

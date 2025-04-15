@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_frontend_mobile/providers/auth_provider.dart';
 import 'package:go_frontend_mobile/providers/chatbot_provider.dart';
+import 'package:go_frontend_mobile/providers/profile_provider.dart';
 import 'package:go_frontend_mobile/theme/colors.dart';
 import 'package:go_frontend_mobile/theme/text_styles.dart';
 import 'package:go_frontend_mobile/widgets/discover_dialog.dart';
@@ -21,6 +22,20 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
   bool _dialogShown = false;
   bool _isSending = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserIfNeeded();
+  }
+
+  Future<void> _loadUserIfNeeded() async {
+    final profileProvider = context.read<ProfileProvider>();
+    if (profileProvider.user == null) {
+      await profileProvider.loadAuthenticatedUser();
+      setState(() {});
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -213,13 +228,34 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
           if (isUser)
             Container(
               margin: const EdgeInsets.only(left: 8),
-              child: CircleAvatar(
-                radius: 22,
-                backgroundColor: AppColors.primary,
-                child: Text(
-                  "HE",
-                  style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
-                ),
+              child: Builder(
+                builder: (context) {
+                  final user =
+                      Provider.of<ProfileProvider>(context, listen: false).user;
+                  final initial =
+                      (user?.name.isNotEmpty == true)
+                          ? user!.name[0].toUpperCase()
+                          : "";
+                  final profileImg = user?.profileImg;
+
+                  return CircleAvatar(
+                    radius: 22,
+                    backgroundColor: AppColors.primary,
+                    backgroundImage:
+                        (profileImg != null && profileImg.isNotEmpty)
+                            ? NetworkImage(profileImg)
+                            : null,
+                    child:
+                        (profileImg == null || profileImg.isEmpty)
+                            ? Text(
+                              initial,
+                              style: AppTextStyles.bodyMedium.copyWith(
+                                color: Colors.white,
+                              ),
+                            )
+                            : null,
+                  );
+                },
               ),
             ),
         ],

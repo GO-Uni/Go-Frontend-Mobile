@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/widgets/snackbar_helper.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
@@ -32,12 +33,24 @@ class LoginState extends State<Login> {
     final email = _email.text.trim();
     final password = _password.text.trim();
 
+    final emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
+
     if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please fill in both email and password"),
-          backgroundColor: Colors.red,
-        ),
+      showCustomSnackBar(
+        context: context,
+        message: "Please fill in both email and password",
+        icon: Icons.warning_amber_rounded,
+        backgroundColor: Colors.red,
+      );
+      return;
+    }
+
+    if (!emailRegex.hasMatch(email)) {
+      showCustomSnackBar(
+        context: context,
+        message: "Please enter a valid email address",
+        icon: Icons.mail_outline,
+        backgroundColor: Colors.red,
       );
       return;
     }
@@ -55,7 +68,7 @@ class LoginState extends State<Login> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Login Successful!"),
-          backgroundColor: Colors.green,
+          backgroundColor: AppColors.primary,
         ),
       );
     } else {
@@ -74,28 +87,11 @@ class LoginState extends State<Login> {
 
     if (authProvider.errorMessage != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: AppColors.primary.withAlpha((0.95 * 255).toInt()),
-            margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            content: Row(
-              children: [
-                const Icon(Icons.error_outline, color: Colors.white),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    authProvider.errorMessage!,
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
-                  ),
-                ),
-              ],
-            ),
-            duration: const Duration(seconds: 3),
-          ),
+        showCustomSnackBar(
+          context: context,
+          message: authProvider.errorMessage!,
+          icon: Icons.error_outline,
+          backgroundColor: AppColors.primary,
         );
 
         authProvider.clearError();

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/models/user_model.dart';
 import 'package:go_frontend_mobile/services/dio_client.dart';
@@ -37,6 +38,7 @@ class ProfileProvider extends ChangeNotifier {
     String? businessDescription,
     double? latitude,
     double? longitude,
+    String? profileImg,
   }) async {
     _isUpdating = true;
     _errorMessage = null;
@@ -55,6 +57,7 @@ class ProfileProvider extends ChangeNotifier {
         if (businessDescription != null) "description": businessDescription,
         if (latitude != null) "latitude": latitude,
         if (longitude != null) "longitude": longitude,
+        if (profileImg != null) "profile_img": profileImg,
       },
     };
 
@@ -74,6 +77,7 @@ class ProfileProvider extends ChangeNotifier {
           counterBooking: counterBooking ?? _user!.counterBooking,
           businessDescription:
               businessDescription ?? _user!.businessDescription,
+          profileImg: profileImg ?? _user!.profileImg,
         );
 
         notifyListeners();
@@ -142,6 +146,35 @@ class ProfileProvider extends ChangeNotifier {
     } finally {
       _isChangingPlan = false;
       notifyListeners();
+    }
+  }
+
+  Future<bool> uploadProfileImage(String imagePath) async {
+    final user = _user;
+    if (user == null) return false;
+
+    try {
+      final formData = FormData.fromMap({
+        "profile_img": await MultipartFile.fromFile(imagePath),
+      });
+
+      final uploadedUrl = await _profileService.uploadProfileImage(formData);
+
+      if (uploadedUrl != null) {
+        await Future.delayed(const Duration(seconds: 4));
+
+        _user = _user?.copyWith(profileImg: uploadedUrl);
+        notifyListeners();
+
+        log("✅ Profile image updated in provider");
+        return true;
+      } else {
+        log("❌ Failed to upload profile image");
+        return false;
+      }
+    } catch (e) {
+      log("❌ Exception in uploadProfileImage: $e");
+      return false;
     }
   }
 

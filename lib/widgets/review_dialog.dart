@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/models/user_model.dart';
+import 'package:go_frontend_mobile/providers/profile_provider.dart';
 import 'package:provider/provider.dart';
 import '../providers/activity_provider.dart';
 import '../theme/text_styles.dart';
@@ -21,6 +23,26 @@ class ReviewDialog extends StatefulWidget {
 
 class _ReviewDialogState extends State<ReviewDialog> {
   final TextEditingController _reviewController = TextEditingController();
+  UserModel? _user;
+
+  @override
+  void initState() {
+    super.initState();
+    _initUser();
+  }
+
+  Future<void> _initUser() async {
+    final profileProvider = Provider.of<ProfileProvider>(
+      context,
+      listen: false,
+    );
+    if (profileProvider.user == null) {
+      await profileProvider.loadAuthenticatedUser();
+    }
+    setState(() {
+      _user = profileProvider.user;
+    });
+  }
 
   Future<void> _handlePostReview() async {
     final reviewText = _reviewController.text.trim();
@@ -79,33 +101,16 @@ class _ReviewDialogState extends State<ReviewDialog> {
                       ),
                     ),
                     alignment: Alignment.center,
-                    child:
-                        widget.profileImageUrl != null
-                            ? ClipRRect(
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(12),
-                                bottomLeft: Radius.circular(12),
-                              ),
-                              child: Image.network(
-                                widget.profileImageUrl!,
-                                width: 40,
-                                height: 150,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Icon(
-                                    Icons.person,
-                                    color: Colors.white,
-                                  );
-                                },
-                              ),
-                            )
-                            : const Text(
-                              "JD",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                    child: Text(
+                      _user?.name.isNotEmpty == true
+                          ? _user!.name[0].toUpperCase()
+                          : '',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
                   ),
                   Expanded(
                     child: Padding(
@@ -138,7 +143,7 @@ class _ReviewDialogState extends State<ReviewDialog> {
                         _handlePostReview();
                       }
                     },
-                    width: 100,
+                    width: 150,
                   );
                 },
               ),

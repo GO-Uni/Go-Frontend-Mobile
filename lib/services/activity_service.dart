@@ -4,6 +4,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../services/dio_client.dart';
 import '../services/api_routes.dart';
 
+class RatingStatus {
+  final bool rated;
+  final int rating;
+
+  RatingStatus({required this.rated, required this.rating});
+}
+
 class ActivityService {
   final DioClient _dioClient;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
@@ -119,7 +126,7 @@ class ActivityService {
     }
   }
 
-  Future<bool> checkIfUserRated(int businessUserId) async {
+  Future<RatingStatus?> checkIfUserRated(int businessUserId) async {
     try {
       final response = await _dioClient.dio.get(
         ApiRoutes.checkIfUserRated(businessUserId),
@@ -128,13 +135,15 @@ class ActivityService {
 
       if (response.statusCode == 200) {
         final rated = response.data['data']['rated'] as bool;
+        final rating =
+            int.tryParse(response.data['data']['rating'].toString()) ?? 0;
         log("✅ Check if rated: $rated");
-        return rated;
+        return RatingStatus(rated: rated, rating: rating);
       }
-      return false;
+      return null;
     } catch (e) {
       log("❌ Error checking if user rated: $e");
-      return false;
+      return null;
     }
   }
 }

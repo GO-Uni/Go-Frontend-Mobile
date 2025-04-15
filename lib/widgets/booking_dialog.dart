@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/theme/colors.dart';
+import 'package:go_frontend_mobile/widgets/snackbar_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:go_frontend_mobile/providers/destination_provider.dart';
@@ -36,9 +38,9 @@ class _BookingDialogState extends State<BookingDialog> {
       orElse: () => {},
     );
 
-    log("Destination ID: ${widget.destinationId}");
-    log("Destination slots: ${_destination['available_booking_slots']}");
-    log("Initial booked slots: ${_destination['bookings']}");
+    //log("Destination ID: ${widget.destinationId}");
+    //log("Destination slots: ${_destination['available_booking_slots']}");
+    //log("Initial booked slots: ${_destination['bookings']}");
 
     if (_destination.isNotEmpty &&
         _destination['available_booking_slots'] != null) {
@@ -169,8 +171,11 @@ class _BookingDialogState extends State<BookingDialog> {
     final bookingProvider = context.read<BookingProvider>();
 
     if (_selectedTimeSlot == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select a time slot")),
+      showCustomSnackBar(
+        context: context,
+        message: "Please select a time slot.",
+        icon: Icons.check_circle_outline,
+        backgroundColor: AppColors.primary,
       );
       return;
     }
@@ -193,14 +198,18 @@ class _BookingDialogState extends State<BookingDialog> {
 
       if (bookingProvider.bookingSuccess) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Booking confirmed")));
+        showCustomSnackBar(
+          context: context,
+          message: "Booking confirmed.",
+          icon: Icons.check_circle_outline,
+          backgroundColor: AppColors.primary,
+        );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(bookingProvider.errorMessage ?? "Booking failed"),
-          ),
+        showCustomSnackBar(
+          context: context,
+          message: bookingProvider.errorMessage ?? "Booking failed",
+          icon: Icons.error_outline,
+          backgroundColor: Colors.red,
         );
       }
     });

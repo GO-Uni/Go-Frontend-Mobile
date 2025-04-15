@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/services/routes.dart';
+import 'package:go_frontend_mobile/widgets/snackbar_helper.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
@@ -35,11 +36,11 @@ class SignUpState extends State<SignUp> {
 
     if (_password.text != _confirmPassword.text) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Passwords do not match'),
-          backgroundColor: Colors.red,
-        ),
+      showCustomSnackBar(
+        context: context,
+        message: "Passwords do not match",
+        icon: Icons.lock_outline,
+        backgroundColor: Colors.red,
       );
       return;
     }

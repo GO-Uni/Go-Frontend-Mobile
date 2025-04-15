@@ -1,5 +1,10 @@
+import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/img_provider.dart';
 import 'package:go_frontend_mobile/providers/profile_provider.dart';
+import 'package:go_frontend_mobile/widgets/image_selector.dart';
+import 'package:go_frontend_mobile/widgets/snackbar_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:go_frontend_mobile/theme/colors.dart';
 import 'package:go_frontend_mobile/theme/text_styles.dart';
@@ -13,7 +18,6 @@ class EditBusinessScreen extends StatefulWidget {
 
 class _EditBusinessScreenState extends State<EditBusinessScreen> {
   String selectedImage = "";
-  List<String> images = [];
   String destinationName = "Business Name";
   String district = "Business District";
   String description = "No description available.";
@@ -21,29 +25,65 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
 
   final TextEditingController _descriptionController = TextEditingController();
   bool isEditing = false;
+  bool _isLoadingImage = false;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final user = Provider.of<ProfileProvider>(context, listen: false).user;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final profileProvider = Provider.of<ProfileProvider>(
+        context,
+        listen: false,
+      );
+      final user = profileProvider.user;
+
+      if (user == null || user.userId == null) return;
+
+      userId = user.userId!;
+
+      final imgProvider = Provider.of<ImgProvider>(context, listen: false);
+      await imgProvider.fetchImages(userId!);
 
       setState(() {
-        images = [
-          user?.businessName != null
-              ? "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/13/f9/cd/d0/gardens.jpg?w=900&h=500&s=1"
-              : "https://images.pexels.com/photos/2990603/pexels-photo-2990603.jpeg?auto=compress&cs=tinysrgb&w=600",
-        ];
-        userId = user?.userId;
-        selectedImage = images.first;
-        destinationName = user?.businessName ?? "Business Name";
-        district = user?.district ?? "Business District";
+        final imgs = imgProvider.images;
+
+        selectedImage =
+            imgs.isNotEmpty
+                ? imgs.first['url'] ??
+                    "https://goapp-assets.s3.eu-north-1.amazonaws.com/${imgs.first['path_name']}"
+                : '';
+
+        destinationName = user.businessName ?? "Business Name";
+        district = user.district ?? "Business District";
         description =
-            user?.businessDescription?.isNotEmpty == true
-                ? user!.businessDescription!
+            user.businessDescription?.isNotEmpty == true
+                ? user.businessDescription!
                 : "No description available.";
         _descriptionController.text = description;
       });
+    });
+  }
+
+  void _handleProfileUpdateResult(bool success, String? errorMessage) {
+    if (success) {
+      showCustomSnackBar(
+        context: context,
+        message: "Description updated successfully!",
+        icon: Icons.check_circle_outline,
+        backgroundColor: AppColors.primary,
+      );
+    } else {
+      showCustomSnackBar(
+        context: context,
+        message: errorMessage ?? "Update failed",
+        icon: Icons.error_outline,
+        backgroundColor: Colors.red,
+      );
+    }
+
+    setState(() {
+      isEditing = false;
+      description = _descriptionController.text;
     });
   }
 
@@ -55,7 +95,16 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final messenger = ScaffoldMessenger.of(context);
+    final imgProvider = Provider.of<ImgProvider>(context);
+    final images =
+        imgProvider.images
+            .map(
+              (img) =>
+                  img['url'] ??
+                  "https://goapp-assets.s3.eu-north-1.amazonaws.com/${img['path_name']}",
+            )
+            .toList()
+            .cast<String>();
 
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
@@ -108,13 +157,16 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Image.network(
-                  selectedImage.isNotEmpty
-                      ? selectedImage
-                      : "https://images.pexels.com/photos/2990603/pexels-photo-2990603.jpeg?auto=compress&cs=tinysrgb&w=600",
-                  width: double.infinity,
-                  height: 250,
-                  fit: BoxFit.cover,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.network(
+                    selectedImage.isNotEmpty
+                        ? selectedImage
+                        : "https://media.gettyimages.com/id/1473848096/vector/idyllic-landscape-with-footpath.jpg?s=612x612&w=gi&k=20&c=spGDcvw4FtlnWj3dqwgRgRKS_DMWOkBxXbHHtRYzTa8=",
+                    width: double.infinity,
+                    height: 250,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               // Divider
@@ -135,99 +187,112 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
                   horizontal: 16,
                   vertical: 1,
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      height: 60,
-                      width: MediaQuery.of(context).size.width * 0.7,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: images.length,
-                        itemBuilder: (context, index) {
-                          bool isSelected = selectedImage == images[index];
-                          return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selectedImage = images[index];
-                              });
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 10),
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: Image.network(
-                                      images[index],
-                                      width: 60,
-                                      height: 60,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  if (isSelected)
-                                    Container(
-                                      width: 60,
-                                      height: 60,
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.withAlpha(100),
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                    ),
-                                ],
+                child:
+                    _isLoadingImage
+                        ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 18.0),
+                            child: CircularProgressIndicator(
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        )
+                        : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: ImageSelectorWidget(
+                                images: images,
+                                selectedImage: selectedImage,
+                                onImageSelected: (img) {
+                                  setState(() {
+                                    selectedImage = img;
+                                  });
+                                },
+                                onImageAdded: (imgPath) async {
+                                  final success = await imgProvider.uploadImage(
+                                    File(imgPath),
+                                    userId!,
+                                  );
+
+                                  if (success) {
+                                    setState(() => _isLoadingImage = true);
+                                    await Future.delayed(
+                                      const Duration(seconds: 4),
+                                    );
+                                    await imgProvider.fetchImages(userId!);
+                                    setState(() => _isLoadingImage = false);
+
+                                    if (imgProvider.images.isNotEmpty) {
+                                      setState(() {
+                                        selectedImage =
+                                            imgProvider.images.last['url'] ??
+                                            "https://goapp-assets.s3.eu-north-1.amazonaws.com/${imgProvider.images.last['path_name']}";
+                                      });
+                                    }
+                                  } else {
+                                    log(
+                                      "Upload succeeded but image not returned properly.",
+                                    );
+                                  }
+                                },
+
+                                onImageRemoved: (imgUrl) async {
+                                  final match = imgProvider.images.firstWhere(
+                                    (element) =>
+                                        imgUrl.endsWith(element['path_name']),
+                                    orElse: () => {},
+                                  );
+
+                                  if (match.containsKey('id')) {
+                                    setState(() => _isLoadingImage = true);
+                                    final success = await imgProvider
+                                        .deleteImages([match['id']]);
+
+                                    if (success) {
+                                      if (!images.contains(selectedImage)) {
+                                        selectedImage =
+                                            images.isNotEmpty
+                                                ? images.first
+                                                : '';
+                                      }
+                                    }
+                                    setState(() => _isLoadingImage = false);
+                                  }
+                                },
                               ),
                             ),
-                          );
-                        },
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(isEditing ? Icons.check : Icons.edit),
-                      onPressed: () async {
-                        if (isEditing) {
-                          final profileProvider = Provider.of<ProfileProvider>(
-                            context,
-                            listen: false,
-                          );
 
-                          final success = await profileProvider.updateProfile(
-                            businessDescription:
-                                _descriptionController.text.trim(),
-                          );
+                            IconButton(
+                              icon: Icon(isEditing ? Icons.check : Icons.edit),
+                              onPressed: () async {
+                                if (!isEditing) {
+                                  setState(() => isEditing = true);
+                                  return;
+                                }
 
-                          if (!mounted) return;
+                                final profileProvider =
+                                    Provider.of<ProfileProvider>(
+                                      context,
+                                      listen: false,
+                                    );
 
-                          if (success) {
-                            messenger.showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Description updated successfully!',
-                                ),
-                              ),
-                            );
-                          } else {
-                            messenger.showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  profileProvider.errorMessage ??
-                                      'Update failed',
-                                ),
-                              ),
-                            );
-                          }
-                        }
+                                final success = await profileProvider
+                                    .updateProfile(
+                                      businessDescription:
+                                          _descriptionController.text.trim(),
+                                    );
 
-                        if (!mounted) return;
-                        setState(() {
-                          isEditing = !isEditing;
-                          if (!isEditing) {
-                            description = _descriptionController.text;
-                          }
-                        });
-                      },
-                    ),
-                  ],
-                ),
+                                if (!mounted) return;
+
+                                _handleProfileUpdateResult(
+                                  success,
+                                  profileProvider.errorMessage,
+                                );
+                              },
+                            ),
+                          ],
+                        ),
               ),
 
               Padding(

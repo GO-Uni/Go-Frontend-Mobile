@@ -1,6 +1,6 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/widgets/change_plan_dialog.dart';
+import 'package:go_frontend_mobile/widgets/snackbar_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
@@ -124,7 +124,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = profileProvider.user;
 
     if (user == null) {
-      log("User is null. Exiting update.");
       return;
     }
 
@@ -170,17 +169,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (!mounted) return;
 
     if (success) {
-      log("Profile updated successfully!");
       setState(() => _isEditing = false);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Profile updated successfully!")),
+      showCustomSnackBar(
+        context: context,
+        message: "Profile updated successfully.",
+        icon: Icons.check_circle_outline,
+        backgroundColor: AppColors.primary,
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Failed to update profile. Please try again."),
-        ),
+      showCustomSnackBar(
+        context: context,
+        message: "Failed to update profile. Please try again.",
+        icon: Icons.error_outline,
+        backgroundColor: Colors.red,
       );
     }
   }
@@ -248,7 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 15, left: 15),
-              child: ProfileHeader(user: user),
+              child: ProfileHeader(),
             ),
             const SizedBox(height: 5),
             Padding(

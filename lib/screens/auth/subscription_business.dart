@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/services/routes.dart';
+import 'package:go_frontend_mobile/widgets/snackbar_helper.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
@@ -39,11 +40,11 @@ class SubscriptionBusinessState extends State<SubscriptionBusiness> {
 
   void _subscribe() async {
     if (selectedPlan.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please select a subscription plan."),
-          backgroundColor: Colors.red,
-        ),
+      showCustomSnackBar(
+        context: context,
+        message: "Please select a subscription plan.",
+        icon: Icons.lock_outline,
+        backgroundColor: Colors.red,
       );
       return;
     }

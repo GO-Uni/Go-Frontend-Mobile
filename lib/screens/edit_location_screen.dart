@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/providers/profile_provider.dart';
 import 'package:go_frontend_mobile/theme/colors.dart';
 import 'package:go_frontend_mobile/theme/text_styles.dart';
+import 'package:go_frontend_mobile/widgets/snackbar_helper.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import '../widgets/custom_button.dart';
@@ -70,23 +71,23 @@ class _EditLocationScreenState extends State<EditLocationScreen> {
 
     if (!mounted) return;
 
-    final messenger = ScaffoldMessenger.of(context);
-
     if (success) {
-      log("✅ Profile updated successfully!");
-      messenger.showSnackBar(
-        const SnackBar(content: Text("Profile updated successfully.")),
+      showCustomSnackBar(
+        context: context,
+        message: "Location updated successfully.",
+        icon: Icons.check_circle_outline,
+        backgroundColor: AppColors.primary,
       );
 
       await Future.delayed(const Duration(milliseconds: 500));
-
       if (!mounted) return;
       Navigator.of(context).pop();
     } else {
-      messenger.showSnackBar(
-        const SnackBar(
-          content: Text("Failed to update profile. Please try again."),
-        ),
+      showCustomSnackBar(
+        context: context,
+        message: "Failed to update location. Please try again.",
+        icon: Icons.error_outline,
+        backgroundColor: Colors.red,
       );
     }
   }
@@ -177,7 +178,7 @@ class _EditLocationScreenState extends State<EditLocationScreen> {
                   const SizedBox(height: 13),
                   CustomButton(
                     text: "Confirm your location",
-                    width: 350,
+                    width: 250,
                     onPressed: _confirmSelection,
                   ),
                 ],
