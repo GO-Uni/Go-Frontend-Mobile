@@ -7,6 +7,7 @@ class ImageSelectorWidget extends StatelessWidget {
   final String selectedImage;
   final Function(String) onImageSelected;
   final Function(String) onImageAdded;
+  final Function(String) onImageRemoved;
 
   const ImageSelectorWidget({
     super.key,
@@ -14,6 +15,7 @@ class ImageSelectorWidget extends StatelessWidget {
     required this.selectedImage,
     required this.onImageSelected,
     required this.onImageAdded,
+    required this.onImageRemoved,
   });
 
   Future<void> _pickImage(BuildContext context) async {
@@ -77,6 +79,22 @@ class ImageSelectorWidget extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
+                  Positioned(
+                    top: 3,
+                    right: 3,
+                    child: GestureDetector(
+                      onTap: () => onImageRemoved(image),
+                      child: const CircleAvatar(
+                        backgroundColor: Colors.red,
+                        radius: 10,
+                        child: Icon(
+                          Icons.remove,
+                          size: 12,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

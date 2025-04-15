@@ -1,4 +1,7 @@
+import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/providers/img_provider.dart';
 import 'package:go_frontend_mobile/providers/profile_provider.dart';
 import 'package:go_frontend_mobile/widgets/image_selector.dart';
 import 'package:go_frontend_mobile/widgets/snackbar_helper.dart';
@@ -27,17 +30,25 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       final user = Provider.of<ProfileProvider>(context, listen: false).user;
+      final imgProvider = Provider.of<ImgProvider>(context, listen: false);
+      await imgProvider.fetchImages();
 
       setState(() {
-        images = [
-          user?.businessName != null
-              ? "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/13/f9/cd/d0/gardens.jpg?w=900&h=500&s=1"
-              : "https://images.pexels.com/photos/2990603/pexels-photo-2990603.jpeg?auto=compress&cs=tinysrgb&w=600",
-        ];
+        final fetchedImgs = imgProvider.images;
+        images =
+            fetchedImgs
+                .map(
+                  (img) =>
+                      img['url'] ??
+                      "https://goapp-assets.s3.eu-north-1.amazonaws.com/${img['path_name']}",
+                )
+                .toList()
+                .cast<String>();
+
+        selectedImage = images.isNotEmpty ? images.first : '';
         userId = user?.userId;
-        selectedImage = images.first;
         destinationName = user?.businessName ?? "Business Name";
         district = user?.district ?? "Business District";
         description =
@@ -80,6 +91,8 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final imgProvider = Provider.of<ImgProvider>(context, listen: false);
+
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
       body: SafeArea(
@@ -172,11 +185,65 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
                           selectedImage = img;
                         });
                       },
-                      onImageAdded: (img) {
-                        setState(() {
-                          images.add(img);
-                          selectedImage = img;
-                        });
+                      onImageAdded: (imgPath) async {
+                        final success = await imgProvider.uploadImage(
+                          File(imgPath),
+                        );
+
+                        if (success) {
+                          await Future.delayed(const Duration(seconds: 2));
+                          await imgProvider.fetchImages();
+
+                          setState(() {
+                            final updatedImgs = imgProvider.images;
+                            images =
+                                updatedImgs
+                                    .map(
+                                      (img) =>
+                                          img['url'] ??
+                                          "https://goapp-assets.s3.eu-north-1.amazonaws.com/${img['path_name']}",
+                                    )
+                                    .toList()
+                                    .cast<String>();
+
+                            if (images.isNotEmpty) {
+                              selectedImage = images.last;
+                            }
+                          });
+                        } else {
+                          log(
+                            "Upload succeeded but image not returned properly.",
+                          );
+                        }
+                      },
+
+                      onImageRemoved: (imgUrl) async {
+                        final match = imgProvider.images.firstWhere(
+                          (element) => imgUrl.endsWith(element['path_name']),
+                          orElse: () => {},
+                        );
+
+                        if (match.isNotEmpty) {
+                          final success = await imgProvider.deleteImages([
+                            match['id'],
+                          ]);
+                          if (success) {
+                            final updatedImgs = imgProvider.images;
+                            setState(() {
+                              images =
+                                  updatedImgs
+                                      .map(
+                                        (img) =>
+                                            img['url'] ??
+                                            "https://goapp-assets.s3.eu-north-1.amazonaws.com/${img['path_name']}",
+                                      )
+                                      .toList()
+                                      .cast<String>();
+                              selectedImage =
+                                  images.isNotEmpty ? images.first : '';
+                            });
+                          }
+                        }
                       },
                     ),
 

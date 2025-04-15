@@ -33,9 +33,12 @@ class ImagesService {
         ),
       );
 
-      if (res.statusCode == 200 && res.data["status"] == "success") {
-        final List<dynamic> images = res.data['images'];
-        log("response Imgs: $res.data['images']");
+      if (res.statusCode == 200 || res.statusCode == 202) {
+        final List<Map<String, dynamic>> images =
+            List<Map<String, dynamic>>.from(res.data['images']);
+
+        log("response Imgs: ${res.data['images']}");
+
         return images.cast<Map<String, dynamic>>();
       } else {
         log("⚠️ Unexpected response: ${res.data}");
@@ -58,7 +61,7 @@ class ImagesService {
       }
 
       final formData = FormData.fromMap({
-        'image': await MultipartFile.fromFile(
+        'images': await MultipartFile.fromFile(
           imageFile.path,
           filename: basename(imageFile.path),
         ),
@@ -76,7 +79,7 @@ class ImagesService {
         ),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 202) {
         log("✅ Image uploaded successfully: ${response.data}");
         return true;
       } else {
