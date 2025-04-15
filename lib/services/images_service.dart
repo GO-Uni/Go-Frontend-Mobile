@@ -117,7 +117,7 @@ class ImagesService {
         ),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 202) {
         log("🗑️ Images deleted: ${response.data}");
         return true;
       } else {

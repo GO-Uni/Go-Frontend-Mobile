@@ -44,6 +44,7 @@ class ImgProvider extends ChangeNotifier {
     final success = await _imgService.deleteImages(ids);
     if (success) {
       _images.removeWhere((img) => ids.contains(img['id']));
+      notifyListeners();
     }
 
     _isLoading = false;

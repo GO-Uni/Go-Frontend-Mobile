@@ -18,7 +18,6 @@ class EditBusinessScreen extends StatefulWidget {
 
 class _EditBusinessScreenState extends State<EditBusinessScreen> {
   String selectedImage = "";
-  List<String> images = [];
   String destinationName = "Business Name";
   String district = "Business District";
   String description = "No description available.";
@@ -26,6 +25,7 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
 
   final TextEditingController _descriptionController = TextEditingController();
   bool isEditing = false;
+  bool _isLoadingImage = false;
 
   @override
   void initState() {
@@ -36,18 +36,14 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
       await imgProvider.fetchImages();
 
       setState(() {
-        final fetchedImgs = imgProvider.images;
-        images =
-            fetchedImgs
-                .map(
-                  (img) =>
-                      img['url'] ??
-                      "https://goapp-assets.s3.eu-north-1.amazonaws.com/${img['path_name']}",
-                )
-                .toList()
-                .cast<String>();
+        final imgs = imgProvider.images;
 
-        selectedImage = images.isNotEmpty ? images.first : '';
+        selectedImage =
+            imgs.isNotEmpty
+                ? imgs.first['url'] ??
+                    "https://goapp-assets.s3.eu-north-1.amazonaws.com/${imgs.first['path_name']}"
+                : '';
+
         userId = user?.userId;
         destinationName = user?.businessName ?? "Business Name";
         district = user?.district ?? "Business District";
@@ -91,7 +87,16 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final imgProvider = Provider.of<ImgProvider>(context, listen: false);
+    final imgProvider = Provider.of<ImgProvider>(context);
+    final images =
+        imgProvider.images
+            .map(
+              (img) =>
+                  img['url'] ??
+                  "https://goapp-assets.s3.eu-north-1.amazonaws.com/${img['path_name']}",
+            )
+            .toList()
+            .cast<String>();
 
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
@@ -174,107 +179,111 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
                   horizontal: 16,
                   vertical: 1,
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    ImageSelectorWidget(
-                      images: images,
-                      selectedImage: selectedImage,
-                      onImageSelected: (img) {
-                        setState(() {
-                          selectedImage = img;
-                        });
-                      },
-                      onImageAdded: (imgPath) async {
-                        final success = await imgProvider.uploadImage(
-                          File(imgPath),
-                        );
+                child:
+                    _isLoadingImage
+                        ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 18.0),
+                            child: CircularProgressIndicator(
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        )
+                        : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: ImageSelectorWidget(
+                                images: images,
+                                selectedImage: selectedImage,
+                                onImageSelected: (img) {
+                                  setState(() {
+                                    selectedImage = img;
+                                  });
+                                },
+                                onImageAdded: (imgPath) async {
+                                  final success = await imgProvider.uploadImage(
+                                    File(imgPath),
+                                  );
 
-                        if (success) {
-                          await Future.delayed(const Duration(seconds: 2));
-                          await imgProvider.fetchImages();
+                                  if (success) {
+                                    setState(() => _isLoadingImage = true);
+                                    await Future.delayed(
+                                      const Duration(seconds: 4),
+                                    );
+                                    await imgProvider.fetchImages();
+                                    setState(() => _isLoadingImage = false);
 
-                          setState(() {
-                            final updatedImgs = imgProvider.images;
-                            images =
-                                updatedImgs
-                                    .map(
-                                      (img) =>
-                                          img['url'] ??
-                                          "https://goapp-assets.s3.eu-north-1.amazonaws.com/${img['path_name']}",
-                                    )
-                                    .toList()
-                                    .cast<String>();
+                                    if (imgProvider.images.isNotEmpty) {
+                                      setState(() {
+                                        selectedImage =
+                                            imgProvider.images.last['url'] ??
+                                            "https://goapp-assets.s3.eu-north-1.amazonaws.com/${imgProvider.images.last['path_name']}";
+                                      });
+                                    }
+                                  } else {
+                                    log(
+                                      "Upload succeeded but image not returned properly.",
+                                    );
+                                  }
+                                },
 
-                            if (images.isNotEmpty) {
-                              selectedImage = images.last;
-                            }
-                          });
-                        } else {
-                          log(
-                            "Upload succeeded but image not returned properly.",
-                          );
-                        }
-                      },
+                                onImageRemoved: (imgUrl) async {
+                                  final match = imgProvider.images.firstWhere(
+                                    (element) =>
+                                        imgUrl.endsWith(element['path_name']),
+                                    orElse: () => {},
+                                  );
 
-                      onImageRemoved: (imgUrl) async {
-                        final match = imgProvider.images.firstWhere(
-                          (element) => imgUrl.endsWith(element['path_name']),
-                          orElse: () => {},
-                        );
+                                  if (match.containsKey('id')) {
+                                    setState(() => _isLoadingImage = true);
+                                    final success = await imgProvider
+                                        .deleteImages([match['id']]);
 
-                        if (match.isNotEmpty) {
-                          final success = await imgProvider.deleteImages([
-                            match['id'],
-                          ]);
-                          if (success) {
-                            final updatedImgs = imgProvider.images;
-                            setState(() {
-                              images =
-                                  updatedImgs
-                                      .map(
-                                        (img) =>
-                                            img['url'] ??
-                                            "https://goapp-assets.s3.eu-north-1.amazonaws.com/${img['path_name']}",
-                                      )
-                                      .toList()
-                                      .cast<String>();
-                              selectedImage =
-                                  images.isNotEmpty ? images.first : '';
-                            });
-                          }
-                        }
-                      },
-                    ),
+                                    if (success) {
+                                      if (!images.contains(selectedImage)) {
+                                        selectedImage =
+                                            images.isNotEmpty
+                                                ? images.first
+                                                : '';
+                                      }
+                                    }
+                                    setState(() => _isLoadingImage = false);
+                                  }
+                                },
+                              ),
+                            ),
 
-                    IconButton(
-                      icon: Icon(isEditing ? Icons.check : Icons.edit),
-                      onPressed: () async {
-                        if (!isEditing) {
-                          setState(() => isEditing = true);
-                          return;
-                        }
+                            IconButton(
+                              icon: Icon(isEditing ? Icons.check : Icons.edit),
+                              onPressed: () async {
+                                if (!isEditing) {
+                                  setState(() => isEditing = true);
+                                  return;
+                                }
 
-                        final profileProvider = Provider.of<ProfileProvider>(
-                          context,
-                          listen: false,
-                        );
+                                final profileProvider =
+                                    Provider.of<ProfileProvider>(
+                                      context,
+                                      listen: false,
+                                    );
 
-                        final success = await profileProvider.updateProfile(
-                          businessDescription:
-                              _descriptionController.text.trim(),
-                        );
+                                final success = await profileProvider
+                                    .updateProfile(
+                                      businessDescription:
+                                          _descriptionController.text.trim(),
+                                    );
 
-                        if (!mounted) return;
+                                if (!mounted) return;
 
-                        _handleProfileUpdateResult(
-                          success,
-                          profileProvider.errorMessage,
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                                _handleProfileUpdateResult(
+                                  success,
+                                  profileProvider.errorMessage,
+                                );
+                              },
+                            ),
+                          ],
+                        ),
               ),
 
               Padding(
