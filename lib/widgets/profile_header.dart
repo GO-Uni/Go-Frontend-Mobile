@@ -30,12 +30,6 @@ class _ProfileHeaderState extends State<ProfileHeader> {
 
       if (!mounted) return;
 
-      if (success) {
-        await Future.delayed(const Duration(seconds: 4));
-      }
-
-      if (!mounted) return;
-
       showCustomSnackBar(
         context: context,
         message:

@@ -116,18 +116,13 @@ class ProfileService {
     }
   }
 
-  Future<String?> uploadProfileImage(
-    FormData formData, {
-    required bool isBusiness,
-  }) async {
+  Future<String?> uploadProfileImage(FormData formData) async {
     try {
-      String? token = await _secureStorage.read(key: 'auth_token');
+      final token = await _secureStorage.read(key: 'auth_token');
       if (token == null) return null;
 
       final response = await _dioClient.dio.post(
-        isBusiness
-            ? ApiRoutes.uploadBusinessMainImage
-            : ApiRoutes.uploadProfileImage,
+        ApiRoutes.uploadProfileImage,
         data: formData,
         options: Options(
           headers: {
@@ -139,7 +134,8 @@ class ProfileService {
       );
 
       final data = response.data["data"];
-      return isBusiness ? data["main_img"] : data["profile_img"];
+
+      return data["main_img"] ?? data["profile_img"];
     } catch (e) {
       log("❌ Upload profile image failed: $e");
       return null;

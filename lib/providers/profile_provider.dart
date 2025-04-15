@@ -155,20 +155,15 @@ class ProfileProvider extends ChangeNotifier {
 
     try {
       final formData = FormData.fromMap({
-        user.roleId == 3
-            ? "main_img"
-            : "profile_img": await MultipartFile.fromFile(imagePath),
+        "profile_img": await MultipartFile.fromFile(imagePath),
       });
 
-      final uploadedPath = await _profileService.uploadProfileImage(
-        formData,
-        isBusiness: user.roleId == 3,
-      );
+      final uploadedUrl = await _profileService.uploadProfileImage(formData);
 
-      if (uploadedPath != null) {
-        await Future.delayed(const Duration(seconds: 4));
+      if (uploadedUrl != null) {
+        await Future.delayed(const Duration(seconds: 2));
 
-        _user = _user?.copyWith(profileImg: uploadedPath);
+        _user = _user?.copyWith(profileImg: uploadedUrl);
         notifyListeners();
 
         log("✅ Profile image updated in provider");
