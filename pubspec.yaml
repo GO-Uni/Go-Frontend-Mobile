@@ -45,6 +45,7 @@ dependencies:
   google_maps_flutter: ^2.12.1
   image_picker: ^1.1.2
   path: ^1.9.1
+  panorama_viewer: ^2.0.4
 
 dev_dependencies:
   flutter_test:

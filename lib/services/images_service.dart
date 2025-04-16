@@ -58,7 +58,6 @@ class ImagesService {
         throw Exception("Authentication required.");
       }
 
-      // Build FormData with an 'images' array containing one map.
       final formData = FormData.fromMap({
         'images': [
           {
@@ -66,7 +65,6 @@ class ImagesService {
               imageFile.path,
               filename: basename(imageFile.path),
             ),
-            // Note: We use 'is_3d' to match the backend validation.
             'is_3d': is360 ? '1' : '0',
           },
         ],

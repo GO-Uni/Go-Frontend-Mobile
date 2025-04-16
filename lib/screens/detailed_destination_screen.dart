@@ -11,6 +11,7 @@ import '../widgets/review_widget.dart';
 import '../widgets/review_dialog.dart';
 import '../widgets/booking_dialog.dart';
 import '../providers/activity_provider.dart';
+import 'package:go_frontend_mobile/widgets/panorama_viewer.dart';
 
 class DetailedDestinationScreen extends StatefulWidget {
   const DetailedDestinationScreen({super.key});
@@ -21,9 +22,9 @@ class DetailedDestinationScreen extends StatefulWidget {
 }
 
 class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
-  String selectedImage =
-      "https://images.pexels.com/photos/2990603/pexels-photo-2990603.jpeg?auto=compress&cs=tinysrgb&w=600";
-  List<String> images = [];
+  String selectedImage = "";
+  bool selectedIs360 = false;
+  List<Map<String, dynamic>> imagesData = [];
   Map<String, dynamic> destination = {};
   int? selectedRating;
   bool _isInitialized = false;
@@ -36,35 +37,23 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
       final extra = GoRouterState.of(context).extra;
       destination = (extra is Map<String, dynamic>) ? extra : {};
       final businessUserId = destination["userid"];
+      final defaultUrl =
+          destination["imageUrl"]?.toString() ??
+          "https://images.pexels.com/photos/2990603/pexels-photo-2990603.jpeg?auto=compress&cs=tinysrgb&w=600";
 
-      final defaultImages =
-          (destination["images"] as List?)?.map((e) => e.toString()).toList() ??
-          [destination["imageUrl"]?.toString() ?? selectedImage];
-
-      images = defaultImages;
-      selectedImage = images.first;
+      imagesData = [
+        {
+          'url': destination["imageUrl"]?.toString() ?? defaultUrl,
+          'is_3d': false,
+        },
+      ];
 
       if (businessUserId != null) {
         final imgProvider = Provider.of<ImgProvider>(context, listen: false);
         await imgProvider.fetchImages(businessUserId);
 
-        final fetchedImages =
-            imgProvider.images
-                .map(
-                  (img) =>
-                      img['url'] ??
-                      "https://goapp-assets.s3.eu-north-1.amazonaws.com/${img['path_name']}",
-                )
-                .toList()
-                .cast<String>();
-
+        imagesData = List<Map<String, dynamic>>.from(imgProvider.images);
         if (!mounted) return;
-
-        setState(() {
-          images = fetchedImages.isNotEmpty ? fetchedImages : defaultImages;
-          selectedImage = images.first;
-          _isInitialized = true;
-        });
 
         final activityProvider = Provider.of<ActivityProvider>(
           context,
@@ -72,11 +61,15 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
         );
         activityProvider.getReviewsDestination(businessUserId);
         activityProvider.checkIfUserRated(businessUserId);
-      } else {
-        setState(() {
-          _isInitialized = true;
-        });
       }
+
+      if (imagesData.isNotEmpty) {
+        final first = imagesData.first;
+        selectedImage = first['url'];
+        selectedIs360 = first['is_3d'] ?? false;
+      }
+
+      setState(() => _isInitialized = true);
     });
   }
 
@@ -101,6 +94,8 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
     if (!_isInitialized) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
+
+    final imageUrls = imagesData.map((img) => img['url'] as String).toList();
 
     return Scaffold(
       backgroundColor: AppColors.lightGreen,
@@ -157,12 +152,15 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16),
-                      child: Image.network(
-                        selectedImage,
-                        width: double.infinity,
-                        height: 250,
-                        fit: BoxFit.cover,
-                      ),
+                      child:
+                          selectedIs360
+                              ? PanoramaViewerWidget(imageUrl: selectedImage)
+                              : Image.network(
+                                selectedImage,
+                                width: double.infinity,
+                                height: 250,
+                                fit: BoxFit.cover,
+                              ),
                     ),
                   ),
 
@@ -188,11 +186,16 @@ class _DetailedDestinationScreenState extends State<DetailedDestinationScreen> {
                       children: [
                         // Thumbnails
                         ImageSelectorWidget(
-                          images: images,
+                          images: imageUrls,
                           selectedImage: selectedImage,
                           onImageSelected: (img) {
+                            final found = imagesData.firstWhere(
+                              (e) => e['url'] == img,
+                              orElse: () => {},
+                            );
                             setState(() {
                               selectedImage = img;
+                              selectedIs360 = (found['is_3d'] ?? false) as bool;
                             });
                           },
                         ),
