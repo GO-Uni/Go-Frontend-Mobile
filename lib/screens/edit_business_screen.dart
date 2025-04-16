@@ -210,9 +210,62 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
                                   });
                                 },
                                 onImageAdded: (imgPath) async {
+                                  bool is360 = false;
+
+                                  // Ask user if the image is 360°
+                                  final shouldContinue = await showDialog<bool>(
+                                    context: context,
+                                    builder: (ctx) {
+                                      return StatefulBuilder(
+                                        builder: (context, setState) {
+                                          return AlertDialog(
+                                            title: const Text("Upload Image"),
+                                            content: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const Text(
+                                                  "Is this a 360° image?",
+                                                ),
+                                                SwitchListTile(
+                                                  title: const Text(
+                                                    "Mark as 360°",
+                                                  ),
+                                                  value: is360,
+                                                  onChanged:
+                                                      (val) => setState(
+                                                        () => is360 = val,
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
+                                            actions: [
+                                              TextButton(
+                                                onPressed:
+                                                    () => Navigator.of(
+                                                      ctx,
+                                                    ).pop(false),
+                                                child: const Text("Cancel"),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed:
+                                                    () => Navigator.of(
+                                                      ctx,
+                                                    ).pop(true),
+                                                child: const Text("Upload"),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                  );
+
+                                  if (shouldContinue != true) return;
+
                                   final success = await imgProvider.uploadImage(
                                     File(imgPath),
                                     userId!,
+                                    is360: is360,
                                   );
 
                                   if (success) {

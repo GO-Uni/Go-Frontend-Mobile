@@ -48,7 +48,7 @@ class ImagesService {
     }
   }
 
-  Future<bool> storeImg(File imageFile) async {
+  Future<bool> storeImg(File imageFile, {bool is360 = false}) async {
     try {
       final token = await _secureStorage.read(key: 'auth_token');
       final userIdStr = await _secureStorage.read(key: 'user_id');
@@ -58,11 +58,18 @@ class ImagesService {
         throw Exception("Authentication required.");
       }
 
+      // Build FormData with an 'images' array containing one map.
       final formData = FormData.fromMap({
-        'images': await MultipartFile.fromFile(
-          imageFile.path,
-          filename: basename(imageFile.path),
-        ),
+        'images': [
+          {
+            'file': await MultipartFile.fromFile(
+              imageFile.path,
+              filename: basename(imageFile.path),
+            ),
+            // Note: We use 'is_3d' to match the backend validation.
+            'is_3d': is360 ? '1' : '0',
+          },
+        ],
       });
 
       final response = await _dioClient.dio.post(
@@ -77,7 +84,9 @@ class ImagesService {
         ),
       );
 
-      if (response.statusCode == 200 || response.statusCode == 202) {
+      if (response.statusCode == 200 ||
+          response.statusCode == 201 ||
+          response.statusCode == 202) {
         log("✅ Image uploaded successfully: ${response.data}");
         return true;
       } else {
