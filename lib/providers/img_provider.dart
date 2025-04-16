@@ -32,7 +32,9 @@ class ImgProvider extends ChangeNotifier {
     notifyListeners();
 
     final success = await _imgService.storeImg(file, is360: is360);
+
     if (success) {
+      await Future.delayed(const Duration(seconds: 4));
       await fetchImages(businessUserId);
     }
 

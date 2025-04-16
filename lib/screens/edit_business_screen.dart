@@ -7,7 +7,6 @@ import 'package:go_frontend_mobile/theme/colors.dart';
 import 'package:go_frontend_mobile/widgets/image_selector.dart';
 import 'package:go_frontend_mobile/widgets/snackbar_helper.dart';
 import 'package:provider/provider.dart';
-import 'package:go_frontend_mobile/theme/colors.dart';
 import 'package:go_frontend_mobile/theme/text_styles.dart';
 import 'package:go_frontend_mobile/widgets/panorama_viewer.dart';
 
