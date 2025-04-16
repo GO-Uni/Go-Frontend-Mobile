@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_frontend_mobile/providers/img_provider.dart';
 import 'package:go_frontend_mobile/providers/profile_provider.dart';
+import 'package:go_frontend_mobile/theme/colors.dart';
 import 'package:go_frontend_mobile/widgets/image_selector.dart';
 import 'package:go_frontend_mobile/widgets/snackbar_helper.dart';
 import 'package:provider/provider.dart';
@@ -250,39 +251,109 @@ class _EditBusinessScreenState extends State<EditBusinessScreen> {
                                       return StatefulBuilder(
                                         builder: (context, setState) {
                                           return AlertDialog(
-                                            title: const Text("Upload Image"),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                            ),
+                                            title: Text(
+                                              "Upload Image",
+                                              style: AppTextStyles.bodyLarge
+                                                  .copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 18,
+                                                    color: AppColors.darkGray,
+                                                  ),
+                                            ),
                                             content: Column(
                                               mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
-                                                const Text(
-                                                  "Is this a 360° image?",
+                                                Text(
+                                                  "Do you want to mark this image as 360°?",
+                                                  style: AppTextStyles
+                                                      .bodyMedium
+                                                      .copyWith(
+                                                        fontSize: 14,
+                                                        color:
+                                                            AppColors
+                                                                .mediumGray,
+                                                      ),
                                                 ),
+                                                const SizedBox(height: 12),
                                                 SwitchListTile(
-                                                  title: const Text(
+                                                  title: Text(
                                                     "Mark as 360°",
+                                                    style: AppTextStyles
+                                                        .bodyMedium
+                                                        .copyWith(
+                                                          fontSize: 14,
+                                                          color:
+                                                              AppColors
+                                                                  .darkGray,
+                                                        ),
                                                   ),
                                                   value: is360,
                                                   onChanged:
                                                       (val) => setState(
                                                         () => is360 = val,
                                                       ),
+                                                  contentPadding:
+                                                      EdgeInsets.zero,
                                                 ),
                                               ],
                                             ),
+                                            actionsPadding:
+                                                const EdgeInsets.symmetric(
+                                                  horizontal: 15,
+                                                  vertical: 8,
+                                                ),
                                             actions: [
                                               TextButton(
                                                 onPressed:
                                                     () => Navigator.of(
                                                       ctx,
                                                     ).pop(false),
-                                                child: const Text("Cancel"),
+                                                child: Text(
+                                                  "Cancel",
+                                                  style: AppTextStyles
+                                                      .bodyMedium
+                                                      .copyWith(
+                                                        fontSize: 14,
+                                                        color:
+                                                            AppColors.primary,
+                                                      ),
+                                                ),
                                               ),
                                               ElevatedButton(
                                                 onPressed:
                                                     () => Navigator.of(
                                                       ctx,
                                                     ).pop(true),
-                                                child: const Text("Upload"),
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      AppColors.primary,
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 20,
+                                                        vertical: 12,
+                                                      ),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          8,
+                                                        ),
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  "Upload",
+                                                  style: AppTextStyles
+                                                      .bodyMedium
+                                                      .copyWith(
+                                                        fontSize: 14,
+                                                        color: Colors.white,
+                                                      ),
+                                                ),
                                               ),
                                             ],
                                           );
