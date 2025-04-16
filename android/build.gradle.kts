@@ -1,3 +1,5 @@
+extra.set("kotlin_version", "1.8.10")
+
 allprojects {
     repositories {
         google()

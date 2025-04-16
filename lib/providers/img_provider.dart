@@ -23,11 +23,15 @@ class ImgProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> uploadImage(File file, int businessUserId) async {
+  Future<bool> uploadImage(
+    File file,
+    int businessUserId, {
+    bool is360 = false,
+  }) async {
     _isLoading = true;
     notifyListeners();
 
-    final success = await _imgService.storeImg(file);
+    final success = await _imgService.storeImg(file, is360: is360);
     if (success) {
       await fetchImages(businessUserId);
     }
