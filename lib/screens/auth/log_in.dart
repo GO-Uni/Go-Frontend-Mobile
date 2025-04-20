@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_frontend_mobile/widgets/snackbar_helper.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
@@ -29,6 +30,31 @@ class LoginState extends State<Login> {
   }
 
   void _login() async {
+    final email = _email.text.trim();
+    final password = _password.text.trim();
+
+    final emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$");
+
+    if (email.isEmpty || password.isEmpty) {
+      showCustomSnackBar(
+        context: context,
+        message: "Please fill in both email and password",
+        icon: Icons.warning_amber_rounded,
+        backgroundColor: Colors.red,
+      );
+      return;
+    }
+
+    if (!emailRegex.hasMatch(email)) {
+      showCustomSnackBar(
+        context: context,
+        message: "Please enter a valid email address",
+        icon: Icons.mail_outline,
+        backgroundColor: Colors.red,
+      );
+      return;
+    }
+
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     bool success = await authProvider.loginUser(
@@ -42,10 +68,9 @@ class LoginState extends State<Login> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Login Successful!"),
-          backgroundColor: Colors.green,
+          backgroundColor: AppColors.primary,
         ),
       );
-      context.go(ConfigRoutes.whereToNext);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -58,6 +83,21 @@ class LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+
+    if (authProvider.errorMessage != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showCustomSnackBar(
+          context: context,
+          message: authProvider.errorMessage!,
+          icon: Icons.error_outline,
+          backgroundColor: AppColors.primary,
+        );
+
+        authProvider.clearError();
+      });
+    }
+
     return Scaffold(
       body: Stack(
         children: [

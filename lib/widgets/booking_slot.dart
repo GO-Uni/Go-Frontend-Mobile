@@ -66,7 +66,10 @@ class BookingSlot extends StatelessWidget {
                         isBooked ? "BOOKED" : "BOOK",
                         style: AppTextStyles.bodyLarge.copyWith(
                           fontSize: 14,
-                          color: isBooked ? Colors.green : Colors.black,
+                          color:
+                              isBooked || isSelected
+                                  ? Colors.green
+                                  : Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

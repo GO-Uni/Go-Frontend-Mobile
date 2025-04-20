@@ -45,4 +45,100 @@ class ProfileService {
       return false;
     }
   }
+
+  Future<Map<String, dynamic>?> getAuthenticatedUser() async {
+    try {
+      String? token = await _secureStorage.read(key: 'auth_token');
+
+      if (token == null) {
+        log("⚠️ No auth token found. Cannot fetch user data.");
+        return null;
+      }
+
+      final response = await _dioClient.dio.get(
+        ApiRoutes.me,
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final user = response.data['data']?['user'];
+        log("✅ Authenticated user: $user");
+        return user;
+      } else {
+        log("⚠️ Failed to fetch authenticated user: ${response.data}");
+        return null;
+      }
+    } on DioException catch (e) {
+      log("❌ Error fetching user: ${e.response?.data['message'] ?? e.message}");
+      return null;
+    }
+  }
+
+  Future<bool> changeSubscription({
+    required String subscriptionType,
+    required String paymentMethod,
+  }) async {
+    try {
+      final token = await _secureStorage.read(key: 'auth_token');
+      if (token == null) {
+        log("❌ No auth token");
+        return false;
+      }
+
+      final response = await _dioClient.dio.put(
+        ApiRoutes.changeSubscription,
+        data: {
+          "subscription_type": subscriptionType,
+          "payment_method": paymentMethod,
+        },
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+          },
+        ),
+      );
+
+      log("✅ Response Status: ${response.statusCode}");
+      log("✅ Response Data: ${response.data}");
+
+      return response.statusCode == 200;
+    } on DioException catch (e) {
+      log("❌ Error: ${e.response}");
+      log("❌ Message: ${e.message}");
+      return false;
+    }
+  }
+
+  Future<String?> uploadProfileImage(FormData formData) async {
+    try {
+      final token = await _secureStorage.read(key: 'auth_token');
+      if (token == null) return null;
+
+      final response = await _dioClient.dio.post(
+        ApiRoutes.uploadProfileImage,
+        data: formData,
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+            "Accept": "application/json",
+            "Content-Type": "multipart/form-data",
+          },
+        ),
+      );
+
+      final data = response.data["data"];
+
+      return data["main_img"] ?? data["profile_img"];
+    } catch (e) {
+      log("❌ Upload profile image failed: $e");
+      return null;
+    }
+  }
 }

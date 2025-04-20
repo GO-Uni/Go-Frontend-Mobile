@@ -1,17 +1,22 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:go_frontend_mobile/providers/profile_provider.dart';
-import 'package:go_frontend_mobile/services/routes.dart';
+import 'package:go_frontend_mobile/widgets/change_plan_dialog.dart';
+import 'package:go_frontend_mobile/widgets/snackbar_helper.dart';
 import 'package:provider/provider.dart';
-import 'package:go_frontend_mobile/providers/auth_provider.dart';
 import 'package:go_router/go_router.dart';
+
+import 'package:go_frontend_mobile/providers/profile_provider.dart';
+import 'package:go_frontend_mobile/providers/auth_provider.dart';
+import 'package:go_frontend_mobile/providers/category_provider.dart';
+import 'package:go_frontend_mobile/services/routes.dart';
+
+import 'package:go_frontend_mobile/widgets/discover_dialog.dart';
 import 'package:go_frontend_mobile/widgets/custom_text_field.dart';
 import 'package:go_frontend_mobile/widgets/custom_button.dart';
+import 'package:go_frontend_mobile/widgets/profile_header.dart';
+import 'package:go_frontend_mobile/widgets/time_dropdown_field.dart';
+import 'package:go_frontend_mobile/widgets/custom_dropdown_field.dart';
+
 import '../theme/colors.dart';
-import '../widgets/profile_header.dart';
-import '../widgets/time_dropdown_field.dart';
-import '../widgets/custom_dropdown_field.dart';
-import 'package:go_frontend_mobile/providers/category_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -22,6 +27,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   bool _isEditing = false;
+  bool _isGuest = false;
+  bool _dialogShown = false;
 
   late TextEditingController _nameController;
   late TextEditingController _businessNameController;
@@ -31,26 +38,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
   late TextEditingController _counterBookingController;
 
   String _selectedCategoryId = "";
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    final user = Provider.of<AuthProvider>(context, listen: false).user;
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final profileProvider = Provider.of<ProfileProvider>(
+      context,
+      listen: false,
+    );
 
+    _isGuest = authProvider.isGuest;
+
+    if (_isGuest) {
+      _initControllersFromUser(null);
+      _isLoading = false;
+    } else {
+      profileProvider.loadAuthenticatedUser().then((success) {
+        if (success && mounted) {
+          final user = profileProvider.user;
+          _initControllersFromUser(user);
+        }
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      });
+    }
+  }
+
+  void _initControllersFromUser(user) {
     _nameController = TextEditingController(text: user?.name ?? "");
     _businessNameController = TextEditingController(
       text: user?.businessName ?? "",
     );
     _districtController = TextEditingController(text: user?.district ?? "");
-    _counterBookingController = TextEditingController(
-      text: user?.counterBooking?.toString() ?? "",
+    _openingHourController = TextEditingController(
+      text: user?.openingHour ?? "",
     );
-    _openingHourController = TextEditingController(text: user?.openingHour);
-    _closingHourController = TextEditingController(text: user?.closingHour);
+    _closingHourController = TextEditingController(
+      text: user?.closingHour ?? "",
+    );
     _counterBookingController = TextEditingController(
       text: user?.counterBooking?.toString() ?? "",
     );
     _selectedCategoryId = user?.businessCategoryId ?? "";
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_isGuest && !_dialogShown) {
+      _dialogShown = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          showDialog(context: context, builder: (_) => const DiscoverDialog());
+        }
+      });
+    }
   }
 
   @override
@@ -78,7 +124,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = profileProvider.user;
 
     if (user == null) {
-      log("User is null. Exiting update.");
       return;
     }
 
@@ -93,10 +138,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final selectedCategoryName = selectedCategory['name'] ?? '';
 
     bool success = await profileProvider.updateProfile(
-      onUpdate: (user) {
-        final authProvider = Provider.of<AuthProvider>(context, listen: false);
-        authProvider.updateUser(user);
-      },
       name: _nameController.text.isNotEmpty ? _nameController.text : user.name,
       businessName:
           _businessNameController.text.isNotEmpty
@@ -128,40 +169,77 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (!mounted) return;
 
     if (success) {
-      log("Profile updated successfully!");
-      setState(() {
-        _isEditing = false;
-      });
+      setState(() => _isEditing = false);
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Profile updated successfully!")),
+      showCustomSnackBar(
+        context: context,
+        message: "Profile updated successfully.",
+        icon: Icons.check_circle_outline,
+        backgroundColor: AppColors.primary,
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Failed to update profile. Please try again."),
-        ),
+      showCustomSnackBar(
+        context: context,
+        message: "Failed to update profile. Please try again.",
+        icon: Icons.error_outline,
+        backgroundColor: Colors.red,
       );
     }
   }
 
   void _logout() {
-    Provider.of<AuthProvider>(context, listen: false).logoutUser();
+    Provider.of<AuthProvider>(context, listen: false).logoutUser(context);
     context.go(ConfigRoutes.signUpOptions);
   }
 
-  void _showChangePlanDialog() {}
+  void _showChangePlanDialog() {
+    final user = context.read<ProfileProvider>().user;
+    if (user == null || user.subscriptionMethod == null) return;
+
+    final currentPlan = user.subscriptionMethod!.toLowerCase();
+
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withAlpha((0.2 * 255).toInt()),
+      builder:
+          (_) => ChangePlanDialog(
+            currentPlan: currentPlan,
+            onSave: (selectedPlan) async {
+              bool success = await context
+                  .read<ProfileProvider>()
+                  .changeSubscriptionPlan(selectedPlan);
+
+              if (!mounted) return;
+
+              if (success) {
+                debugPrint("✔ Plan changed to $selectedPlan");
+              } else {
+                debugPrint("❌ Failed to change plan.");
+              }
+            },
+          ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final profileProvider = Provider.of<ProfileProvider>(
-      context,
-      listen: false,
-    );
+    final profileProvider = Provider.of<ProfileProvider>(context);
     final user = profileProvider.user;
 
-    if (user == null) {
-      return const Center(child: CircularProgressIndicator());
+    if (_isGuest) {
+      return const Scaffold(
+        backgroundColor: AppColors.lightGreen,
+        body: Center(child: SizedBox.shrink()),
+      );
+    }
+
+    if (_isLoading || user == null) {
+      return const Scaffold(
+        backgroundColor: AppColors.lightGreen,
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+      );
     }
 
     return Scaffold(
@@ -172,7 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.only(top: 15, left: 15),
-              child: ProfileHeader(user: user),
+              child: ProfileHeader(),
             ),
             const SizedBox(height: 5),
             Padding(
@@ -210,10 +288,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Consumer<CategoryProvider>(
                       builder: (context, categoryProvider, child) {
                         if (categoryProvider.isLoading) {
-                          return const CircularProgressIndicator();
+                          return const CircularProgressIndicator(
+                            color: AppColors.primary,
+                          );
                         }
 
-                        List<DropdownMenuItem<String>> dropdownItems =
+                        final dropdownItems =
                             categoryProvider.categories.map((category) {
                               return DropdownMenuItem<String>(
                                 value: category['id'].toString(),
@@ -222,13 +302,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             }).toList();
 
                         if (!_isEditing) {
-                          var selectedCategory = categoryProvider.categories
+                          final selectedCategory = categoryProvider.categories
                               .firstWhere(
                                 (cat) =>
                                     cat['id'].toString() == _selectedCategoryId,
                                 orElse: () => {'name': ''},
                               );
-                          String displayCategoryName =
+                          final displayCategoryName =
                               selectedCategory['name'] ?? '';
                           return CustomTextField(
                             label: "Business Category",
@@ -245,9 +325,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     ? _selectedCategoryId
                                     : null,
                             onChanged: (value) {
-                              setState(() {
-                                _selectedCategoryId = value!;
-                              });
+                              setState(() => _selectedCategoryId = value!);
                             },
                           );
                         }
@@ -259,18 +337,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       controller: _districtController,
                       readOnly: !_isEditing,
                     ),
-                    Container(
-                      alignment: Alignment.centerLeft,
+                    Padding(
                       padding: const EdgeInsets.only(top: 10, bottom: 10),
-                      child: Text(
-                        "Bookings",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          fontSize: 14,
-                          color: AppColors.darkGray,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Bookings",
+                          style: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.copyWith(
+                            fontSize: 14,
+                            color: AppColors.darkGray,
+                          ),
                         ),
                       ),
                     ),
-
                     Row(
                       children: [
                         Expanded(
@@ -302,11 +383,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Expanded(
                           child: CustomTextField(
                             label: "Qnty/Booking",
-                            hintText:
-                                _isEditing
-                                    ? _counterBookingController.text
-                                    : (user.counterBooking?.toString() ??
-                                        "123"),
+                            hintText: _counterBookingController.text,
                             controller: _counterBookingController,
                             readOnly: !_isEditing,
                           ),
@@ -315,8 +392,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     CustomTextField(
                       label: "Subscription Method",
-                      hintText: "Monthly",
-                      subText: "\$14.99/monthly",
+                      hintText:
+                          user.subscriptionMethod != null &&
+                                  user.subscriptionMethod!.isNotEmpty
+                              ? '${user.subscriptionMethod![0].toUpperCase()}${user.subscriptionMethod!.substring(1)}'
+                              : "Unknown",
+                      subText:
+                          user.subscriptionPrice != null
+                              ? "\$${(user.subscriptionPrice! / 100).toStringAsFixed(2)}/${user.subscriptionMethod}"
+                              : "",
                       isSubscription: true,
                       readOnly: true,
                       onChangePlan: _showChangePlanDialog,
@@ -345,6 +429,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
+
             const SizedBox(height: 30),
           ],
         ),

@@ -13,11 +13,18 @@ class UserModel {
   final String? closingHour;
   final int? counterBooking;
   final String? subscriptionMethod;
+  final double? subscriptionPrice;
+  final String? businessDescription;
+  final int? userId;
+  final double? latitude;
+  final double? longitude;
+  final String? profileImg;
 
   const UserModel({
     required this.name,
     required this.email,
     required this.roleId,
+    required this.userId,
     this.businessName,
     this.ownerName,
     this.businessCategory,
@@ -27,6 +34,11 @@ class UserModel {
     this.closingHour,
     this.counterBooking,
     this.subscriptionMethod,
+    this.subscriptionPrice,
+    this.businessDescription,
+    this.latitude,
+    this.longitude,
+    this.profileImg,
   });
 
   UserModel copyWith({
@@ -42,11 +54,16 @@ class UserModel {
     String? closingHour,
     int? counterBooking,
     String? subscriptionMethod,
+    String? businessDescription,
+    double? latitude,
+    double? longitude,
+    String? profileImg,
   }) {
     return UserModel(
       name: name ?? this.name,
       email: email ?? this.email,
       roleId: roleId ?? this.roleId,
+      userId: userId,
       businessName: businessName ?? this.businessName,
       ownerName: ownerName ?? this.ownerName,
       businessCategory: businessCategory ?? this.businessCategory,
@@ -56,17 +73,23 @@ class UserModel {
       closingHour: closingHour ?? this.closingHour,
       counterBooking: counterBooking ?? this.counterBooking,
       subscriptionMethod: subscriptionMethod ?? this.subscriptionMethod,
+      businessDescription: businessDescription ?? this.businessDescription,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      profileImg: profileImg ?? this.profileImg,
     );
   }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     final businessProfile = json['business_profile'] ?? {};
+    final subscription =
+        businessProfile['subscription_details'] ?? json['subscription'] ?? {};
 
     return UserModel(
       name: json['name'] ?? "Unknown",
       email: json['email'] ?? "No Email",
       roleId: json['role_id'] ?? 2,
-
+      userId: json['id'],
       businessName: businessProfile['business_name'] as String?,
       ownerName: businessProfile['user_name'] as String?,
       businessCategory: businessProfile['category_name'] as String?,
@@ -74,12 +97,25 @@ class UserModel {
       district: businessProfile['district'] as String?,
       openingHour: businessProfile['opening_hour'] as String?,
       closingHour: businessProfile['closing_hour'] as String?,
+      businessDescription: businessProfile['description'] as String?,
       counterBooking:
           businessProfile['counter_booking'] != null
               ? int.tryParse(businessProfile['counter_booking'].toString())
               : null,
-
-      subscriptionMethod: json['subscription_method'] as String?,
+      subscriptionMethod: subscription['type'] as String?,
+      subscriptionPrice:
+          subscription['price'] != null
+              ? double.tryParse(subscription['price'].toString())
+              : null,
+      latitude:
+          businessProfile['latitude'] != null
+              ? double.tryParse(businessProfile['latitude'].toString())
+              : null,
+      longitude:
+          businessProfile['longitude'] != null
+              ? double.tryParse(businessProfile['longitude'].toString())
+              : null,
+      profileImg: json['profile_img'] as String?,
     );
   }
 
@@ -89,6 +125,8 @@ class UserModel {
       "email": email,
       "role_id": roleId,
       "subscription_method": subscriptionMethod,
+      "userId": userId,
+      "profile_img": profileImg,
 
       if (roleId == 3)
         "business_profile": {
@@ -100,6 +138,9 @@ class UserModel {
           "opening_hour": openingHour,
           "closing_hour": closingHour,
           "counter_booking": counterBooking,
+          'business_description': businessDescription,
+          "latitude": latitude,
+          "longitude": longitude,
         },
     };
   }

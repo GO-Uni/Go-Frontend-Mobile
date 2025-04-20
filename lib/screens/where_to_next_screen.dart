@@ -52,7 +52,11 @@ class WhereToNextScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 14),
                 child:
                     categoryProvider.isLoading
-                        ? const Center(child: CircularProgressIndicator())
+                        ? const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.primary,
+                          ),
+                        )
                         : categoryProvider.categories.isEmpty
                         ? const Center(child: Text("No categories found"))
                         : GridView.builder(

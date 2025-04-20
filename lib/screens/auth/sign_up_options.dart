@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_frontend_mobile/providers/auth_provider.dart';
 import 'package:go_frontend_mobile/services/routes.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../widgets/signup_option_card.dart';
 
@@ -71,7 +73,12 @@ class SignUpOptions extends StatelessWidget {
                 actionText: "Start exploring",
                 icon: FontAwesomeIcons.ghost,
                 onTap: () {
-                  // Handle guest login
+                  final authProvider = Provider.of<AuthProvider>(
+                    context,
+                    listen: false,
+                  );
+                  authProvider.continueAsGuest();
+                  context.go(ConfigRoutes.whereToNext);
                 },
               ),
               const Spacer(),

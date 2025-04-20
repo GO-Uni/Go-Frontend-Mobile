@@ -4,6 +4,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../services/dio_client.dart';
 import '../services/api_routes.dart';
 
+class RatingStatus {
+  final bool rated;
+  final int rating;
+
+  RatingStatus({required this.rated, required this.rating});
+}
+
 class ActivityService {
   final DioClient _dioClient;
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
@@ -94,6 +101,49 @@ class ActivityService {
     } catch (e) {
       log("❌ Error adding review destination: $e");
       return false;
+    }
+  }
+
+  List<Map<String, dynamic>>? lastFetchedReviews;
+
+  Future<bool> getReviewsDestination({required int businessUserId}) async {
+    try {
+      Response response = await _dioClient.dio.get(
+        ApiRoutes.getReviewsDestination(businessUserId),
+      );
+
+      if (response.statusCode == 200 && response.data["data"] != null) {
+        lastFetchedReviews = List<Map<String, dynamic>>.from(
+          response.data["data"],
+        );
+      }
+
+      log("✅ Reviews Destination fetched successfully: ${response.data}");
+      return response.statusCode == 200;
+    } catch (e) {
+      log("❌ Error fetching reviews destination: $e");
+      return false;
+    }
+  }
+
+  Future<RatingStatus?> checkIfUserRated(int businessUserId) async {
+    try {
+      final response = await _dioClient.dio.get(
+        ApiRoutes.checkIfUserRated(businessUserId),
+        options: Options(headers: await _getHeaders()),
+      );
+
+      if (response.statusCode == 200) {
+        final rated = response.data['data']['rated'] as bool;
+        final rating =
+            int.tryParse(response.data['data']['rating'].toString()) ?? 0;
+        log("✅ Check if rated: $rated");
+        return RatingStatus(rated: rated, rating: rating);
+      }
+      return null;
+    } catch (e) {
+      log("❌ Error checking if user rated: $e");
+      return null;
     }
   }
 }
